@@ -1,3 +1,11 @@
+import web3 from 'web3'
+import bitcoin from 'bitcoinjs-lib'
+
+
+console.log('web3', web3)
+console.log('bitcoin', bitcoin)
+
+
 alight.router.setBase(location.pathname)
 
 alight.ctrl.main = function (scope) {
