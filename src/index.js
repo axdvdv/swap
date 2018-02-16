@@ -1,6 +1,8 @@
 import web3 from 'web3'
 import bitcoin from 'bitcoinjs-lib'
 
+import './style.scss'
+
 
 console.log('web3', web3)
 console.log('bitcoin', bitcoin)
