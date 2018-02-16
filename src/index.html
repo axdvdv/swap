@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= htmlWebpackPlugin.options.title %></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <script src="http://angularlight.org/bin/alight_0.12.last.debug.js"></script>
+  <script type="text/javascript" src="https://rawgit.com/lega911/alight/master/ext/router.es.js"></script>
+</head>
+<body al-app="main">
+
+  <div al-cloak>
+    real: {{realUrl()}} <br/>
+    url: {{url()}}
+    <hr/>
+
+    <div al-route="/user/details">
+      <h3>Super-Header for /user/details</h3>
+    </div>
+
+    <div al-route="/user/**" al-ctrl>
+      <hr/>
+      <b>"/user/**" = </b> {{$route.tail}}
+      <hr/>
+    </div>
+
+    <div al-route="/login">
+      Login page
+      <button al-link="/profile">Login</button>
+    </div>
+
+    <div al-route>
+      <header>Header</header>
+      <div al-route="/profile" al-ctrl>
+        Profile
+        <button al-link="/user/details">Look user details</button>
+        <button al-link="/login">Exit</button>
+        <br/>
+        <a @click="$route.go('/user/ubuntu/view')" href>User Ubuntu</a> <br/>
+        <a @click="$route.go('/user/linux/view')" href>User Linux</a> <br/>
+        <a @click="$route.go('/wrong/link')" href>Wrong link</a> <br/>
+        <a al-link="/user" href>go to /user</a> <br/>
+      </div>
+      <div al-route="/user">
+        User list
+      </div>
+      <div al-route="/user/:name/view"
+           al-route-out2="onOut()"
+           al-ctrl="userCtrl">
+        <b>View</b> <br/>
+        <label> <input type="checkbox" al-model="ask" /> ask on out</label>
+        <br/>
+        <b>user name</b> {{$route?.name}}
+        <br/>
+        <a href al-link="/user/unix/view">go to unix user</a>
+      </div>
+      <div al-route="/user/details">
+        User Details
+        <button @click="go('/profile')">Go to profile</button>
+        <button @click="go('/login')">Exit</button>
+      </div>
+      <div al-route.default>
+        404 - Not found
+      </div>
+      <footer>footer here</footer>
+    </div>
+
+    <hr/>
+    <div>
+      <h3>History</h3>
+      <ul>
+        <li al-repeat="url in history track by $index">
+          <a href @click="go(url)" :style.color="$last?'green':''">{{url}}</a>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+
+  <div :hidden="true">
+    Loading...
+  </div>
+
+</body>
+</html>
