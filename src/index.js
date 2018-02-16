@@ -8,37 +8,21 @@ console.log('bitcoin', bitcoin)
 
 alight.router.setBase(location.pathname)
 
-alight.ctrl.main = function (scope) {
+alight.ctrl.app = function (scope) {
 
   scope.go = (url) => {
     alight.router.go(url)
   }
 
   scope.$watch('$finishBinding', () => {
-    alight.router.go('/login')
+    alight.router.go('/list')
     scope.$scan()
   })
 
   scope.realUrl = () => document.location.pathname
   scope.url = alight.router.getCurrentUrl
 
-  // history
-  scope.history = []
-  alight.router.subscribe( (url) => {
-    scope.history.push(url)
+  alight.router.subscribe((url) => {
+    console.log(`Moved to ${url}`)
   })
-}
-
-
-alight.ctrl.userCtrl = function (scope) {
-
-  if(!scope.$route) {
-    console.warn('no $route')
-  }
-
-  scope.onOut = () => {
-    if(scope.ask)
-      return !confirm('Do you want to out?')
-    return false
-  }
 }

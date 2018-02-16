@@ -8,74 +8,47 @@
   <script src="http://angularlight.org/bin/alight_0.12.last.debug.js"></script>
   <script type="text/javascript" src="https://rawgit.com/lega911/alight/master/ext/router.es.js"></script>
 </head>
-<body al-app="main">
+<body al-app="app">
 
   <div al-cloak>
     real: {{realUrl()}} <br/>
     url: {{url()}}
     <hr/>
 
-    <div al-route="/user/details">
-      <h3>Super-Header for /user/details</h3>
+    <!--
+
+    List
+
+    **************************************************************** -->
+
+    <div al-route="/list">
+      <h3>Users list looking for swap</h3>
+      <button al-link="/btc-to-eth">Swap BTC to ETH</button><br /><br />
+      <button al-link="/eth-to-btc">Swap ETH to BTC</button>
     </div>
 
-    <div al-route="/user/**" al-ctrl>
-      <hr/>
-      <b>"/user/**" = </b> {{$route.tail}}
-      <hr/>
+    <!--
+
+    BTC to ETH
+
+    **************************************************************** -->
+
+    <div al-route="/btc-to-eth">
+      <h3>BTC to ETH</h3>
+      <button al-link="/list">Back</button>
     </div>
 
-    <div al-route="/login">
-      Login page
-      <button al-link="/profile">Login</button>
+    <!--
+
+    ETH to BTC
+
+    **************************************************************** -->
+
+    <div al-route="/eth-to-btc">
+      <h3>ETH to BTC</h3>
+      <button al-link="/list">Back</button>
     </div>
 
-    <div al-route>
-      <header>Header</header>
-      <div al-route="/profile" al-ctrl>
-        Profile
-        <button al-link="/user/details">Look user details</button>
-        <button al-link="/login">Exit</button>
-        <br/>
-        <a @click="$route.go('/user/ubuntu/view')" href>User Ubuntu</a> <br/>
-        <a @click="$route.go('/user/linux/view')" href>User Linux</a> <br/>
-        <a @click="$route.go('/wrong/link')" href>Wrong link</a> <br/>
-        <a al-link="/user" href>go to /user</a> <br/>
-      </div>
-      <div al-route="/user">
-        User list
-      </div>
-      <div al-route="/user/:name/view"
-           al-route-out2="onOut()"
-           al-ctrl="userCtrl">
-        <b>View</b> <br/>
-        <label> <input type="checkbox" al-model="ask" /> ask on out</label>
-        <br/>
-        <b>user name</b> {{$route?.name}}
-        <br/>
-        <a href al-link="/user/unix/view">go to unix user</a>
-      </div>
-      <div al-route="/user/details">
-        User Details
-        <button @click="go('/profile')">Go to profile</button>
-        <button @click="go('/login')">Exit</button>
-      </div>
-      <div al-route.default>
-        404 - Not found
-      </div>
-      <footer>footer here</footer>
-    </div>
-
-    <hr/>
-    <div>
-      <h3>History</h3>
-      <ul>
-        <li al-repeat="url in history track by $index">
-          <a href @click="go(url)" :style.color="$last?'green':''">{{url}}</a>
-        </li>
-      </ul>
-
-    </div>
   </div>
 
   <div :hidden="true">
