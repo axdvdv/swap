@@ -16,10 +16,10 @@ alight.ctrl.app = function (scope) {
     alight.router.go(url)
   }
 
-  scope.$watch('$finishBinding', () => {
-    alight.router.go('/list')
-    scope.$scan()
-  })
+  // scope.$watch('$finishBinding', () => {
+  //   alight.router.go('/list')
+  //   scope.$scan()
+  // })
 
   scope.realUrl = () => document.location.pathname
   scope.url = alight.router.getCurrentUrl
