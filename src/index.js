@@ -12,17 +12,17 @@ alight.router.setBase(location.pathname)
 
 alight.ctrl.app = function (scope) {
 
-  scope.go = (url) => {
-    alight.router.go(url)
-  }
-
-  // scope.$watch('$finishBinding', () => {
-  //   alight.router.go('/list')
-  //   scope.$scan()
-  // })
-
-  scope.realUrl = () => document.location.pathname
   scope.url = alight.router.getCurrentUrl
+
+  scope.go = (url) => alight.router.go(url)
+  scope.realUrl = () => document.location.pathname
+
+  scope.$watch('$finishBinding', () => {
+    if (location.pathname === '/') {
+      alight.router.go('/list')
+      scope.$scan()
+    }
+  })
 
   alight.router.subscribe((url) => {
     console.log(`Moved to ${url}`)
