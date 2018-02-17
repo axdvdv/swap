@@ -5,15 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <script src="http://angularlight.org/bin/alight_0.12.last.debug.js"></script>
-  <script type="text/javascript" src="https://rawgit.com/lega911/alight/master/ext/router.es.js"></script>
+  <script src="https://unpkg.com/ipfs/dist/index.js"></script>
+  <style>
+    [al-cloak] {
+      display: none !important;
+    }
+  </style>
 </head>
-<body al-app="app">
+<!--body al-app="app"-->
+<body al-app="main">
 
   <div al-cloak>
-    real: {{realUrl()}} <br/>
-    url: {{url()}}
-    <hr/>
 
     <!--
 
@@ -21,11 +23,300 @@
 
     **************************************************************** -->
 
-    <div al-route="/list">
-      <h3>Users list looking for swap</h3>
-      <button al-link="/btc-to-eth">Swap BTC to ETH</button><br /><br />
-      <button al-link="/eth-to-btc">Swap ETH to BTC</button>
-    </div>
+    <!--div al-route="/main">
+      <div al-ctrl="main"-->
+        <div class="content">
+          <div class="row">
+            <div class="col border-right">
+              <div class="pr-2">
+                <div class="alert alert-warning fs-16" role="alert">
+                  <div class="d-flex justify-content-between">
+                    <div>Баланс <b>{{balance}}</b></div>
+                    <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
+                  </div>
+                  <hr />
+                  <a id="eth_address" @click="CopyToClipboard('eth_address')" title="скопировать в буффер">{{address}}</a>
+                </div>
+                <h3 class="pt-4 pb-2">Купить ETH за BTC</h3>
+                <form action="" al-submit="append('buy')">
+                  <div class="form-group">
+                    <label>Курс</label>
+                    <div class="input-group mb-3">
+                      <input
+                        class="form-control"
+                        type="number"
+                        @input.change_eth_price=""
+                        al-value="eth_price"
+                        required
+                      >
+                      <div class="input-group-append">
+                        <span class="input-group-text">ETH</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Количество <b>BTC</b> которое вы хотите <b>получить</b></label>
+                    <div class="input-group mb-3">
+                      <input
+                        class="form-control"
+                        type="number"
+                        @input.change_btc=""
+                        al-value="btc"
+                        required
+                      >
+                      <div class="input-group-append">
+                        <span class="input-group-text">BTC</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Количество <b>ETH</b> которое вы хотите <b>продать</b></label>
+                    <div class="input-group mb-3">
+                      <input
+                        class="form-control"
+                        type="number"
+                        @input.change_eth=""
+                        al-value="eth"
+                        required
+                      >
+                      <div class="input-group-append">
+                        <span class="input-group-text">ETH</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input
+                        id="ch_active"
+                        class="form-check-input"
+                        type="checkbox"
+                        al-init="checked()"
+                        al-value="active"
+                      />
+                      Обьявление активно
+                    </label>
+                    <div class="text-muted">поставьте галочку, что бы объявление появилось в онлайне в списке выше</div>
+                  </div>
+                  <div class="pt-3">
+                    <input type="submit" class="btn btn-primary btn-block" value="Создать объявление">
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="col">
+              <div class="pl-2">
+                <div class="alert alert-warning fs-16" role="alert">
+                  <div class="d-flex justify-content-between">
+                    <div>Баланс <b>{{bitcoin_balance}}</b></div>
+                    <a href="" data-toggle="modal" data-target="#withdraw_btc">вывести средства</a>
+                  </div>
+                  <hr />
+                  <a id="bitcoin_address" @click="CopyToClipboard('bitcoin_address')" title="скопировать в буффер">{{address}}</a>
+                </div>
+                <h3 class="pt-4 pb-2">Купить ETH за BTC</h3>
+                <form action="" al-submit="append('sell')">
+                  <div class="form-group">
+                    <label>Курс</label>
+                    <div class="input-group mb-3">
+                      <input
+                        class="form-control"
+                        type="number"
+                        @input.change_btc_price=""
+                        al-value="btc_price"
+                        required
+                      >
+                      <div class="input-group-append">
+                        <span class="input-group-text">ETH</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Количество <b>ETH</b> которое вы хотите <b>продать</b></label>
+                    <div class="input-group mb-3">
+                      <input
+                        class="form-control"
+                        type="number"
+                        @input.change_sell_eth=""
+                        al-value="sell_eth"
+                        required
+                      >
+                      <div class="input-group-append">
+                        <span class="input-group-text">ETH</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Количество <b>BTC</b> которое вы хотите <b>получить</b></label>
+                    <div class="input-group mb-3">
+                      <input
+                        class="form-control"
+                        type="number"
+                        @input.change_sell_btc=""
+                        al-value="sell_btc"
+                        required
+                      >
+                      <div class="input-group-append">
+                        <span class="input-group-text">BTC</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input
+                        id="sell_ch_active"
+                        class="form-check-input"
+                        type="checkbox"
+                        al-init="sell_checked()"
+                        al-value="active"
+                      />
+                      Обьявление активно
+                    </label>
+                    <div class="text-muted">поставьте галочку, что бы объявление появилось в онлайне в списке выше</div>
+                  </div>
+                  <div class="pt-3">
+                    <input type="submit" class="btn btn-primary btn-block" value="Создать объявление">
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-5" />
+
+          <div class="row">
+            <div class="col border-right">
+              <div class="pr-2">
+                <div class="d-flex justify-content-between">
+                  <label>Продают</label>
+                  <div>Всего: <span>{{total_eth}} ETH</span></div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th>Цена</th>
+                      <th class="text-right">ETH</th>
+                      <th class="text-right">BTC</th>
+                      <th class="text-right">-</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr al-repeat="it in advs | onlysell">
+                      <td>{{it.kurs}}</td>
+                      <td class="text-right">{{it.eth}}</td>
+                      <td class="text-right">{{it.btc}}</td>
+                      <td class="text-right"><a href="">купить</a></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="pl-2">
+                <div class="d-flex justify-content-between">
+                  <label>Покупают</label>
+                  <div>Всего: <span>{{total_btc}} BTC</span></div>
+                </div>
+                <div class="table-responsive ">
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th>Цена</th>
+                      <th class="text-right">ETH</th>
+                      <th class="text-right">BTC</th>
+                      <th class="text-right">-</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr al-repeat="it in advs | onlybuy">
+                      <td>{{it.kurs}}</td>
+                      <td class="text-right">{{it.eth}}</td>
+                      <td class="text-right">{{it.btc}}</td>
+                      <td class="text-right"><a href="">купить</a></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="withdraw_eth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <form action="" al-submit="send_eth('#withdraw_eth')">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">Вывести ETH</h4>
+                </div>
+                <div class="modal-body">
+
+                  <div class="row row_form">
+                    <div style="display: none;" class="tplaceholder key-up">Адрес</div>
+                    <div class="left-input show_placeholder">
+                      <input class="form-control " value="" al-value="withdraw_eth_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
+                    </div>
+                  </div>
+
+                  <div class="row row_form">
+                    <div style="display: none;" class="tplaceholder key-up">Сумма</div>
+                    <div class="left-input show_placeholder">
+                      <input class="form-control " onkeyup="this.value=this.value.match(/^[\d.]+$/)" value="" al-init="withdraw_eth_amount = min_withdraw_eth"  al-value="withdraw_eth_amount"required=""   type="text" placeholder="Сумма">
+                      <span>ETH</span>
+                    </div>
+                    <p class="list-text">мин: <a href="" @click="withdraw_eth_amount=min_withdraw_eth">{{min_withdraw_eth}}</a>, макс <a href="" @click="withdraw_eth_amount=balance">{{balance}}</a>
+                    </p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Отправить</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="modal fade" id="withdraw_btc" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <form action="" al-submit="send_btc('#withdraw_btc')">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" >Вывести BTC</h4>
+                </div>
+                <div class="modal-body">
+
+                  <div class="row row_form">
+                    <div style="display: none;" class="tplaceholder key-up">Адрес</div>
+                    <div class="left-input show_placeholder">
+                      <input class="form-control " value="" al-value="withdraw_btc_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
+                    </div>
+                  </div>
+
+                  <div class="row row_form">
+                    <div style="display: none;" class="tplaceholder key-up">Сумма</div>
+                    <div class="left-input show_placeholder">
+                      <input class="form-control " value="" al-init="withdraw_btc_amount = min_withdraw_btc"  al-value="withdraw_btc_amount"required=""   type="text" placeholder="Сумма">
+                      <span>BTC</span>
+                    </div>
+                    <p class="list-text">мин: <a href="" @click="withdraw_btc_amount=min_withdraw_btc">{{min_withdraw_btc}}</a>, макс <a href="" @click="withdraw_btc_amount=bitcoin_balance">{{bitcoin_balance}}</a>
+                    </p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Отправить</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      <!--/div>
+    </div-->
 
     <!--
 

@@ -4,6 +4,7 @@ const HtmlWebpackPlugin     = require('html-webpack-plugin')
 const ProgressBarPlugin     = require('progress-bar-webpack-plugin')
 const ExtractTextPlugin     = require('extract-text-webpack-plugin')
 const UglifyJsPlugin        = require('uglifyjs-webpack-plugin')
+const CompressionPlugin     = require('compression-webpack-plugin')
 
 
 const IS_DEV      = process.env.NODE_ENV === 'development'
@@ -16,7 +17,8 @@ const BUILD_DIR   = path.join(__dirname, 'build')
  */
 module.exports = {
 
-  devtool: IS_DEV ? 'eval' : 'cheap-module-source-map',
+  //devtool: IS_DEV ? 'inline-source-map' : false,
+  devtool: 'inline-source-map',
 
   devServer: {
     publicPath: '/',
@@ -44,7 +46,8 @@ module.exports = {
     modules: [
       'node_modules',
       SRC_DIR,
-    ]
+    ],
+    extensions: [ '.js', '.scss' ],
   },
   
   module: {
@@ -60,36 +63,46 @@ module.exports = {
         },
       },
 
-      // STYLES
+      // JQUERY
       {
-        test: /\.css$/,
+        test: require.resolve('jquery'),
         use: [
-          'style-loader',
           {
-            loader: 'css-loader',
-            options: {
-              sourceMap: IS_DEV,
-            },
+            loader: 'expose-loader',
+            options: '$',
           },
         ],
       },
 
-      // CSS / SASS
+      // CSS
       {
-        test: /\.scss/,
+        test: /\.css$/,
         use: [
           'style-loader',
+          'css-loader',
+        ],
+      },
+
+      // SCSS
+      {
+        test: /\.scss$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
           {
             loader: 'css-loader',
             options: {
-              sourceMap: IS_DEV,
+              localIdentName: IS_DEV ? '[local]__[hash:base64:3]' : '[hash:base64:6]',
             },
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: IS_DEV,
-              includePaths: [ SRC_DIR ],
+              // data: '@import "./scss/index";',
+              includePaths: [
+                SRC_DIR,
+              ],
             },
           },
         ],
@@ -104,15 +117,30 @@ module.exports = {
         }
       },
 
+      // FONTS
+      {
+        test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'fonts/',     // where the fonts will go
+              publicPath: '../',        // override the default path
+            },
+          },
+        ],
+      },
+
     ])
       .map((rule) => {
         if (IS_DEV) {
           return rule
         }
 
-        if (rule.test.test('*.css') || rule.test.test('*.scss')) {
+        if (typeof rule.test !== 'string' && (rule.test.test('*.css') || rule.test.test('*.scss'))) {
           rule.use = ExtractTextPlugin.extract({
-            fallback: 'style-rule',
+            fallback: 'style-loader',
             use: rule.use.slice(1),
           })
         }
@@ -130,19 +158,21 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src/index.html'),
       title: 'Swap',
+      // inject: 'head',
       hash: false,
     }),
   ]
     .concat(IS_DEV ? [] : [
-      new UglifyJsPlugin({
-        comments: false,
-        compress: {
-          pure_getters: true,
-          unsafe: true,
-          unsafe_comps: true,
-          warnings: false,
-          screw_ie8: true,
-        },
+      new ExtractTextPlugin({
+        filename: '[name].css',
+        allChunks: true,
+      }),
+      // new UglifyJsPlugin(),
+      // new CompressionPlugin(),
+      new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendor',
+        // this assumes your vendor imports exist in the node_modules directory
+        minChunks: (module) => module.context && module.context.indexOf('node_modules') >= 0,
       }),
     ]),
 }
