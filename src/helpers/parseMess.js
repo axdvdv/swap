@@ -1,4 +1,4 @@
-import { app } from 'models'
+import { main } from 'controllers'
 
 
 class ParseMess {
@@ -29,9 +29,9 @@ class ParseMess {
   }
 
   updateAdv() {
-    app.scope.advs = this.advs
-    app.scope.updateCommon()
-    app.scope.$scan()
+    main.scope.advs = this.advs
+    main.scope.updateCommon()
+    main.scope.$scan()
   }
 }
 

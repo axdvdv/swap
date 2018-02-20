@@ -1,7 +1,7 @@
 import Web3 from 'web3'
 import bitcoin from 'bitcoinjs-lib'
 import BigInteger from 'bigi'
-import { app } from 'models'
+import { main } from 'controllers'
 import { showMess } from 'helpers'
 
 
@@ -16,32 +16,32 @@ class User {
   sendTransactionEth(modal) {
     this.web3.eth.getBalance(window.User.data.address).then((r) => {
       try {
-        app.scope.balance = this.web3.utils.fromWei(r)
+        main.scope.balance = this.web3.utils.fromWei(r)
 
-        if (!app.scope.balance) {
+        if (!main.scope.balance) {
           // throw new Error('Ваш баланс пуст')
           showMess('Ваш баланс пуст', 5, 0)
           return false
         }
 
-        if (app.scope.balance < app.scope.withdraw_eth_amount) {
+        if (main.scope.balance < main.scope.withdraw_eth_amount) {
           // throw new Error('На вашем балансе недостаточно средств')
           showMess('На вашем балансе недостаточно средств', 5, 0)
           return false
         }
 
-        if (!this.web3.utils.isAddress(app.scope.withdraw_eth_address)) {
+        if (!this.web3.utils.isAddress(main.scope.withdraw_eth_address)) {
           // throw new Error('Не верный адрес')
           showMess('Не верный адрес', 5, 0)
           return false
         }
 
         const t = {
-          from: app.scope.address,
-          to: app.scope.withdraw_eth_address,
+          from: main.scope.address,
+          to: main.scope.withdraw_eth_address,
           gas: "21000",
           gasPrice: "20000000000",
-          value: this.web3.utils.toWei(app.scope.withdraw_eth_amount.toString())
+          value: this.web3.utils.toWei(main.scope.withdraw_eth_amount.toString())
         }
 
         this.web3.eth.accounts.signTransaction(t,localStorage.getItem('privateKey'))
@@ -62,9 +62,9 @@ class User {
           .catch(error => console.error(error))
 
         // this.web3.eth.sendTransaction({
-        //   from: app.scope.address,
-        //   to: app.scope.withdraw_eth_address,
-        //   amount: this.web3.utils.toWei(app.scope.withdraw_eth_amount.toString())
+        //   from: main.scope.address,
+        //   to: main.scope.withdraw_eth_address,
+        //   amount: this.web3.utils.toWei(main.scope.withdraw_eth_amount.toString())
         // }).then(function(err, resp) {
         //   showMess('Error', 5, 0)
         //   console.log(err)
@@ -72,7 +72,7 @@ class User {
         // })
       }
       catch (e) {
-        app.scope.showError(e)
+        main.scope.showError(e)
       }
     })
   }
@@ -81,18 +81,18 @@ class User {
     const newtx = {
       inputs: [
         {
-          addresses: [ app.scope.bitcoin_address ],
+          addresses: [ main.scope.bitcoin_address ],
         },
       ],
       outputs: [
         {
-          addresses: [ app.scope.withdraw_btc_address ],
-          value: app.scope.withdraw_btc_amount * 100000000,
+          addresses: [ main.scope.withdraw_btc_address ],
+          value: main.scope.withdraw_btc_amount * 100000000,
         },
       ],
     }
 
-    if (app.scope.withdraw_btc_amount > app.scope.bitcoin_balance) {
+    if (main.scope.withdraw_btc_amount > main.scope.bitcoin_balance) {
       showMess('На вашем балансе недостаточно средств', 5, 0)
       // alert('На вашем балансе недостаточно средств')
       return false
@@ -132,10 +132,10 @@ class User {
     // const txb = new bitcoin.TransactionBuilder(bitcoin.networks.testnet)
     //
     // //https://api.blocktrail.com/v1/btc/address/17hFoVScNKVDfDTT6vVhjYwvCu6iDEiXC4/transactions?api_key=MY_APIKEY
-    // url = 'https://api.blocktrail.com/v1/tbtc/address/'+app.scope.bitcoin_address+'/unspent-outputs?api_key=MY_APIKEY'
+    // url = 'https://api.blocktrail.com/v1/tbtc/address/'+main.scope.bitcoin_address+'/unspent-outputs?api_key=MY_APIKEY'
     // jQuery.getJSON(url, (r) => {
     //   txb.addInput(r.data[0].hash, 1)
-    //   txb.addOutput(app.scope.withdraw_btc_address, app.scope.withdraw_btc_amount * 100000000)
+    //   txb.addOutput(main.scope.withdraw_btc_address, main.scope.withdraw_btc_amount * 100000000)
     //   txb.sign(0, this.bitcoinData.keyPair)
     //
     //   const pushtx = {

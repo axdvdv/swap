@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import alight from 'alight'
-import { app, user, room } from 'models'
+import { user, room } from 'models'
 import { parseMess } from 'helpers'
 
 
@@ -283,7 +283,7 @@ alight.controllers.main = function(scope) {
   scope.getCurrentCurs()
   scope.sign()
 
-  app.scope = scope
+  main.scope = scope
 }
 
 alight.filters.onlybuy = function(advs, scope) {
@@ -314,12 +314,12 @@ alight.hooks.eventModifier['change_eth_price'] = {
   event: ['input', 'blur'],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!app.scope.eth_price) return
+    if (!main.scope.eth_price) return
     
-    app.scope.eth_price = (app.scope.eth_price.match(/^[\d.]+$/))
-    app.scope.btc = app.scope.eth *app.scope.eth_price
+    main.scope.eth_price = (main.scope.eth_price.match(/^[\d.]+$/))
+    main.scope.btc = main.scope.eth *main.scope.eth_price
     
-    app.scope.$scan()
+    main.scope.$scan()
   }
 }
 
@@ -327,12 +327,12 @@ alight.hooks.eventModifier['change_eth'] = {
   event: ['input', 'blur'],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!app.scope.eth_price) return
+    if (!main.scope.eth_price) return
 
-    app.scope.eth = (app.scope.eth.match(/^[\d.]+$/))
-    app.scope.btc = app.scope.eth *app.scope.eth_price
+    main.scope.eth = (main.scope.eth.match(/^[\d.]+$/))
+    main.scope.btc = main.scope.eth *main.scope.eth_price
     
-    app.scope.$scan()
+    main.scope.$scan()
   }
 }
 
@@ -340,12 +340,12 @@ alight.hooks.eventModifier['change_btc'] = {
   event: ['input', 'blur'],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!app.scope.eth_price) return
+    if (!main.scope.eth_price) return
 
-    app.scope.btc = (app.scope.btc.match(/^[\d.]+$/))
-    app.scope.eth = app.scope.btc / app.scope.eth_price
+    main.scope.btc = (main.scope.btc.match(/^[\d.]+$/))
+    main.scope.eth = main.scope.btc / main.scope.eth_price
     
-    app.scope.$scan()
+    main.scope.$scan()
   }
 }
 
@@ -354,12 +354,12 @@ alight.hooks.eventModifier['change_sell_eth_price'] = {
   event: ['input', 'blur'],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!app.scope.btc_price) return
+    if (!main.scope.btc_price) return
     
-    app.scope.btc_price = (app.scope.btc_price.match(/^[\d.]+$/))
-    app.scope.sell_btc = app.scope.sell_eth *app.scope.btc_price
+    main.scope.btc_price = (main.scope.btc_price.match(/^[\d.]+$/))
+    main.scope.sell_btc = main.scope.sell_eth *main.scope.btc_price
     
-    app.scope.$scan()
+    main.scope.$scan()
   }
 }
 
@@ -367,12 +367,12 @@ alight.hooks.eventModifier['change_sell_eth'] = {
   event: ['input', 'blur'],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!app.scope.btc_price) return
+    if (!main.scope.btc_price) return
 
-    app.scope.sell_eth = (app.scope.sell_eth.match(/^[\d.]+$/))
-    app.scope.sell_btc = app.scope.sell_eth *app.scope.btc_price
+    main.scope.sell_eth = (main.scope.sell_eth.match(/^[\d.]+$/))
+    main.scope.sell_btc = main.scope.sell_eth *main.scope.btc_price
     
-    app.scope.$scan()
+    main.scope.$scan()
   }
 }
 
@@ -380,12 +380,12 @@ alight.hooks.eventModifier['sell_change_btc'] = {
   event: ['input', 'blur'],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!app.scope.btc_price) return
+    if (!main.scope.btc_price) return
 
-    app.scope.sell_btc = (app.scope.sell_btc.match(/^[\d.]+$/))
-    app.scope.sell_eth = app.scope.sell_btc / app.scope.btc_price
+    main.scope.sell_btc = (main.scope.sell_btc.match(/^[\d.]+$/))
+    main.scope.sell_eth = main.scope.sell_btc / main.scope.btc_price
     
-    app.scope.$scan()
+    main.scope.$scan()
   }
 }
 
