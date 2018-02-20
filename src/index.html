@@ -12,10 +12,11 @@
     }
   </style>
 </head>
-<!--body al-app="app"-->
-<body al-app="main">
+<body al-app="app">
 
   <div al-cloak>
+
+    <button al-link="/eth-to-btc">ETH to BTC</button>
 
     <!--
 
@@ -23,8 +24,8 @@
 
     **************************************************************** -->
 
-    <!--div al-route="/main">
-      <div al-ctrl="main"-->
+    <div al-show="activeRoute == '/main'">
+      <div al-ctrl="main">
         <div class="content">
           <div class="row">
             <div class="col border-right">
@@ -37,7 +38,7 @@
                   <hr />
                   <a id="eth_address" @click="CopyToClipboard('eth_address')" title="скопировать в буффер">{{address}}</a>
                 </div>
-                <h3 class="pt-4 pb-2">Купить ETH за BTC</h3>
+                <h3 class="pt-4 pb-2">Купить BTC за ETH</h3>
                 <form action="" al-submit="append('buy')">
                   <div class="form-group">
                     <label>Курс</label>
@@ -328,8 +329,8 @@
             </form>
           </div>
         </div>
-      <!--/div>
-    </div-->
+      </div>
+    </div>
 
     <!--
 
@@ -337,9 +338,9 @@
 
     **************************************************************** -->
 
-    <div al-route="/btc-to-eth">
+    <div al-show="activeRoute == '/btc-to-eth'">
       <h3>BTC to ETH</h3>
-      <button al-link="/list">Back</button>
+      <button al-link="/main">Back</button>
     </div>
 
     <!--
@@ -348,9 +349,9 @@
 
     **************************************************************** -->
 
-    <div al-route="/eth-to-btc">
+    <div al-show="activeRoute == '/eth-to-btc'">
       <h3>ETH to BTC</h3>
-      <button al-link="/list">Back</button>
+      <button al-link="/main">Back</button>
     </div>
 
   </div>

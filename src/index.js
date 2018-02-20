@@ -1,15 +1,16 @@
 import alight from 'alight'
 
+alight.autostart = false
+
+
 import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap/dist/js/bootstrap';
+import 'bootstrap/dist/js/bootstrap'
 import './style.scss'
 
-import './router'
-// import 'controllers/app'
-import 'controllers/main'
-
-
-
+import 'directives'
+import 'controllers'
+import router from 'router'
 
 
 alight.bootstrap()
+router.resolve()

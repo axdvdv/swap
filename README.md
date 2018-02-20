@@ -9,8 +9,10 @@
 git clone https://github.com/noxonsu/swap.git
 cd ./swap
 npm install
+```
 
-for windows
+For windows
+```
 npm install --global windows-build-tools
 ```
 

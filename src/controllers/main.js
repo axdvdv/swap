@@ -4,7 +4,12 @@ import { app, user, room } from 'models'
 import { parseMess } from 'helpers'
 
 
+const main = {
+  scope: {},
+}
+
 alight.controllers.main = function(scope) {
+  main.scope = scope
 
   scope.advs = []
   scope.balance = 0
@@ -383,3 +388,6 @@ alight.hooks.eventModifier['sell_change_btc'] = {
     app.scope.$scan()
   }
 }
+
+
+export default main

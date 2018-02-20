@@ -20,6 +20,7 @@
     "font-awesome": "^4.7.0",
     "ipfs-pubsub-room": "^1.1.5",
     "jquery": "^3.3.1",
+    "navigo": "^7.1.1",
     "popper.js": "^1.13.0",
     "web3": "^1.0.0-beta.30",
     "web3-js": "^1.0.0-beta.26"
