@@ -2,7 +2,7 @@ import { app } from 'controllers'
 import Navigo from 'navigo'
 
 
-const router = new Navigo()
+const router = new Navigo(null, true, '#')
 
 const bind = (path) => [ path, () => {
   console.log(`Route changed to ${path}`)

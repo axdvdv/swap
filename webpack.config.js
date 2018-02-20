@@ -39,7 +39,7 @@ module.exports = {
     path: BUILD_DIR,
     filename: '[name].js',
     chunkFilename: '[id].chunk.js',
-    publicPath: '/',
+    publicPath: '',
   },
 
   resolve: {
