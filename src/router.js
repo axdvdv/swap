@@ -12,7 +12,7 @@ const bind = (path) => [ path, () => {
 } ]
 
 router
-  .on(...bind('/main'))
+  .on(...bind('/'))
   .on(...bind('/btc-to-eth'))
   .on(...bind('/eth-to-btc'))
 
