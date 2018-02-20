@@ -1,16 +1,29 @@
-# Title
+# Swap
 
-> This is an example file with default selections.
+[**noxonswap.surge.sh**](http://noxonswap.surge.sh/)
 
-## Demo
-
-```
-```
 
 ## Install
 
 ```
+git clone https://github.com/noxonsu/swap.git
+cd ./swap
+npm install
 ```
+
+#### Development
+
+```
+npm run dev
+```
+Then open http://localhost:3000/
+
+#### Production
+
+```
+npm run build
+```
+This command automatically deploy prod version to [**noxonswap.surge.sh**](http://noxonswap.surge.sh/)
 
 ## Usage
 
