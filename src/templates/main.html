@@ -10,7 +10,7 @@
                 <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
               </div>
               <hr />
-              <a id="eth_address" @click="CopyToClipboard('eth_address')" title="скопировать в буффер">{{address}}</a>
+              <a al-copy title="скопировать в буффер">{{address}}</a>
             </div>
             <h3 class="pt-4 pb-2">Купить BTC за ETH</h3>
             <form action="" al-submit="append('buy')">
@@ -86,7 +86,7 @@
                 <a href="" data-toggle="modal" data-target="#withdraw_btc">вывести средства</a>
               </div>
               <hr />
-              <a id="bitcoin_address" @click="CopyToClipboard('bitcoin_address')" title="скопировать в буффер">{{bitcoin_address}}</a>
+              <a al-copy title="скопировать в буффер">{{bitcoin_address}}</a>
             </div>
             <h3 class="pt-4 pb-2">Купить ETH за BTC</h3>
             <form action="" al-submit="append('sell')">
@@ -251,7 +251,6 @@
                 </p>
               </div>
 
-
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -267,10 +266,8 @@
         <form action="" al-submit="send_btc('#withdraw_btc')">
           <div class="modal-content">
             <div class="modal-header">
-
               <h4 class="modal-title" >Вывести BTC</h4>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-
             </div>
             <div class="modal-body">
 
@@ -278,7 +275,6 @@
                 <label>Адрес</label>
                 <div class="input-group mb-3">
                   <input class="form-control" value="" al-value="withdraw_btc_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
-
                 </div>
               </div>
 
