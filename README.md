@@ -28,7 +28,7 @@ Then open http://localhost:3000/
 ```
 npm run build
 ```
-This command automatically deploy prod version to [**noxonswap.surge.sh**](http://noxonswap.surge.sh/)
+This command automatically deploy prod version to [**noxonswap.surge.sh**](https://noxonswap.surge.sh/)
 
 ## Usage
 
