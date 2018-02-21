@@ -156,9 +156,9 @@ module.exports = {
       IS_DEV,
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src/index.html'),
+      template: `ejs-render-loader!${path.join(__dirname, 'src/index.ejs')}`,
       title: 'Swap',
-      // inject: 'head',
+      inject: 'body',
       hash: false,
     }),
   ]

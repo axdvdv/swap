@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Swap Online</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <script src="https://unpkg.com/ipfs/dist/index.js"></script>
+  <style>
+    [al-cloak] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body al-app="app">
+
+  <div al-cloak>
+
+    <% include templates/main.html %>
+    <% include templates/history.html %>
+    <% include templates/btc-to-eth.html %>
+    <% include templates/eth-to-btc.html %>
+
+  </div>
+
+  <div :hidden="true">
+    Loading...
+  </div>
+
+</body>
+</html>
