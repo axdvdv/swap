@@ -55,36 +55,6 @@ alight.controllers.main = function(scope) {
     localStorage.setItem('my_setting',  mySetting)
   }
 
-  scope.CopyToClipboard = function (containerid) {
-    try {
-      // современный объект Selection
-      window.getSelection().removeAllRanges()
-    }
-    catch (e) {
-      // для IE8-
-      document.selection.empty()
-    }
-
-    if (document.selection) {
-      const range = document.body.createTextRange()
-      range.moveToElementText(document.getElementById(containerid))
-      range.select().createTextRange()
-      document.execCommand("Copy")
-
-    }
-    else if (window.getSelection) {
-      const range = document.createRange()
-
-      range.selectNode(document.getElementById(containerid))
-
-      console.log(range)
-
-      window.getSelection().addRange(range)
-      document.execCommand("Copy")
-      alert("text copied")
-    }
-  }
-
   scope.updateList = function() {
     const list = localStorage.getItem('myAdvs')
 

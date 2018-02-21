@@ -16,10 +16,10 @@
 
   <div al-cloak>
 
-    <% include templates/main.html %>
-    <% include templates/history.html %>
-    <% include templates/btc-to-eth.html %>
-    <% include templates/eth-to-btc.html %>
+    <%= require('html-loader!./templates/main.html') %>
+    <%= require('html-loader!./templates/history.html') %>
+    <%= require('html-loader!./templates/btc-to-eth.html') %>
+    <%= require('html-loader!./templates/eth-to-btc.html') %>
 
   </div>
 

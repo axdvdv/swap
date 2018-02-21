@@ -1,5 +1,73 @@
 <div al-show="activeRoute == '/btc-to-eth'">
   <div al-ctrl="btcToEth">
 
+    <div class="content-600">
+
+      <div class="page-header">
+        <h1>Придумайте секретную фразу</h1>
+      </div>
+      <div class="alert alert-danger" role="alert">
+        Сохраните секретную фразу, иначе вы не сможете получить деньги!
+      </div>
+      <div al-show="data.step == 1">
+        <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
+        <br />
+        <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
+      </div>
+      <div class="fs18" al-show="data.step > 1">
+        <div class="input-group">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button">Secret</button>
+        </span>
+          <input type="text" class="form-control" disabled al-value="data.secret">
+        </div>
+        <br />
+        <div class="input-group">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button">Secret hash</button>
+        </span>
+          <input type="text" class="form-control" disabled al-value="data.secretHash">
+        </div>
+      </div>
+
+      <div al-show="data.step > 1">
+        <div class="page-header">
+          <h1>Пополните адрес созданного BTC кошелька на N</h1>
+        </div>
+        <a class="fs-18" title="скопировать в буффер" al-copy>{{data.btcScriptAddress}}</a>
+        <br /><br />
+        <button type="button" class="btn btn-primary" @click="goNextStep()">Я пополнил, давай проверяй и погнали дальше!</button>
+      </div>
+
+      <div al-show="data.step > 2">
+        <div al-show="data.waitingForUser">
+          <div class="page-header">
+            <h1>Ожидаем пользователя {Username}</h1>
+          </div>
+          <div class="sk-fading-circle">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+          </div>
+        </div>
+      </div>
+
+      <div al-show="data.step > 3">
+        <div class="page-header">
+          <h1>Step 4</h1>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </div>
