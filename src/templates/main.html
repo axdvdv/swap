@@ -10,18 +10,18 @@
                 <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
               </div>
               <hr />
-              <a al-copy title="скопировать в буффер">{{address}}</a>
+              <a href="" al-copy title="скопировать в буффер">{{address}}</a>
             </div>
             <h3 class="pt-4 pb-2">Купить BTC за ETH</h3>
-            <form action="" al-submit="append('buy')">
+            <form action="" al-submit="createOrder('buy')">
               <div class="form-group">
                 <label>Курс</label>
                 <div class="input-group mb-3">
                   <input
                     class="form-control"
                     type="type"
-                    @input.change_eth_price=""
-                    al-value="eth_price"
+                    @input.change_eth_exchange_rate=""
+                    al-value="eth_exchange_rate"
                     required
                   >
                   <div class="input-group-append">
@@ -59,7 +59,7 @@
                   </div>
                 </div>
               </div>
-              <div class="form-check">
+              <!--div class="form-check">
                 <label class="form-check-label">
                   <input
                     id="ch_active"
@@ -71,7 +71,7 @@
                   Обьявление активно
                 </label>
                 <div class="text-muted">поставьте галочку, что бы объявление появилось в онлайне в списке выше</div>
-              </div>
+              </div-->
               <div class="pt-3">
                 <input type="submit" class="btn btn-primary btn-block" value="Создать объявление">
               </div>
@@ -86,18 +86,18 @@
                 <a href="" data-toggle="modal" data-target="#withdraw_btc">вывести средства</a>
               </div>
               <hr />
-              <a al-copy title="скопировать в буффер">{{bitcoin_address}}</a>
+              <a href="" al-copy title="скопировать в буффер">{{bitcoin_address}}</a>
             </div>
             <h3 class="pt-4 pb-2">Купить ETH за BTC</h3>
-            <form action="" al-submit="append('sell')">
+            <form action="" al-submit="createOrder('sell')">
               <div class="form-group">
                 <label>Курс</label>
                 <div class="input-group mb-3">
                   <input
                     class="form-control"
                     type="type"
-                    @input.change_btc_price=""
-                    al-value="btc_price"
+                    @input.change_btc_exchange_rate=""
+                    al-value="btc_exchange_rate"
                     required
                   >
                   <div class="input-group-append">
@@ -135,7 +135,7 @@
                   </div>
                 </div>
               </div>
-              <div class="form-check">
+              <!--div class="form-check">
                 <label class="form-check-label">
                   <input
                     id="sell_ch_active"
@@ -147,7 +147,7 @@
                   Обьявление активно
                 </label>
                 <div class="text-muted">поставьте галочку, что бы объявление появилось в онлайне в списке выше</div>
-              </div>
+              </div-->
               <div class="pt-3">
                 <input type="submit" class="btn btn-primary btn-block" value="Создать объявление">
               </div>
@@ -176,11 +176,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="it in advs | onlysell">
-                  <td>{{it.kurs}}</td>
-                  <td class="text-right">{{it.eth}}</td>
-                  <td class="text-right">{{it.btc}}</td>
-                  <td class="text-right"><a href="">купить</a></td>
+                <tr al-repeat="item in orders.items | onlySell">
+                  <td>{{item.exchangeRate}}</td>
+                  <td class="text-right">{{item.currency1Amount}}</td>
+                  <td class="text-right">{{item.currency2Amount}}</td>
+                  <td class="text-right"><a href="#" al-link="/btc-to-eth/hash">купить</a></td>
                 </tr>
                 </tbody>
               </table>
@@ -204,11 +204,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="it in advs | onlybuy">
-                  <td>{{it.kurs}}</td>
-                  <td class="text-right">{{it.eth}}</td>
-                  <td class="text-right">{{it.btc}}</td>
-                  <td class="text-right"><a href="">купить</a></td>
+                <tr al-repeat="item in orders.items | onlyBuy">
+                  <td>{{item.exchangeRate}}</td>
+                  <td class="text-right">{{item.currency1Amount}}</td>
+                  <td class="text-right">{{item.currency2Amount}}</td>
+                  <td class="text-right"><a href="#" al-link="/eth-to-btc/hash">купить</a></td>
                 </tr>
                 </tbody>
               </table>
