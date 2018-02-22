@@ -111,10 +111,12 @@ class User {
 
         // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
         tmptx.signatures = tmptx.tosign.map((tosign, n) => {
-          tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'))
+          tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'));
+
+
           
-          return keys.sign( bitcoin.bigi.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
-        })
+          return keys.sign( BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
+        });
 
         $.post('https://api.blockcypher.com/v1/btc/test3/txs/send',JSON.stringify(tmptx)).then((r) => {
           showMess('Платеж прошел', 5, 1)
