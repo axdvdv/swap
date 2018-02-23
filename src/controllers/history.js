@@ -1,12 +1,12 @@
 import alight from 'alight'
 import { user, room } from 'models'
-
+import $ from 'jquery'
 const history = {
   scope: {},
 }
 
 alight.controllers.history = function(scope) {
-
+    console.log('history controller!')
   history.scope = scope;
 
     scope.sign = function() {
@@ -14,16 +14,25 @@ alight.controllers.history = function(scope) {
     }
 
     scope.refreshBTCTransaction = function () {
-        if (scope.bitcoin_address) {
-            const url = 'https://api.blocktrail.com/v1/tbtc/address/'+scope.bitcoin_address+'/transactions?api_key=MY_APIKEY'
+
+        if (user.bitcoinData.address) {
+            const url = 'https://api.blocktrail.com/v1/tbtc/address/'+user.bitcoinData.address+'/transactions?api_key=MY_APIKEY';
+
+            let total = 0;
 
             $.getJSON(url, function (r) {
-                scope.btcTransactions = r.data
-                // scope.btcTransactions.kurs = scope.eth_price
-                console.log(scope.btcTransactions)
-                // console.log(scope.eth_price)
-                scope.$scan()
-            })
+                history.scope.btcTransactions = r.data
+
+                $.each(r.data, function(k, i) {
+                    console.log(i)
+
+                });
+
+                history.scope.$scan();
+
+            });
+        } else {
+            console.log('bitcoin_address is missing');
         }
     }
 
