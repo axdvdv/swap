@@ -17,8 +17,12 @@ alight.controllers.main = function(scope) {
   scope.address = ''
   scope.eth_exchange_rate = ''
   scope.btc_exchange_rate = ''
-  scope.total_eth =  0
-  scope.total_btc =  0
+  scope.eth = ''
+  scope.btc = ''
+  scope.sell_eth = ''
+  scope.sell_btc = ''
+  scope.total_eth = 0
+  scope.total_btc = 0
   scope.bitcoin_address = 0
   scope.min_withdraw_eth = 0.01
   scope.min_withdraw_btc = 0.1
@@ -128,8 +132,35 @@ alight.controllers.main = function(scope) {
     scope.$scan()
   }
 
+  const decreaseTotals = (orders) => {
+    orders.forEach(({ type, currency1Amount, currency2Amount }) => {
+      if (type === 'buy') {
+        scope.total_btc -= parseFloat(currency2Amount)
+      }
+      else {
+        scope.total_eth -= parseFloat(currency1Amount)
+      }
+    })
+
+    scope.$scan()
+  }
+
+  const cleanTotals = () => {
+    scope.total_eth = 0
+    scope.total_btc = 0
+
+    scope.$scan()
+  }
+
+  const getUniqueId = (() => {
+    let id = +new Date() // TODO replace with user public key
+
+    return () => sha256(user.data.address + String(++id))
+  })()
+
   scope.createOrder = (type) => {
-    const id = sha256(user.data.address) // TODO replace with user public key
+    const id = getUniqueId()
+
     const order = new Order({
       id,
       ownerAddress: user.data.address,
@@ -143,16 +174,33 @@ alight.controllers.main = function(scope) {
 
     console.log('order created:', order)
 
+    scope.eth = ''
+    scope.btc = ''
+    scope.sell_eth = ''
+    scope.sell_btc = ''
+
     room.sendMessage({
       data: order,
       type: 'newOrder',
     })
     orders.append(order)
     increaseTotals([ order ])
-    localStorage.setItem('myOrders', JSON.stringify(orders.getOwnedByMe()))
   }
 
-  // auth
+  scope.removeOrder = (id) => {
+    console.log('Remove order with id:', id)
+
+    orders.remove(id, () => {
+      console.log(user.data.address, orders.items)
+      scope.$scan()
+    })
+  }
+
+  scope.removeAllOrders = () => {
+    orders.removeAll()
+    scope.$scan()
+  }
+
   scope.sign = () => {
     user.sign()
     scope.updateBalanceEth()
