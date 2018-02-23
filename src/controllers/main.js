@@ -9,6 +9,8 @@ const main = {
 }
 
 alight.controllers.main = function(scope) {
+  console.log('Main controller!')
+
   main.scope = scope
 
   scope.orders = orders

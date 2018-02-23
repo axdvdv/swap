@@ -11,13 +11,15 @@ class Orders extends Collection {
   }
 
   onMount() {
-    let items = localStorage.getItem('deals')
+    let items = localStorage.getItem('myOrders')
 
-    try {
-      items = JSON.parse(items)
-    }
-    catch (err) {
-      throw new Error(err)
+    if (items) {
+      try {
+        items = JSON.parse(items)
+      }
+      catch (err) {
+        throw new Error(err)
+      }
     }
 
     this.items = items || []

@@ -27,7 +27,7 @@ class Collection {
   /**
    * Add item at the end of current collection
    * @param item
-   * * @param key {string|number}
+   * @param key {string|number}
    * @returns {*}
    */
   append(item, key) {
@@ -101,5 +101,6 @@ class Collection {
     return this.items.length
   }
 }
+
 
 export default Collection

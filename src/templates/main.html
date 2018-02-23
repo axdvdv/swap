@@ -1,4 +1,4 @@
-<div al-show="activeRoute == '/'">
+<div class="al-hide" al-show="activeRoute.path == '/'">
   <div al-ctrl="main">
     <div class="content">
       <div class="row">
@@ -6,7 +6,7 @@
           <div class="pr-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{balance}}</b>    <span>ETH</span></div>
+                <div>Баланс <b>{{balance}}</b> ETH</div>
                 <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
               </div>
               <hr />
@@ -82,7 +82,7 @@
           <div class="pl-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{bitcoin_balance}}</b> <span>BTC</span></div>
+                <div>Баланс <b>{{bitcoin_balance}}</b> BTC</div>
                 <a href="" data-toggle="modal" data-target="#withdraw_btc">вывести средства</a>
               </div>
               <hr />
@@ -180,7 +180,7 @@
                   <td>{{item.exchangeRate}}</td>
                   <td class="text-right">{{item.currency1Amount}}</td>
                   <td class="text-right">{{item.currency2Amount}}</td>
-                  <td class="text-right"><a href="#" al-link="/btc-to-eth/hash">купить</a></td>
+                  <td class="text-right"><a href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">купить</a></td>
                 </tr>
                 </tbody>
               </table>
@@ -208,7 +208,7 @@
                   <td>{{item.exchangeRate}}</td>
                   <td class="text-right">{{item.currency1Amount}}</td>
                   <td class="text-right">{{item.currency2Amount}}</td>
-                  <td class="text-right"><a href="#" al-link="/eth-to-btc/hash">купить</a></td>
+                  <td class="text-right"><a href="#" al-link data-link="{{'/eth-to-btc/' + item.id}}">купить</a></td>
                 </tr>
                 </tbody>
               </table>

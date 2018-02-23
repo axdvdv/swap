@@ -7,7 +7,7 @@ alight.directives.al.link = function (scope, element, expression, env) {
     event.preventDefault()
     event.stopPropagation()
 
-    const link = $(this).attr('al-link')
+    const link = $(this).attr('al-link') || $(this).attr('data-link')
 
     router.navigate(link)
     scope.activeRoute = link

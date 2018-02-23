@@ -6,6 +6,8 @@ const ethToBtc = {
 }
 
 alight.controllers.ethToBtc = function(scope) {
+  console.log('ETH to BTC controller!')
+
   ethToBtc.scope = scope
 
 }

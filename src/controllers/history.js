@@ -6,6 +6,8 @@ const history = {
 }
 
 alight.controllers.history = function(scope) {
+  console.log('History controller!')
+
   history.scope = scope
 
 }

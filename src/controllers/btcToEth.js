@@ -1,4 +1,6 @@
 import alight from 'alight'
+import { app } from 'controllers'
+import { orders } from 'models'
 
 
 const btcToEth = {
@@ -6,9 +8,14 @@ const btcToEth = {
 }
 
 alight.controllers.btcToEth = function(scope) {
+  console.log('BTC to ETH controller!')
+
   btcToEth.scope = scope
 
+  console.log(app.scope.activeRoute)
+
   scope.data = {
+    order: orders.getByKey(),
     secret: '',
     secretHash: '',
     btcScriptAddress: '0x0dsgsdhsdhsddsh',
