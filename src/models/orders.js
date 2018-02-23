@@ -11,19 +11,12 @@ class Orders extends Collection {
   }
 
   onMount() {
-    let items = localStorage.getItem('myOrders')
+    const items = JSON.parse(localStorage.getItem('myOrders') || '[]')
 
-    if (items) {
-      try {
-        items = JSON.parse(items)
-      }
-      catch (err) {
-        throw new Error(err)
-      }
-    }
+    this.items = items
+    this.itemIds = {}
 
-    this.items = items || []
-    this.itemIds = items ? items.map(({ id }) => id) : []
+    items.forEach(({ id }, index) => this.itemIds[id] = index)
   }
 
   /**

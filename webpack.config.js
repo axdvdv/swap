@@ -46,6 +46,7 @@ module.exports = {
   resolve: {
     modules: [
       'node_modules',
+      path.join(__dirname, 'local_modules'),
       SRC_DIR,
     ],
     extensions: [ '.js', '.scss' ],

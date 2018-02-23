@@ -1,11 +1,9 @@
 <div al-if="activeRoute.path == '/btc-to-eth/:id'">
   <div al-ctrl="btcToEth">
 
-    <div class="content-600">
+    <div class="content-800">
 
-      <div class="page-header">
-        <h1>Придумайте секретную фразу</h1>
-      </div>
+      <h2 class="mb-4">1. Придумайте секретную фразу</h2>
       <div class="alert alert-danger" role="alert">
         Сохраните секретную фразу, иначе вы не сможете получить деньги!
       </div>
@@ -15,25 +13,16 @@
         <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
       </div>
       <div class="fs18" al-show="data.step > 1">
-        <div class="input-group">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button">Secret</button>
-        </span>
-          <input type="text" class="form-control" disabled al-value="data.secret">
+        <div class="alert alert-warning" role="warning">
+          Secret: <b>{{data.secret}}</b>
         </div>
-        <br />
-        <div class="input-group">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button">Secret hash</button>
-        </span>
-          <input type="text" class="form-control" disabled al-value="data.secretHash">
+        <div class="alert alert-warning" role="warning">
+          Secret Hash: <b>{{data.secretHash}}</b>
         </div>
       </div>
 
       <div al-show="data.step > 1">
-        <div class="page-header">
-          <h1>Пополните адрес созданного BTC кошелька на N</h1>
-        </div>
+        <h2 class="mb-4">2. Пополните адрес созданного BTC кошелька на N</h2>
         <a class="fs-18" title="скопировать в буффер" al-copy>{{data.btcScriptAddress}}</a>
         <br /><br />
         <button type="button" class="btn btn-primary" @click="goNextStep()">Я пополнил, давай проверяй и погнали дальше!</button>
@@ -41,9 +30,7 @@
 
       <div al-show="data.step > 2">
         <div al-show="data.waitingForUser">
-          <div class="page-header">
-            <h1>Ожидаем пользователя {Username}</h1>
-          </div>
+          <h2 class="mb-4">3. Ожидаем пользователя {Username}</h2>
           <div class="sk-fading-circle">
             <div class="sk-circle1 sk-circle"></div>
             <div class="sk-circle2 sk-circle"></div>
