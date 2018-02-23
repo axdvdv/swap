@@ -115,6 +115,19 @@ alight.controllers.main = function(scope) {
     return true
   }
 
+  const increaseTotals = (orders) => {
+    orders.forEach(({ type, currency1Amount, currency2Amount }) => {
+      if (type === 'buy') {
+        scope.total_btc += parseFloat(currency2Amount)
+      }
+      else {
+        scope.total_eth += parseFloat(currency1Amount)
+      }
+    })
+
+    scope.$scan()
+  }
+
   scope.createOrder = (type) => {
     const id = sha256(user.data.address) // TODO replace with user public key
     const order = new Order({
@@ -135,7 +148,7 @@ alight.controllers.main = function(scope) {
       type: 'newOrder',
     })
     orders.append(order)
-
+    increaseTotals([ order ])
     localStorage.setItem('myOrders', JSON.stringify(orders.getOwnedByMe()))
   }
 
@@ -185,19 +198,7 @@ alight.controllers.main = function(scope) {
       scope.withdraw_btc_address = my_setting.withdraw_btc_address
     }
 
-    scope.total_btc = 0
-    scope.total_eth = 0
-
-    orders.items.forEach(({ type, currency1Amount, currency2Amount }) => {
-      if (type === 'buy') {
-        scope.total_btc += parseFloat(currency2Amount)
-      }
-      else {
-        scope.total_eth += parseFloat(currency1Amount)
-      }
-    })
-
-    scope.$scan()
+    increaseTotals(orders.items)
   }
 
   scope.init()
