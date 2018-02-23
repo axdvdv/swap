@@ -2,7 +2,10 @@ import alight from 'alight'
 
 
 alight.directives.al.copy = function (scope, element, expression, env) {
-  $(element).on('click', function () {
+  $(element).on('click', function (event) {
+    event.preventDefault()
+    event.stopPropagation()
+
     try {
       // современный объект Selection
       window.getSelection().removeAllRanges()

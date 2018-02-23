@@ -6,7 +6,9 @@ const app = {
 }
 
 alight.controllers.app = function (scope) {
-  scope.activeRoute = '/'
+  console.log('App controller!')
+
+  scope.activeRoute = {}
 
   app.scope = scope
 }

@@ -9,12 +9,12 @@ class User {
 
   constructor() {
     this.web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/JCnK5ifEPH9qcQkX0Ahl"))
-    this.data = []
-    this.bitcoinData = []
+    this.data = {}
+    this.bitcoinData = {}
   }
 
   sendTransactionEth(modal) {
-    this.web3.eth.getBalance(window.User.data.address).then((r) => {
+    this.web3.eth.getBalance(this.data.address).then((r) => {
       try {
         main.scope.balance = this.web3.utils.fromWei(r)
 
@@ -113,10 +113,8 @@ class User {
         tmptx.signatures = tmptx.tosign.map((tosign, n) => {
           tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'));
 
-
-          
-          return keys.sign( BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
-        });
+          return keys.sign(BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
+        })
 
         $.post('https://api.blockcypher.com/v1/btc/test3/txs/send',JSON.stringify(tmptx)).then((r) => {
           showMess('Платеж прошел', 5, 1)

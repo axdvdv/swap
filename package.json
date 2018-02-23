@@ -21,6 +21,7 @@
     "font-awesome": "^4.7.0",
     "ipfs-pubsub-room": "^1.1.5",
     "jquery": "^3.3.1",
+    "js-sha256": "^0.9.0",
     "navigo": "^7.1.1",
     "popper.js": "^1.13.0",
     "web3": "^1.0.0-beta.30",
@@ -29,6 +30,8 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "body-parser": "^1.18.2",
     "chalk": "^2.3.1",

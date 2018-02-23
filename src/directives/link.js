@@ -3,8 +3,11 @@ import router from 'router'
 
 
 alight.directives.al.link = function (scope, element, expression, env) {
-  $(element).on('click', function () {
-    const link = $(this).attr('al-link')
+  $(element).on('click', function (event) {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const link = $(this).attr('al-link') || $(this).attr('data-link')
 
     router.navigate(link)
     scope.activeRoute = link

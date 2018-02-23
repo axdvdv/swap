@@ -6,6 +6,7 @@ const history = {
 }
 
 alight.controllers.history = function(scope) {
+
   history.scope = scope;
 
     scope.sign = function() {
@@ -25,7 +26,6 @@ alight.controllers.history = function(scope) {
             })
         }
     }
-
 
     scope.sign();
     scope.refreshBTCTransaction();

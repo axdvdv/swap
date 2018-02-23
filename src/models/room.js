@@ -1,5 +1,5 @@
 import IpfsRoom from 'ipfs-pubsub-room'
-import { parseMess } from 'helpers'
+import { orders } from 'models'
 
 
 class Room {
@@ -8,14 +8,55 @@ class Room {
     this.connection = null
   }
 
-  connect(connection) {
-    this.connection = connection
+  connect(ipfsConnection) {
+    this.connection = IpfsRoom(ipfsConnection, 'jswaps', {
+      pollInterval: 5000,
+    })
+
+    this.connection.on('message', this.handleNewMessage)
+    this.connection.on('peer joined', this.handleNewUserConnected)
+    this.connection.on('subscribed', this.handleSubscribe)
+  }
+
+  handleSubscribe = () => {
+    console.info('Now connected!')
+  }
+
+  handleNewMessage = (message) => {
+    const data = JSON.parse(message.data.toString())
+
+    if (data && data.length) {
+      console.log(`New message data:`, { ...message, data })
+
+      data.forEach(({ type, data }) => {
+        console.log(`Message of type ${type}:`, data)
+
+        if (type === 'newOrder') {
+          orders.append(data)
+        }
+      })
+    }
+  }
+
+  handleNewUserConnected = (peer) => {
+    console.info('New peer:', peer)
+
+    const myOrders = orders.getOwnedByMe()
+
+    if (myOrders.length) {
+      this.connection.sendTo(peer, JSON.stringify(myOrders))
+    }
+  }
+
+  sendMessage(message) {
+    this.connection.broadcast(JSON.stringify(message))
   }
 }
 
 const room = new Room()
 
-const IpfsConnection = new Ipfs({
+
+const ipfsConnection = new Ipfs({
   EXPERIMENTAL: {
     pubsub: true,
   },
@@ -28,25 +69,7 @@ const IpfsConnection = new Ipfs({
   },
 })
 
-
-IpfsConnection.on('ready', () => {
-  room.connect(IpfsRoom(IpfsConnection, 'jswaps'))
-
-  room.connection.on('message', (message) => {
-    parseMess.showMessage(message.data.toString())
-  })
-
-  // send message new users
-  room.connection.on('peer joined', (peer) => {
-    if (parseMess.myAdvs) {
-      room.connection.sendTo(peer, parseMess.getStringify(parseMess.myAdvs))
-    }
-  })
-
-  room.connection.on('subscribed', () => {
-    console.log('Now connected!')
-  })
-})
+ipfsConnection.on('ready', () => room.connect(ipfsConnection))
 
 
 export default room

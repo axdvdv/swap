@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import alight from 'alight'
-import { user, room } from 'models'
-import { parseMess } from 'helpers'
+import sha256 from 'js-sha256'
+import { user, room, Order, orders } from 'models'
 
 
 const main = {
@@ -9,19 +9,22 @@ const main = {
 }
 
 alight.controllers.main = function(scope) {
+  console.log('Main controller!')
+
   main.scope = scope
 
+  scope.orders = orders
   scope.advs = []
   scope.balance = 0
   scope.address = ''
-  scope.eth_price = ''
-  scope.btc_price = ''
+  scope.eth_exchange_rate = ''
+  scope.btc_exchange_rate = ''
   scope.total_eth =  0
   scope.total_btc =  0
-  scope.bitcoin_address =  0
-  scope.min_withdraw_eth =  0.01
-  scope.min_withdraw_btc =  0.1
-  scope.my_setting = []
+  scope.bitcoin_address = 0
+  scope.min_withdraw_eth = 0.01
+  scope.min_withdraw_btc = 0.1
+  scope.my_setting = {}
   scope.btcTransactions = []
 
   scope.send_eth = function (modal) {
@@ -47,7 +50,7 @@ alight.controllers.main = function(scope) {
   }
 
   scope.saveApps = function () {
-    const mySetting = parseMess.getStringify({
+    const mySetting = JSON.stringify({
       'withdraw_eth_address': scope.withdraw_eth_address,
       'withdraw_btc_address': scope.withdraw_btc_address,
     })
@@ -55,35 +58,11 @@ alight.controllers.main = function(scope) {
     localStorage.setItem('my_setting',  mySetting)
   }
 
-  scope.updateList = function() {
-    const list = localStorage.getItem('myAdvs')
-
-    if (list) {
-      scope.advs = [JSON.parse(list)]
-      parseMess.myAdvs = JSON.parse(list)
-      parseMess.advs = [JSON.parse(list)]
-
-      if (parseMess.myAdvs.type === 'sell') {
-        scope.sell_eth = parseMess.myAdvs.eth
-        scope.sell_btc = parseMess.myAdvs.btc
-      }
-      else {
-        scope.eth = parseMess.myAdvs.eth
-        scope.btc = parseMess.myAdvs.btc
-      }
-
-      scope.$scan()
-    }
-
-    scope.updateCommon()
-  }
-
-  //take current cource
-  scope.getCurrentCurs = function() {
+  scope.getCurrentExchangeRate = () => {
     try {
-      $.getJSON('https://noxonfund.com/curs.php', function (responce) {
-        scope.eth_price = responce.price_btc
-        scope.btc_price = responce.price_btc
+      $.getJSON('https://noxonfund.com/curs.php', ({ price_btc }) => {
+        scope.eth_exchange_rate = price_btc
+        scope.btc_exchange_rate = price_btc
         scope.$scan()
       })
     }
@@ -94,13 +73,13 @@ alight.controllers.main = function(scope) {
 
   scope.updateBalanceEth = function () {
     user.web3.eth.getBalance(user.data.address).then(function (r) {
+
       scope.balance = user.web3.utils.fromWei(r);
       scope.address = user.data.address;
       scope.bitcoin_address = user.bitcoinData.address;
       
       scope.updateBalanceBitcoin();
       scope.$scan();
-
     })
   }
 
@@ -126,7 +105,7 @@ alight.controllers.main = function(scope) {
     alert(msg)
   }
 
-  //проверяем был ли создал адресс
+  // check if address was created
   scope.check = function () {
     const address = '' + scope.address
 
@@ -138,78 +117,79 @@ alight.controllers.main = function(scope) {
     return true
   }
 
-  //форма отправки
-  scope.append = function(type) {
+  scope.createOrder = (type) => {
+    const id = sha256(user.data.address) // TODO replace with user public key
+    const order = new Order({
+      id,
+      ownerAddress: user.data.address,
+      currency1: 'BTC',
+      currency2: 'ETH',
+      currency1Amount: type === 'buy' ? scope.eth : scope.sell_eth, // TODO fix this
+      currency2Amount: type === 'buy' ? scope.btc : scope.sell_btc, // TODO fix this
+      exchangeRate: scope.eth_exchange_rate, // TODO fix this
+      type,
+    })
 
-    if (!scope.check()) {
+    console.log('order created:', order)
 
-      return false
-    }
-    scope.type = type
+    room.sendMessage({
+      data: order,
+      type: 'newOrder',
+    })
+    orders.append(order)
 
-    if (scope.type =='buy') {
-      var adv ={
-        address: scope.address,
-        eth: scope.eth,
-        btc: scope.btc,
-        active: +$('#ch_active').is(':checked'),
-        kurs: scope.eth_price,
-        btc_address: scope.bitcoin_address,
-        type: scope.type
-      }
-
-    } else {
-      var adv ={
-        address: scope.address,
-        eth: scope.sell_eth,
-        btc: scope.sell_btc,
-        active: +$('#sell_ch_active').is(':checked'),
-        kurs: scope.eth_price,
-        btc_address: scope.bitcoin_address,
-        type: scope.type,
-      }
-    }
-
-
-    //send messange
-    room.connection.broadcast(parseMess.getStringify(adv))
-
-    //save in my list adv
-    parseMess.myAdvs = adv
-
-    localStorage.setItem('myAdvs', parseMess.getStringify( parseMess.myAdvs ))
-
+    localStorage.setItem('myOrders', JSON.stringify(orders.getOwnedByMe()))
   }
 
-  //авторизация
+  // auth
   scope.sign = function() {
     user.sign()
     scope.updateBalanceEth()
   }
 
-  scope.sell_checked = function () {
-    $('#sell_ch_active').attr('checked', function() {
-      if (parseMess.myAdvs) {
-        return parseMess.myAdvs.active
-      }
-      
-      return true
-    })
-  }
+  // scope.sell_checked = function () {
+  //   $('#sell_ch_active').attr('checked', function() {
+  //     if (parseMess.myAdvs) {
+  //       return parseMess.myAdvs.active
+  //     }
+  //
+  //     return true
+  //   })
+  // }
+  //
+  // scope.checked = function () {
+  //   $('#ch_active').attr('checked', function() {
+  //     if (parseMess.myAdvs) {
+  //       return parseMess.myAdvs.active
+  //     }
+  //
+  //     return true
+  //   })
+  // }
 
-  scope.updateCommon = function () {
+  scope.init = function () {
+    let my_setting = localStorage.getItem('my_setting')
+
+    if (my_setting) {
+      my_setting = JSON.parse(my_setting)
+      scope.withdraw_eth_address = my_setting.withdraw_eth_address
+      scope.withdraw_btc_address = my_setting.withdraw_btc_address
+      scope.$scan()
+    }
+
     scope.total_btc = 0
     scope.total_eth = 0
-    
+
     for (let i=0; i < scope.advs.length; i++) {
       if (scope.advs[i].type === 'buy') {
         scope.total_btc += parseFloat(scope.advs[i].btc)
-      } 
+      }
       else {
         scope.total_eth += parseFloat(scope.advs[i].eth)
       }
     }
   }
+
 
   scope.checked = function () {
     $('#ch_active').attr('checked', function() {
@@ -232,114 +212,99 @@ alight.controllers.main = function(scope) {
     }
   }
 
-
-
   scope.init()
-  scope.updateList()
-  scope.getCurrentCurs()
+  scope.getCurrentExchangeRate()
   scope.sign()
 
   main.scope = scope
 }
 
-alight.filters.onlybuy = function(advs, scope) {
-  const tmp = []
-  
-  for (let i=0; i < advs.length; i++) {
-    if (advs[i].type === 'buy') {
-      tmp.push(advs[i])
-    }
-  }
 
-  return tmp
-}
+// Filters
 
-alight.filters.onlysell = function(advs, scope) {
-  const tmp = []
-  
-  for (let i=0; i < advs.length; i++) {
-    if (advs[i].type === 'sell') {
-      tmp.push(advs[i])
-    }
-  }
+alight.filters.onlyBuy = (items, scope) =>
+  items.filter(({ type }) => type === 'buy')
 
-  return tmp
-}
+alight.filters.onlySell = (items, scope) =>
+  items.filter(({ type }) => type === 'sell')
 
-alight.hooks.eventModifier['change_eth_price'] = {
-  event: ['input', 'blur'],
+
+// Hooks
+
+alight.hooks.eventModifier.change_eth_exchange_rate = {
+  event: [ 'input', 'blur' ],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!main.scope.eth_price) return
-    
-    main.scope.eth_price = (main.scope.eth_price.match(/^[\d.]+$/))
-    main.scope.btc = main.scope.eth *main.scope.eth_price
-    
+    if (!main.scope.eth_exchange_rate) return
+
+    main.scope.eth_exchange_rate = (main.scope.eth_exchange_rate.match(/^[\d.]+$/))
+    main.scope.btc = main.scope.eth *main.scope.eth_exchange_rate
+
     main.scope.$scan()
   }
 }
 
-alight.hooks.eventModifier['change_eth'] = {
-  event: ['input', 'blur'],
+alight.hooks.eventModifier.change_eth = {
+  event: [ 'input', 'blur' ],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!main.scope.eth_price) return
+    if (!main.scope.eth_exchange_rate) return
 
     main.scope.eth = (main.scope.eth.match(/^[\d.]+$/))
-    main.scope.btc = main.scope.eth *main.scope.eth_price
-    
+    main.scope.btc = main.scope.eth *main.scope.eth_exchange_rate
+
     main.scope.$scan()
   }
 }
 
-alight.hooks.eventModifier['change_btc'] = {
-  event: ['input', 'blur'],
+alight.hooks.eventModifier.change_btc = {
+  event: [ 'input', 'blur' ],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!main.scope.eth_price) return
+    if (!main.scope.eth_exchange_rate) return
 
     main.scope.btc = (main.scope.btc.match(/^[\d.]+$/))
-    main.scope.eth = main.scope.btc / main.scope.eth_price
-    
+    main.scope.eth = main.scope.btc / main.scope.eth_exchange_rate
+
     main.scope.$scan()
   }
 }
 
 //for sell
-alight.hooks.eventModifier['change_sell_eth_price'] = {
-  event: ['input', 'blur'],
+alight.hooks.eventModifier.change_btc_exchange_rate = {
+  event: [ 'input', 'blur' ],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!main.scope.btc_price) return
-    
-    main.scope.btc_price = (main.scope.btc_price.match(/^[\d.]+$/))
-    main.scope.sell_btc = main.scope.sell_eth *main.scope.btc_price
-    
+    if (!main.scope.btc_exchange_rate) return
+
+    main.scope.btc_exchange_rate = (main.scope.btc_exchange_rate.match(/^[\d.]+$/))
+    main.scope.sell_btc = main.scope.sell_eth *main.scope.btc_exchange_rate
+
     main.scope.$scan()
   }
 }
 
-alight.hooks.eventModifier['change_sell_eth'] = {
-  event: ['input', 'blur'],
+alight.hooks.eventModifier.change_sell_eth = {
+  event: [ 'input', 'blur' ],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!main.scope.btc_price) return
+    if (!main.scope.btc_exchange_rate) return
 
     main.scope.sell_eth = (main.scope.sell_eth.match(/^[\d.]+$/))
-    main.scope.sell_btc = main.scope.sell_eth *main.scope.btc_price
-    
+    main.scope.sell_btc = main.scope.sell_eth *main.scope.btc_exchange_rate
+
     main.scope.$scan()
   }
 }
 
-alight.hooks.eventModifier['sell_change_btc'] = {
-  event: ['input', 'blur'],
+alight.hooks.eventModifier.change_sell_btc = {
+  event: [ 'input', 'blur' ],
   fn: (event, env) => {
     if (event.type === 'blur') return
-    if (!main.scope.btc_price) return
+    if (!main.scope.btc_exchange_rate) return
 
     main.scope.sell_btc = (main.scope.sell_btc.match(/^[\d.]+$/))
-    main.scope.sell_eth = main.scope.sell_btc / main.scope.btc_price
+    main.scope.sell_eth = main.scope.sell_btc / main.scope.btc_exchange_rate
     
     main.scope.$scan()
   }
