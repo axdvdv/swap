@@ -22,6 +22,7 @@
     "ipfs-pubsub-room": "^1.1.5",
     "jquery": "^3.3.1",
     "js-sha256": "^0.9.0",
+    "js-sha3": "^0.7.0",
     "navigo": "^7.1.1",
     "popper.js": "^1.13.0",
     "web3": "^1.0.0-beta.30",

@@ -1,11 +1,13 @@
 <div al-if="activeRoute.path == '/btc-to-eth/:id'">
+  <button al-link="/">Назад</button>
+
   <div al-ctrl="btcToEth">
 
     <div class="content-800">
 
       <h2 class="mb-4">1. Придумайте секретную фразу</h2>
       <div class="alert alert-danger" role="alert">
-        Сохраните секретную фразу, иначе вы не сможете получить деньги!
+        <b>Сохраните секретную фразу, иначе вы не сможете получить деньги!</b>
       </div>
       <div al-show="data.step == 1">
         <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
@@ -13,22 +15,26 @@
         <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
       </div>
       <div class="fs18" al-show="data.step > 1">
-        <div class="alert alert-warning" role="warning">
-          Secret: <b>{{data.secret}}</b>
+        <div class="alert alert-warning" role="alert">
+          Secret: <b><a href="" al-copy>{{data.secret}}</a></b>
         </div>
-        <div class="alert alert-warning" role="warning">
-          Secret Hash: <b>{{data.secretHash}}</b>
+        <div class="alert alert-warning" role="alert">
+          Secret Hash: <b><a href="" al-copy>{{data.secretHash}}</a></b>
         </div>
       </div>
 
-      <div al-show="data.step > 1">
-        <h2 class="mb-4">2. Пополните адрес созданного BTC кошелька на N</h2>
-        <a class="fs-18" title="скопировать в буффер" al-copy>{{data.btcScriptAddress}}</a>
-        <br /><br />
+      <div class="mt-5" al-show="data.step > 1">
+        <h2 class="mb-4">2. Пополните адрес созданного BTC кошелька</h2>
+        <div class="alert alert-primary fs-18" role="alert">
+          Сумма для пополнения: <b>{{data.order.currency1Amount}} BTC</b>
+        </div>
+        <div class="alert alert-warning" role="alert">
+          Адрес BTC кошелька: <b><a href="" al-copy>{{data.btcScriptAddress}}</a></b>
+        </div>
         <button type="button" class="btn btn-primary" @click="goNextStep()">Я пополнил, давай проверяй и погнали дальше!</button>
       </div>
 
-      <div al-show="data.step > 2">
+      <div class="mt-5" al-show="data.step > 2">
         <div al-show="data.waitingForUser">
           <h2 class="mb-4">3. Ожидаем пользователя {Username}</h2>
           <div class="sk-fading-circle">
@@ -48,7 +54,7 @@
         </div>
       </div>
 
-      <div al-show="data.step > 3">
+      <div class="mt-5" al-show="data.step > 3">
         <div class="page-header">
           <h1>Step 4</h1>
         </div>

@@ -7,7 +7,8 @@
 
   <script src="https://unpkg.com/ipfs/dist/index.js"></script>
   <style>
-    [al-cloak] {
+    [al-cloak],
+    .al-hide {
       display: none !important;
     }
   </style>
@@ -16,30 +17,30 @@
 
   <div al-cloak>
 
-    <div al-show="activeRoute == '/'">
+    <div al-if="activeRoute.path == '/'">
   <div al-ctrl="main">
-    <div class="content">
+    <div class="content-1000">
       <div class="row">
         <div class="col border-right">
           <div class="pr-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{balance}}</b>    <span>ETH</span></div>
+                <div>Баланс <b>{{balance}}</b> ETH</div>
                 <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
               </div>
               <hr />
-              <a al-copy title="скопировать в буффер">{{address}}</a>
+              <a href="" al-copy title="скопировать в буффер">{{address}}</a>
             </div>
             <h3 class="pt-4 pb-2">Купить BTC за ETH</h3>
-            <form action="" al-submit="append('buy')">
+            <form action="" al-submit="createOrder('buy')">
               <div class="form-group">
                 <label>Курс</label>
                 <div class="input-group mb-3">
                   <input
                     class="form-control"
                     type="type"
-                    @input.change_eth_price=""
-                    al-value="eth_price"
+                    @input.change_eth_exchange_rate=""
+                    al-value="eth_exchange_rate"
                     required
                   >
                   <div class="input-group-append">
@@ -77,7 +78,7 @@
                   </div>
                 </div>
               </div>
-              <div class="form-check">
+              <!--div class="form-check">
                 <label class="form-check-label">
                   <input
                     id="ch_active"
@@ -89,7 +90,7 @@
                   Обьявление активно
                 </label>
                 <div class="text-muted">поставьте галочку, что бы объявление появилось в онлайне в списке выше</div>
-              </div>
+              </div-->
               <div class="pt-3">
                 <input type="submit" class="btn btn-primary btn-block" value="Создать объявление">
               </div>
@@ -100,22 +101,22 @@
           <div class="pl-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{bitcoin_balance}}</b> <span>BTC</span></div>
+                <div>Баланс <b>{{bitcoin_balance}}</b> BTC</div>
                 <a href="" data-toggle="modal" data-target="#withdraw_btc">вывести средства</a>
               </div>
               <hr />
-              <a al-copy title="скопировать в буффер">{{bitcoin_address}}</a>
+              <a href="" al-copy title="скопировать в буффер">{{bitcoin_address}}</a>
             </div>
             <h3 class="pt-4 pb-2">Купить ETH за BTC</h3>
-            <form action="" al-submit="append('sell')">
+            <form action="" al-submit="createOrder('sell')">
               <div class="form-group">
                 <label>Курс</label>
                 <div class="input-group mb-3">
                   <input
                     class="form-control"
                     type="type"
-                    @input.change_btc_price=""
-                    al-value="btc_price"
+                    @input.change_btc_exchange_rate=""
+                    al-value="btc_exchange_rate"
                     required
                   >
                   <div class="input-group-append">
@@ -153,7 +154,7 @@
                   </div>
                 </div>
               </div>
-              <div class="form-check">
+              <!--div class="form-check">
                 <label class="form-check-label">
                   <input
                     id="sell_ch_active"
@@ -165,7 +166,7 @@
                   Обьявление активно
                 </label>
                 <div class="text-muted">поставьте галочку, что бы объявление появилось в онлайне в списке выше</div>
-              </div>
+              </div-->
               <div class="pt-3">
                 <input type="submit" class="btn btn-primary btn-block" value="Создать объявление">
               </div>
@@ -194,11 +195,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="it in advs | onlysell">
-                  <td>{{it.kurs}}</td>
-                  <td class="text-right">{{it.eth}}</td>
-                  <td class="text-right">{{it.btc}}</td>
-                  <td class="text-right"><a href="">купить</a></td>
+                <tr al-repeat="item in orders.items | onlySell">
+                  <td>{{item.exchangeRate}}</td>
+                  <td class="text-right">{{item.currency1Amount}}</td>
+                  <td class="text-right">{{item.currency2Amount}}</td>
+                  <td class="text-right"><a href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">купить</a></td>
                 </tr>
                 </tbody>
               </table>
@@ -222,11 +223,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="it in advs | onlybuy">
-                  <td>{{it.kurs}}</td>
-                  <td class="text-right">{{it.eth}}</td>
-                  <td class="text-right">{{it.btc}}</td>
-                  <td class="text-right"><a href="">купить</a></td>
+                <tr al-repeat="item in orders.items | onlyBuy">
+                  <td>{{item.exchangeRate}}</td>
+                  <td class="text-right">{{item.currency1Amount}}</td>
+                  <td class="text-right">{{item.currency2Amount}}</td>
+                  <td class="text-right"><a href="#" al-link data-link="{{'/eth-to-btc/' + item.id}}">купить</a></td>
                 </tr>
                 </tbody>
               </table>
@@ -320,9 +321,11 @@
   </div>
 </div>
 
-    <div al-show="activeRoute == '/history'">
+    <div al-if="activeRoute.path == '/history'">
+  <button al-link="/">Назад</button>
+
   <div al-ctrl="history">
-    <div class="content">
+    <div class="content-1000">
 
       <div class="page-header">
         <h1>История</h1>
@@ -383,23 +386,20 @@
         </div>
       </div>
 
-
-
     </div>
-  </div>
   </div>
 </div>
 
-    <div al-show="activeRoute == '/btc-to-eth'">
+    <div al-if="activeRoute.path == '/btc-to-eth/:id'">
+  <button al-link="/">Назад</button>
+
   <div al-ctrl="btcToEth">
 
-    <div class="content-600">
+    <div class="content-800">
 
-      <div class="page-header">
-        <h1>Придумайте секретную фразу</h1>
-      </div>
+      <h2 class="mb-4">1. Придумайте секретную фразу</h2>
       <div class="alert alert-danger" role="alert">
-        Сохраните секретную фразу, иначе вы не сможете получить деньги!
+        <b>Сохраните секретную фразу, иначе вы не сможете получить деньги!</b>
       </div>
       <div al-show="data.step == 1">
         <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
@@ -407,35 +407,28 @@
         <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
       </div>
       <div class="fs18" al-show="data.step > 1">
-        <div class="input-group">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button">Secret</button>
-        </span>
-          <input type="text" class="form-control" disabled al-value="data.secret">
+        <div class="alert alert-warning" role="alert">
+          Secret: <b><a href="" al-copy>{{data.secret}}</a></b>
         </div>
-        <br />
-        <div class="input-group">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button">Secret hash</button>
-        </span>
-          <input type="text" class="form-control" disabled al-value="data.secretHash">
+        <div class="alert alert-warning" role="alert">
+          Secret Hash: <b><a href="" al-copy>{{data.secretHash}}</a></b>
         </div>
       </div>
 
-      <div al-show="data.step > 1">
-        <div class="page-header">
-          <h1>Пополните адрес созданного BTC кошелька на N</h1>
+      <div class="mt-5" al-show="data.step > 1">
+        <h2 class="mb-4">2. Пополните адрес созданного BTC кошелька</h2>
+        <div class="alert alert-primary fs-18" role="alert">
+          Сумма для пополнения: <b>{{data.order.currency1Amount}} BTC</b>
         </div>
-        <a class="fs-18" title="скопировать в буффер" al-copy>{{data.btcScriptAddress}}</a>
-        <br /><br />
+        <div class="alert alert-warning" role="alert">
+          Адрес BTC кошелька: <b><a href="" al-copy>{{data.btcScriptAddress}}</a></b>
+        </div>
         <button type="button" class="btn btn-primary" @click="goNextStep()">Я пополнил, давай проверяй и погнали дальше!</button>
       </div>
 
-      <div al-show="data.step > 2">
+      <div class="mt-5" al-show="data.step > 2">
         <div al-show="data.waitingForUser">
-          <div class="page-header">
-            <h1>Ожидаем пользователя {Username}</h1>
-          </div>
+          <h2 class="mb-4">3. Ожидаем пользователя {Username}</h2>
           <div class="sk-fading-circle">
             <div class="sk-circle1 sk-circle"></div>
             <div class="sk-circle2 sk-circle"></div>
@@ -453,7 +446,7 @@
         </div>
       </div>
 
-      <div al-show="data.step > 3">
+      <div class="mt-5" al-show="data.step > 3">
         <div class="page-header">
           <h1>Step 4</h1>
         </div>
@@ -464,7 +457,9 @@
   </div>
 </div>
 
-    <div al-show="activeRoute == '/eth-to-btc'">
+    <div al-if="activeRoute.path == '/eth-to-btc/:id'">
+  <button al-link="/">Назад</button>
+
   <div al-ctrl="ethToBtc">
 
   </div>

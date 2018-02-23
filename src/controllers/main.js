@@ -11,8 +11,6 @@ const main = {
 alight.controllers.main = function(scope) {
   console.log('Main controller!')
 
-  main.scope = scope
-
   scope.orders = orders
   scope.advs = []
   scope.balance = 0
@@ -101,12 +99,12 @@ alight.controllers.main = function(scope) {
     }
   }
 
-  scope.showError = function (msg) {
+  scope.showError = (msg) => {
     alert(msg)
   }
 
   // check if address was created
-  scope.check = function () {
+  scope.check = () => {
     const address = '' + scope.address
 
     if (!address.length) {
@@ -142,7 +140,7 @@ alight.controllers.main = function(scope) {
   }
 
   // auth
-  scope.sign = function() {
+  scope.sign = () => {
     user.sign()
     scope.updateBalanceEth()
   }
@@ -167,31 +165,7 @@ alight.controllers.main = function(scope) {
   //   })
   // }
 
-  scope.init = function () {
-    let my_setting = localStorage.getItem('my_setting')
-
-    if (my_setting) {
-      my_setting = JSON.parse(my_setting)
-      scope.withdraw_eth_address = my_setting.withdraw_eth_address
-      scope.withdraw_btc_address = my_setting.withdraw_btc_address
-      scope.$scan()
-    }
-
-    scope.total_btc = 0
-    scope.total_eth = 0
-
-    for (let i=0; i < scope.advs.length; i++) {
-      if (scope.advs[i].type === 'buy') {
-        scope.total_btc += parseFloat(scope.advs[i].btc)
-      }
-      else {
-        scope.total_eth += parseFloat(scope.advs[i].eth)
-      }
-    }
-  }
-
-
-  scope.checked = function () {
+  scope.checked = () => {
     $('#ch_active').attr('checked', function() {
       if (parseMess.myAdvs) {
         return parseMess.myAdvs.active
@@ -205,11 +179,25 @@ alight.controllers.main = function(scope) {
     let my_setting = localStorage.getItem('my_setting')
 
     if (my_setting) {
-      my_setting =  JSON.parse(my_setting)
+      my_setting = JSON.parse(my_setting)
+
       scope.withdraw_eth_address = my_setting.withdraw_eth_address
       scope.withdraw_btc_address = my_setting.withdraw_btc_address
-      scope.$scan()
     }
+
+    scope.total_btc = 0
+    scope.total_eth = 0
+
+    orders.items.forEach(({ type, currency1Amount, currency2Amount }) => {
+      if (type === 'buy') {
+        scope.total_btc += parseFloat(currency2Amount)
+      }
+      else {
+        scope.total_eth += parseFloat(currency1Amount)
+      }
+    })
+
+    scope.$scan()
   }
 
   scope.init()
