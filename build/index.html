@@ -322,7 +322,71 @@
 
     <div al-show="activeRoute == '/history'">
   <div al-ctrl="history">
+    <div class="content">
 
+      <div class="page-header">
+        <h1>История</h1>
+      </div>
+
+      <div class="row">
+        <div class="col border-right">
+          <div class="pr-2">
+            <div class="d-flex justify-content-between">
+
+              <div>Всего: <span>0 ETH</span></div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>BTC</th>
+                  <th class="text-right">Address</th>
+                  <th class="text-right">Time</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+        <div class="col">
+          <div class="pr-2">
+            <div class="d-flex justify-content-between">
+
+              <div>Всего: <span>{{total_btc}} BTC</span></div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>BTC</th>
+                  <th class="text-right">Address</th>
+                  <th class="text-right">Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr al-repeat="it in btcTransactions">
+                  <td>{{it.outputs[0].value / 100000000}}</td>
+                  <td>{{it.outputs[0].address}}</td>
+                  <td>{{it.time}}</td>
+
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
   </div>
 </div>
 

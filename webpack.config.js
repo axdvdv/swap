@@ -17,7 +17,8 @@ const BUILD_DIR   = path.join(__dirname, 'build')
  */
 module.exports = {
 
-  //devtool: IS_DEV ? 'inline-source-map' : false,
+    watch: true,
+    //devtool: IS_DEV ? 'inline-source-map' : false,
   devtool: 'inline-source-map',
 
   devServer: {

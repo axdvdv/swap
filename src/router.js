@@ -15,6 +15,7 @@ router
   .on(...bind('/'))
   .on(...bind('/btc-to-eth'))
   .on(...bind('/eth-to-btc'))
+  .on(...bind('/history'))
 
 
 export default router

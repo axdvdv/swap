@@ -94,13 +94,13 @@ alight.controllers.main = function(scope) {
 
   scope.updateBalanceEth = function () {
     user.web3.eth.getBalance(user.data.address).then(function (r) {
-      scope.balance = user.web3.utils.fromWei(r)
-      scope.address = user.data.address
-      scope.bitcoin_address = user.bitcoinData.address
+      scope.balance = user.web3.utils.fromWei(r);
+      scope.address = user.data.address;
+      scope.bitcoin_address = user.bitcoinData.address;
       
-      scope.updateBalanceBitcoin()
-      scope.$scan()
-      scope.refreshBTCTransaction()
+      scope.updateBalanceBitcoin();
+      scope.$scan();
+
     })
   }
 
@@ -232,21 +232,7 @@ alight.controllers.main = function(scope) {
     }
   }
 
-  scope.refreshBTCTransaction = function () {
-    if (scope.bitcoin_address) {
-      const url = 'https://api.blocktrail.com/v1/tbtc/address/'+scope.bitcoin_address+'/transactions?api_key=MY_APIKEY'
-      
-      console.log(url)
-      
-      $.getJSON(url, function (r) {
-        scope.btcTransactions = r.data
-        // scope.btcTransactions.kurs = scope.eth_price
-        console.log(scope.btcTransactions)
-        // console.log(scope.eth_price)
-        scope.$scan()
-      })
-    }
-  }
+
 
   scope.init()
   scope.updateList()
