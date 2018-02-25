@@ -6,11 +6,13 @@ const history = {
 }
 
 alight.controllers.history = function (scope) {
-  console.log('history controller!')
+
   history.scope = scope
 
   scope.sign = function () {
     user.sign()
+
+   // console.log(user.web3);
   }
 
   scope.refreshBTCTransaction = function () {
@@ -19,17 +21,30 @@ alight.controllers.history = function (scope) {
       const url = 'https://api.blocktrail.com/v1/tbtc/address/' + user.bitcoinData.address + '/transactions?api_key=MY_APIKEY'
 
       let total = 0
-
+      let transactions = [];
       $.getJSON(url, function (r) {
-        history.scope.btcTransactions = r.data
 
         $.each(r.data, function (k, i) {
-          console.log(i)
 
+            transactions.push(
+                {
+                    status:1,
+                    value: i.outputs[0].value / 100000000,
+                    address: i.outputs[0].address,
+                    date: i.time
+                }
+            )
+
+            console.log(i)
+            total += i.outputs[0].value / 100000000;
+            //если дошли до конца обновляем все
+            if((k+1) == r.data.length ) {
+
+                history.scope.btcTransactions = transactions
+                history.scope.total_btc = total
+                history.scope.$scan()
+            }
         })
-
-        history.scope.$scan()
-
       })
     } else {
       console.log('bitcoin_address is missing')
