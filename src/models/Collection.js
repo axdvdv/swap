@@ -53,8 +53,16 @@ class Collection {
    * @returns {*}
    */
   removeByKey(key) {
-    this.items = this.items.splice(this.itemIds[key], 1)
+    const index = this.itemIds[key]
+
+    this.items.splice(index, 1)
     delete this.itemIds[key]
+
+    Object.keys(this.itemIds).forEach((key) => {
+      if (this.itemIds[key] > index) {
+        this.itemIds[key]--
+      }
+    })
   }
 
   /**

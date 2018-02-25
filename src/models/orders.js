@@ -17,6 +17,8 @@ class Orders extends Collection {
     this.itemIds = {}
 
     items.forEach(({ id }, index) => this.itemIds[id] = index)
+
+    console.log('Orders:', this.items)
   }
 
   /**
@@ -31,10 +33,40 @@ class Orders extends Collection {
    */
   append(data) {
     super.append(data, data.id)
+    this.saveLocalStorage()
+  }
+
+  remove(id, cb) {
+    if (this.checkIfOwnedByMe(id)) {
+      super.removeByKey(id)
+      this.saveLocalStorage()
+      cb()
+    }
+  }
+
+  removeAll() {
+    this.items = []
+    this.itemIds = {}
+    this.saveLocalStorage()
+  }
+
+  checkIfOwnedByMe(id) {
+    const order = this.getByKey(id)
+
+    if (!order) {
+      console.error('checkIfOwnedByMe failed', this.items, this.itemIds)
+      return false
+    }
+
+    return order.ownerAddress === user.data.address
   }
 
   getOwnedByMe() {
-    return this.items.filter(({ ownerAddress }) => ownerAddress === user.data.address)
+    return this.items.length ? this.items.filter(({ ownerAddress }) => ownerAddress === user.data.address) : []
+  }
+
+  saveLocalStorage() {
+    localStorage.setItem('myOrders', JSON.stringify(this.getOwnedByMe()))
   }
 }
 
