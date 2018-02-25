@@ -9,6 +9,7 @@ class User {
 
   constructor() {
     this.web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/JCnK5ifEPH9qcQkX0Ahl"))
+    this.peer = null
     this.data = {}
     this.bitcoinData = {}
   }

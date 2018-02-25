@@ -1,6 +1,9 @@
 import IpfsRoom from 'ipfs-pubsub-room'
 import { main } from 'controllers'
-import { user, orders, myOrders } from 'models'
+import { orderStatuses } from 'helpers'
+import user from './user'
+import orders from './orders'
+import myOrders from './myOrders'
 
 
 class Room {
@@ -10,7 +13,7 @@ class Room {
   }
 
   connect(ipfsConnection) {
-    this.peer = ipfsConnection._peerInfo.id.toB58String()
+    user.peer = ipfsConnection._peerInfo.id.toB58String()
 
     this.connection = IpfsRoom(ipfsConnection, 'jswaps', {
       pollInterval: 5000,
@@ -26,7 +29,7 @@ class Room {
   }
 
   handleNewMessage = (message) => {
-    if (message.from === this.peer) {
+    if (message.from === user.peer) {
       return
     }
 
@@ -46,6 +49,29 @@ class Room {
           else if (type === 'removeOrder') {
             orders.remove(data.id)
             main.scope.decreaseTotals([ data ])
+          }
+          else if (type === 'updateOrderStatus') {
+            if (data.status in orderStatuses) {
+              orders.getByKey(data.orderId).status = data.status
+              main.scope.$scan()
+            }
+          }
+          else if (type === 'startProcessOrder') {
+            const order = orders.getByKey(data.orderId)
+
+            order.update({
+              status: orderStatuses.processing,
+              participant: {
+                peer: message.from,
+              },
+            })
+            myOrders.saveProcessingOrdersToLocalStorage()
+          }
+          else if (type === 'orderProcessing:sendSecretHash') {
+            const order = orders.getByKey(data.orderId)
+
+            order.secretHash = data.secretHash
+            myOrders.saveProcessingOrdersToLocalStorage()
           }
         }
       })

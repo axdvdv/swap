@@ -176,7 +176,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="item in orders.items | onlySell track by item.id" data-id="{{item.id}}">
+                <tr al-repeat="item in orders.items | onlySell | onlyActive track by item.id" data-id="{{item.id}}">
                   <td>{{item.exchangeRate}}</td>
                   <td class="text-right trim-order-value">{{item.currency1Amount}}</td>
                   <td class="text-right trim-order-value">{{item.currency2Amount}}</td>
@@ -185,7 +185,7 @@
                   </td>
                   <td class="text-right">
                     <button
-                      al-if="item.ownerAddress == user.data.address"
+                      al-if="item.owner.address == user.data.address"
                       class="close"
                       type="button"
                       aria-label="Close"
@@ -217,7 +217,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="item in orders.items | onlyBuy track by item.id" data-id="{{item.id}}">
+                <tr al-repeat="item in orders.items | onlyBuy | onlyActive track by item.id" data-id="{{item.id}}">
                   <td>{{item.exchangeRate}}</td>
                   <td class="text-right trim-order-value">{{item.currency1Amount}}</td>
                   <td class="text-right trim-order-value">{{item.currency2Amount}}</td>
@@ -226,7 +226,7 @@
                   </td>
                   <td class="text-right">
                     <button
-                      al-if="item.ownerAddress == user.data.address"
+                      al-if="item.owner.address == user.data.address"
                       class="close"
                       type="button"
                       aria-label="Close"

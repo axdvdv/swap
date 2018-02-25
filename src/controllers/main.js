@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import alight from 'alight'
 import sha256 from 'js-sha256'
+import { orderStatuses } from 'helpers'
 import { user, room, Order, myOrders, orders } from 'models'
 
 
@@ -164,7 +165,6 @@ alight.controllers.main = function(scope) {
 
     const order = new Order({
       id,
-      ownerAddress: user.data.address,
       currency1: 'BTC',
       currency2: 'ETH',
       currency1Amount: type === 'buy' ? scope.eth : scope.sell_eth, // TODO fix this
@@ -280,6 +280,9 @@ alight.filters.onlyBuy = (items, scope) =>
 
 alight.filters.onlySell = (items, scope) =>
   items.filter(({ type }) => type === 'sell')
+
+alight.filters.onlyActive = (items, scope) =>
+  items.filter(({ status }) => status === orderStatuses.active)
 
 
 // Hooks

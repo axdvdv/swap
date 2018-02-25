@@ -1,6 +1,6 @@
+import { orderStatuses } from 'helpers'
 import orders from './orders'
 import user from './user'
-import room from './room'
 
 
 class MyOrders {
@@ -26,15 +26,21 @@ class MyOrders {
       this.remove(order.id)
     })
 
-    orders.append(data)
-    this.saveLocalStorage()
+    orders.append({
+      ...data,
+      owner: {
+        address: user.data.address,
+        peer: user.peer,
+      },
+    })
+    this.saveToLocalStorage()
     cb(removedOrder)
   }
 
   remove(id, cb) {
     if (this.checkIfOwnedByMe(id)) {
       orders.removeByKey(id)
-      this.saveLocalStorage()
+      this.saveToLocalStorage()
       cb && cb()
     }
   }
@@ -46,15 +52,21 @@ class MyOrders {
       return false
     }
 
-    return order.ownerAddress === user.data.address
+    return order.owner.address === user.data.address
   }
 
-  getOwnedByMe() {
-    return orders.items.length ? orders.items.filter(({ ownerAddress }) => ownerAddress === user.data.address) : []
+  saveToLocalStorage() {
+    localStorage.setItem('myOrders', JSON.stringify(orders.getOwnedByMe()))
   }
 
-  saveLocalStorage() {
-    localStorage.setItem('myOrders', JSON.stringify(this.getOwnedByMe()))
+  getProcessingOrders() {
+    const myOrders = orders.getOwnedByMe()
+
+    return myOrders.length ? myOrders.filter(({ status }) => status === orderStatuses.processing) : []
+  }
+
+  saveProcessingOrdersToLocalStorage() {
+    localStorage.setItem('myProcessingOrders', JSON.stringify(this.getProcessingOrders()))
   }
 }
 

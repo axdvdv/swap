@@ -26,6 +26,10 @@ class Orders extends Collection {
   remove(id) {
     super.removeByKey(id)
   }
+
+  getOwnedByMe() {
+    return this.items.length ? this.items.filter(({ owner: { address } }) => address === user.data.address) : []
+  }
 }
 
 
