@@ -184,7 +184,13 @@
                     <a href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">купить</a>
                   </td>
                   <td class="text-right">
-                    <button type="button" class="close" aria-label="Close" @click="removeOrder(item.id)">
+                    <button
+                      al-if="item.ownerAddress == user.data.address"
+                      class="close"
+                      type="button"
+                      aria-label="Close"
+                      @click="removeOrder(item)"
+                    >
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </td>
@@ -207,7 +213,7 @@
                   <th>Цена</th>
                   <th class="text-right">ETH</th>
                   <th class="text-right">BTC</th>
-                  <th class="text-right">-</th>
+                  <th colspan="2"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -219,7 +225,13 @@
                     <a href="#" al-link data-link="{{'/eth-to-btc/' + item.id}}">купить</a>
                   </td>
                   <td class="text-right">
-                    <button type="button" class="close" aria-label="Close" @click="removeOrder(item.id)">
+                    <button
+                      al-if="item.ownerAddress == user.data.address"
+                      class="close"
+                      type="button"
+                      aria-label="Close"
+                      @click="removeOrder(item)"
+                    >
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </td>
@@ -230,7 +242,6 @@
           </div>
         </div>
       </div>
-      <button type="button" class="btn btn-primary" @click="removeAllOrders()">Очистить ордера</button>
     </div>
 
     <!-- Modal -->

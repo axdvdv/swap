@@ -26,6 +26,11 @@ body, html {
 [data-route] {
   display: none; }
 
+.trim-order-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px; }
+
 /* Loader ******************************************************************* */
 .sk-fading-circle {
   width: 40px;

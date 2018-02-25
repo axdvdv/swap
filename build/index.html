@@ -21,7 +21,7 @@
   <div al-ctrl="main">
     <div class="content-1000">
       <div class="row">
-        <div class="col border-right">
+        <div class="col-6 border-right">
           <div class="pr-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
@@ -97,7 +97,7 @@
             </form>
           </div>
         </div>
-        <div class="col">
+        <div class="col-6">
           <div class="pl-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
@@ -178,7 +178,7 @@
       <hr class="my-5" />
 
       <div class="row">
-        <div class="col border-right">
+        <div class="col-6 border-right">
           <div class="pr-2">
             <div class="d-flex justify-content-between">
               <label>Продают</label>
@@ -191,22 +191,29 @@
                   <th>Цена</th>
                   <th class="text-right">ETH</th>
                   <th class="text-right">BTC</th>
-                  <th class="text-right">-</th>
+                  <th colspan="2"></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="item in orders.items | onlySell">
+                <tr al-repeat="item in orders.items | onlySell track by item.id" data-id="{{item.id}}">
                   <td>{{item.exchangeRate}}</td>
-                  <td class="text-right">{{item.currency1Amount}}</td>
-                  <td class="text-right">{{item.currency2Amount}}</td>
-                  <td class="text-right"><a href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">купить</a></td>
+                  <td class="text-right trim-order-value">{{item.currency1Amount}}</td>
+                  <td class="text-right trim-order-value">{{item.currency2Amount}}</td>
+                  <td class="text-right">
+                    <a href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">купить</a>
+                  </td>
+                  <td class="text-right">
+                    <button type="button" class="close" aria-label="Close" @click="removeOrder(item.id)">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </td>
                 </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-        <div class="col">
+        <div class="col-6">
           <div class="pl-2">
             <div class="d-flex justify-content-between">
               <label>Покупают</label>
@@ -223,11 +230,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="item in orders.items | onlyBuy">
+                <tr al-repeat="item in orders.items | onlyBuy track by item.id" data-id="{{item.id}}">
                   <td>{{item.exchangeRate}}</td>
-                  <td class="text-right">{{item.currency1Amount}}</td>
-                  <td class="text-right">{{item.currency2Amount}}</td>
-                  <td class="text-right"><a href="#" al-link data-link="{{'/eth-to-btc/' + item.id}}">купить</a></td>
+                  <td class="text-right trim-order-value">{{item.currency1Amount}}</td>
+                  <td class="text-right trim-order-value">{{item.currency2Amount}}</td>
+                  <td class="text-right">
+                    <a href="#" al-link data-link="{{'/eth-to-btc/' + item.id}}">купить</a>
+                  </td>
+                  <td class="text-right">
+                    <button type="button" class="close" aria-label="Close" @click="removeOrder(item.id)">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </td>
                 </tr>
                 </tbody>
               </table>
@@ -235,6 +249,7 @@
           </div>
         </div>
       </div>
+      <button type="button" class="btn btn-primary" @click="removeAllOrders()">Очистить ордера</button>
     </div>
 
     <!-- Modal -->

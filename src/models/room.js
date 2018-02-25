@@ -1,5 +1,6 @@
 import IpfsRoom from 'ipfs-pubsub-room'
-import { orders } from 'models'
+import { main } from 'controllers'
+import { user, orders, myOrders } from 'models'
 
 
 class Room {
@@ -9,6 +10,8 @@ class Room {
   }
 
   connect(ipfsConnection) {
+    this.peer = ipfsConnection._peerInfo.id.toB58String()
+
     this.connection = IpfsRoom(ipfsConnection, 'jswaps', {
       pollInterval: 5000,
     })
@@ -23,16 +26,27 @@ class Room {
   }
 
   handleNewMessage = (message) => {
+    if (message.from === this.peer) {
+      return
+    }
+
     const data = JSON.parse(message.data.toString())
 
+    console.log('New message', { ...message, data })
+
     if (data && data.length) {
-      console.log(`New message data:`, { ...message, data })
-
       data.forEach(({ type, data }) => {
-        console.log(`Message of type ${type}:`, data)
+        if (data) {
+          console.log(`New message data:`, { ...message, type, data })
 
-        if (type === 'newOrder') {
-          orders.append(data)
+          if (type === 'newOrder') {
+            orders.append(data)
+            main.scope.increaseTotals([ data ])
+          }
+          else if (type === 'removeOrder') {
+            orders.remove(data.id)
+            main.scope.decreaseTotals([ data ])
+          }
         }
       })
     }
@@ -41,15 +55,24 @@ class Room {
   handleNewUserConnected = (peer) => {
     console.info('New peer:', peer)
 
-    const myOrders = orders.getOwnedByMe()
+    const orders = myOrders.getOwnedByMe()
 
-    if (myOrders.length) {
-      this.connection.sendTo(peer, JSON.stringify(myOrders))
+    console.log('Send my orders:', orders)
+
+    if (orders.length) {
+      this.sendMessageToPeer(peer, orders.map((order) => ({
+        type: 'newOrder',
+        data: order,
+      })))
     }
   }
 
   sendMessage(message) {
     this.connection.broadcast(JSON.stringify(message))
+  }
+
+  sendMessageToPeer(peer, message) {
+    this.connection.sendTo(peer, JSON.stringify(message))
   }
 }
 

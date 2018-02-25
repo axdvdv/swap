@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import alight from 'alight'
 import sha256 from 'js-sha256'
-import { user, room, Order, orders } from 'models'
+import { user, room, Order, myOrders, orders } from 'models'
 
 
 const main = {
@@ -11,6 +11,7 @@ const main = {
 alight.controllers.main = function(scope) {
   console.log('Main controller!')
 
+  scope.user = user
   scope.orders = orders
   scope.advs = []
   scope.balance = 0
@@ -119,7 +120,7 @@ alight.controllers.main = function(scope) {
     return true
   }
 
-  const increaseTotals = (orders) => {
+  scope.increaseTotals = (orders) => {
     orders.forEach(({ type, currency1Amount, currency2Amount }) => {
       if (type === 'buy') {
         scope.total_btc += parseFloat(currency2Amount)
@@ -132,7 +133,7 @@ alight.controllers.main = function(scope) {
     scope.$scan()
   }
 
-  const decreaseTotals = (orders) => {
+  scope.decreaseTotals = (orders) => {
     orders.forEach(({ type, currency1Amount, currency2Amount }) => {
       if (type === 'buy') {
         scope.total_btc -= parseFloat(currency2Amount)
@@ -179,26 +180,41 @@ alight.controllers.main = function(scope) {
     scope.sell_eth = ''
     scope.sell_btc = ''
 
-    room.sendMessage({
-      data: order,
-      type: 'newOrder',
+    myOrders.append(order, (removedOrder) => {
+      const message = []
+
+      if (removedOrder) {
+        message.push({
+          type: 'removeOrder',
+          data: removedOrder,
+        })
+      }
+
+      message.push({
+        type: 'newOrder',
+        data: order,
+      })
+
+      room.sendMessage(message)
     })
-    orders.append(order)
-    increaseTotals([ order ])
+
+    scope.increaseTotals([ order ])
   }
 
-  scope.removeOrder = (id) => {
+  scope.removeOrder = (order) => {
+    const { id } = order
     console.log('Remove order with id:', id)
 
-    orders.remove(id, () => {
-      console.log(user.data.address, orders.items)
-      scope.$scan()
+    myOrders.remove(id, () => {
+      room.sendMessage([
+        {
+          type: 'removeOrder',
+          data: order,
+        },
+      ])
     })
-  }
 
-  scope.removeAllOrders = () => {
-    orders.removeAll()
-    scope.$scan()
+    scope.decreaseTotals([ order ])
   }
 
   scope.sign = () => {
@@ -246,7 +262,7 @@ alight.controllers.main = function(scope) {
       scope.withdraw_btc_address = my_setting.withdraw_btc_address
     }
 
-    increaseTotals(orders.items)
+    scope.increaseTotals(orders.items)
   }
 
   scope.init()
