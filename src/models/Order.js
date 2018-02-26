@@ -1,5 +1,6 @@
 import { orderStatuses } from 'helpers'
 import { merge } from 'lodash'
+import user from './user'
 
 
 class Order {
@@ -21,6 +22,10 @@ class Order {
       this[key] = data[key]
     })
 
+    this.owner = {
+      address: user.data.address,
+      peer: user.peer,
+    }
     this.status = orderStatuses.active // active, processing, closed
   }
 

@@ -1,4 +1,5 @@
 import Collection from './Collection'
+import user from './user'
 
 
 class Orders extends Collection {
@@ -25,6 +26,16 @@ class Orders extends Collection {
 
   remove(id) {
     super.removeByKey(id)
+  }
+
+  checkIfOwnedByMe(id) {
+    const order = this.getByKey(id)
+
+    if (!order) {
+      return false
+    }
+
+    return order.owner.address === user.data.address
   }
 
   getOwnedByMe() {

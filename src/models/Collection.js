@@ -61,18 +61,20 @@ class Collection {
 
     console.log('index', index)
 
-    this.items.splice(index, 1)
-    delete this.itemIds[key]
+    if (index !== undefined) {
+      this.items.splice(index, 1)
+      delete this.itemIds[key]
 
-    console.log('items after removing', JSON.parse(JSON.stringify(this.items)))
+      console.log('items after removing', JSON.parse(JSON.stringify(this.items)))
 
-    Object.keys(this.itemIds).forEach((key) => {
-      if (this.itemIds[key] > index) {
-        this.itemIds[key]--
-      }
-    })
+      Object.keys(this.itemIds).forEach((key) => {
+        if (this.itemIds[key] > index) {
+          this.itemIds[key]--
+        }
+      })
 
-    console.log('items after reindexing', JSON.parse(JSON.stringify(this.items)))
+      console.log('items after reindexing', JSON.parse(JSON.stringify(this.items)))
+    }
   }
 
   /**

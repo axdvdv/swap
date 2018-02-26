@@ -1,6 +1,5 @@
 import { orderStatuses } from 'helpers'
 import orders from './orders'
-import user from './user'
 
 
 class MyOrders {
@@ -13,46 +12,30 @@ class MyOrders {
 
     items.forEach(({ id }, index) => orders.itemIds[id] = index)
 
-    console.log('Orders:', orders.items)
+    console.log('Initial orders:', JSON.parse(JSON.stringify(orders.items)), JSON.parse(JSON.stringify(orders.itemIds)))
   }
 
   append(data, cb) {
     let removedOrder
 
     // TODO ductape to store only 1 order from any user
-    this.getOwnedByMe().forEach((order) => {
+    orders.getOwnedByMe().forEach((order) => {
       removedOrder = JSON.parse(JSON.stringify(order))
 
       this.remove(order.id)
     })
 
-    orders.append({
-      ...data,
-      owner: {
-        address: user.data.address,
-        peer: user.peer,
-      },
-    })
+    orders.append(data)
     this.saveToLocalStorage()
     cb(removedOrder)
   }
 
   remove(id, cb) {
-    if (this.checkIfOwnedByMe(id)) {
+    if (orders.checkIfOwnedByMe(id)) {
       orders.removeByKey(id)
       this.saveToLocalStorage()
       cb && cb()
     }
-  }
-
-  checkIfOwnedByMe(id) {
-    const order = orders.getByKey(id)
-
-    if (!order) {
-      return false
-    }
-
-    return order.owner.address === user.data.address
   }
 
   saveToLocalStorage() {

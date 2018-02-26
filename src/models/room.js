@@ -81,12 +81,12 @@ class Room {
   handleNewUserConnected = (peer) => {
     console.info('New peer:', peer)
 
-    const orders = myOrders.getOwnedByMe()
+    const myOrders = orders.getOwnedByMe()
 
-    console.log('Send my orders:', orders)
+    console.log('Send my orders:', myOrders)
 
-    if (orders.length) {
-      this.sendMessageToPeer(peer, orders.map((order) => ({
+    if (myOrders.length) {
+      this.sendMessageToPeer(peer, myOrders.map((order) => ({
         type: 'newOrder',
         data: order,
       })))
