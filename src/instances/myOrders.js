@@ -1,4 +1,5 @@
 import { orderStatuses } from 'helpers'
+import EA from './EA'
 import orders from './orders'
 
 
@@ -13,6 +14,16 @@ class MyOrders {
     items.forEach(({ id }, index) => orders.itemIds[id] = index)
 
     console.log('Initial orders:', JSON.parse(JSON.stringify(orders.items)), JSON.parse(JSON.stringify(orders.itemIds)))
+
+    EA.dispatchEvent('myOrders:onMount')
+
+    this.onMount()
+  }
+
+  onMount() {
+    EA.subscribe('order:onUpdate', () => {
+      this.saveProcessingOrdersToLocalStorage()
+    })
   }
 
   append(data, cb) {

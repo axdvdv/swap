@@ -2,7 +2,7 @@ import $ from 'jquery'
 import alight from 'alight'
 import sha256 from 'js-sha256'
 import { orderStatuses } from 'helpers'
-import { user, room, Order, myOrders, orders } from 'models'
+import { EA, user, room, myOrders, orders } from 'instances'
 
 
 const main = {
@@ -30,6 +30,30 @@ alight.controllers.main = function(scope) {
   scope.min_withdraw_btc = 0.1
   scope.my_setting = {}
   scope.btcTransactions = []
+
+
+  const increaseTotals = (orders) => {
+    orders.forEach(({ type, currency1Amount, currency2Amount }) => {
+      if (type === 'buy') {
+        scope.total_btc += parseFloat(currency2Amount)
+      }
+      else {
+        scope.total_eth += parseFloat(currency1Amount)
+      }
+    })
+  }
+
+  const decreaseTotals = (orders) => {
+    orders.forEach(({ type, currency1Amount, currency2Amount }) => {
+      if (type === 'buy') {
+        scope.total_btc -= parseFloat(currency2Amount)
+      }
+      else {
+        scope.total_eth -= parseFloat(currency1Amount)
+      }
+    })
+  }
+
 
   scope.send_eth = function (modal) {
     scope.saveApps()
@@ -121,38 +145,6 @@ alight.controllers.main = function(scope) {
     return true
   }
 
-  scope.increaseTotals = (orders) => {
-    orders.forEach(({ type, currency1Amount, currency2Amount }) => {
-      if (type === 'buy') {
-        scope.total_btc += parseFloat(currency2Amount)
-      }
-      else {
-        scope.total_eth += parseFloat(currency1Amount)
-      }
-    })
-
-    scope.$scan()
-  }
-
-  scope.decreaseTotals = (orders) => {
-    orders.forEach(({ type, currency1Amount, currency2Amount }) => {
-      if (type === 'buy') {
-        scope.total_btc -= parseFloat(currency2Amount)
-      }
-      else {
-        scope.total_eth -= parseFloat(currency1Amount)
-      }
-    })
-
-    scope.$scan()
-  }
-
-  const cleanTotals = () => {
-    scope.total_eth = 0
-    scope.total_btc = 0
-
-    scope.$scan()
-  }
 
   const getUniqueId = (() => {
     let id = +new Date() // TODO replace with user public key
@@ -163,7 +155,7 @@ alight.controllers.main = function(scope) {
   scope.createOrder = (type) => {
     const id = getUniqueId()
 
-    const order = new Order({
+    const order = user.createOrder({
       id,
       currency1: 'BTC',
       currency2: 'ETH',
@@ -197,8 +189,6 @@ alight.controllers.main = function(scope) {
 
       room.sendMessage(message)
     })
-
-    scope.increaseTotals([ order ])
   }
 
   scope.removeOrder = (order) => {
@@ -213,8 +203,6 @@ alight.controllers.main = function(scope) {
         },
       ])
     })
-
-    scope.decreaseTotals([ order ])
   }
 
   scope.sign = () => {
@@ -262,12 +250,31 @@ alight.controllers.main = function(scope) {
       scope.withdraw_btc_address = my_setting.withdraw_btc_address
     }
 
-    scope.increaseTotals(orders.items)
+    scope.$scan()
   }
 
   scope.init()
   scope.getCurrentExchangeRate()
   scope.sign()
+
+  EA.once('myOrders:onMount', () => {
+    increaseTotals(orders.items)
+    scope.$scan()
+  })
+
+  EA.subscribe('orders:onAppend', (order) => {
+    increaseTotals([ order ])
+    scope.$scan()
+  })
+
+  EA.subscribe('orders:onRemove', (order) => {
+    decreaseTotals([ order ])
+    scope.$scan()
+  })
+
+  EA.subscribe('order:onStatusUpdate', () => {
+    scope.$scan()
+  })
 
   main.scope = scope
 }

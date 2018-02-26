@@ -1,14 +1,12 @@
+import Collection from './Collection'
+import EventAggregator from './EventAggregator'
+import Event from './Event'
 import Order from './Order'
-import orders from './orders'
-import myOrders from './myOrders'
-import room from './room'
-import user from './user'
 
 
 export {
+  Collection,
+  EventAggregator,
+  Event,
   Order,
-  orders,
-  myOrders,
-  room,
-  user,
 }

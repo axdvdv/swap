@@ -1,6 +1,6 @@
 import { orderStatuses } from 'helpers'
 import { merge } from 'lodash'
-import user from './user'
+import { EA } from 'instances'
 
 
 class Order {
@@ -22,10 +22,6 @@ class Order {
       this[key] = data[key]
     })
 
-    this.owner = {
-      address: user.data.address,
-      peer: user.peer,
-    }
     this.status = orderStatuses.active // active, processing, closed
   }
 
@@ -33,6 +29,23 @@ class Order {
     Object.keys(data).forEach((key) => {
       this[key] = merge(this[key], data[key])
     })
+
+    EA.dispatchEvent('order:onUpdate', this)
+  }
+
+  updateStatus(status) {
+    if (status in orderStatuses) {
+      this.status = status
+
+      EA.dispatchEvent('order:onUpdate', this)
+    }
+  }
+
+  startProcessing(participant) {
+    this.status = orderStatuses.processing
+    this.participant = participant
+
+    EA.dispatchEvent('order:onUpdate', this)
   }
 }
 

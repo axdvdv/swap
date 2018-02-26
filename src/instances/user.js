@@ -2,7 +2,9 @@ import Web3 from 'web3'
 import bitcoin from 'bitcoinjs-lib'
 import BigInteger from 'bigi'
 import { main } from 'controllers'
+import { Order } from 'models'
 import { showMess } from 'helpers'
+import EA from './EA'
 
 
 class User {
@@ -12,6 +14,24 @@ class User {
     this.peer = null
     this.data = {}
     this.bitcoinData = {}
+
+    this.onMount()
+  }
+
+  onMount() {
+    EA.subscribe('ipfs:ready', ({ connection }) => {
+      this.peer = connection._peerInfo.id.toB58String()
+    })
+  }
+
+  createOrder(data) {
+    return new Order({
+      ...data,
+      owner: {
+        address: this.data.address,
+        peer: this.peer,
+      },
+    })
   }
 
   sendTransactionEth(modal) {

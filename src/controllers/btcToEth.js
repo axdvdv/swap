@@ -1,7 +1,7 @@
 import alight from 'alight'
 import crypto from 'swap-crypto'
 import { app } from 'controllers'
-import { room, orders } from 'models'
+import { room, orders } from 'instances'
 import { orderStatuses } from 'helpers'
 import { ethSwap, btcSwap } from 'swaps'
 
