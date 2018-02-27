@@ -17,9 +17,7 @@ const BUILD_DIR   = path.join(__dirname, 'build')
  */
 module.exports = {
 
-    watch: true,
-    //devtool: IS_DEV ? 'inline-source-map' : false,
-  devtool: 'inline-source-map',
+  devtool: IS_DEV ? 'source-map' : false,
 
   devServer: {
     publicPath: '/',
@@ -34,7 +32,7 @@ module.exports = {
 
   output: IS_DEV ? {
     pathinfo: true,
-    publicPath: '/',
+    publicPath: 'http://localhost:3000/',
     filename: '[name].js'
   } : {
     path: BUILD_DIR,
@@ -61,7 +59,7 @@ module.exports = {
         loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          compact: true,
+          sourceMaps: 'inline',
         },
       },
 
@@ -96,6 +94,7 @@ module.exports = {
             loader: 'css-loader',
             options: {
               localIdentName: IS_DEV ? '[local]__[hash:base64:3]' : '[hash:base64:6]',
+              sourceMap: IS_DEV,
             },
           },
           {

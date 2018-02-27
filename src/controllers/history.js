@@ -1,6 +1,8 @@
 import alight from 'alight'
-import {user, room} from 'models'
+import { user, room } from 'instances'
 import $ from 'jquery'
+
+
 const history = {
     scope: {},
 }
