@@ -1,9 +1,9 @@
 import Web3 from 'web3'
 import bitcoin from 'bitcoinjs-lib'
 import BigInteger from 'bigi'
-import { main } from 'controllers'
-import { Order } from 'models'
-import { showMess } from 'helpers'
+import {main} from 'controllers'
+import {Order} from 'models'
+import {showMess} from 'helpers'
 import EA from './EA'
 
 
@@ -18,8 +18,42 @@ class User {
     this.onMount()
   }
 
+  getEthTransactions() {
+    console.log(this.data)
+  }
+
+  getBtcTransactions() {
+    let transactions = [];
+    if (this.bitcoinData.address) {
+      const url = 'https://api.blocktrail.com/v1/tbtc/address/' + this.bitcoinData.address + '/transactions?api_key=MY_APIKEY'
+
+        $.getJSON(url, (r) => {
+
+          $.each(r.data, function (k, i) {
+
+            transactions.push(
+              {
+                status: i.block_hash != null ? 1 : 0,
+                value: i.outputs[0].value / 100000000,
+                address: i.outputs[0].address,
+                date: i.time,
+                type: user.bitcoinData.address == i.outputs[0].address ? 'text-success' : 'text-danger'
+              }
+            )
+
+          })
+        })
+
+    } else {
+      console.log('bitcoin_address is missing')
+    }
+
+    return transactions;
+  }
+
+
   onMount() {
-    EA.subscribe('ipfs:ready', ({ connection }) => {
+    EA.subscribe('ipfs:ready', ({connection}) => {
       this.peer = connection._peerInfo.id.toB58String()
     })
   }
@@ -65,7 +99,7 @@ class User {
           value: this.web3.utils.toWei(main.scope.withdraw_eth_amount.toString())
         }
 
-        this.web3.eth.accounts.signTransaction(t,localStorage.getItem('privateKey'))
+        this.web3.eth.accounts.signTransaction(t, localStorage.getItem('privateKey'))
           .then((result) => {
             return this.web3.eth.sendSignedTransaction(result.rawTransaction)
           })
@@ -102,12 +136,12 @@ class User {
     const newtx = {
       inputs: [
         {
-          addresses: [ main.scope.bitcoin_address ],
+          addresses: [main.scope.bitcoin_address],
         },
       ],
       outputs: [
         {
-          addresses: [ main.scope.withdraw_btc_address ],
+          addresses: [main.scope.withdraw_btc_address],
           value: main.scope.withdraw_btc_amount * 100000000,
         },
       ],
@@ -122,13 +156,13 @@ class User {
     $.post('https://api.blockcypher.com/v1/btc/test3/txs/new', JSON.stringify(newtx))
       .then((d) => {
         // convert response body to JSON
-        let tmptx =  d
+        let tmptx = d
 
         // attribute to store public keys
         tmptx.pubkeys = []
 
         // build signer from WIF
-        let keys = new bitcoin.ECPair.fromWIF(this.bitcoinData.keyPair.toWIF(),  bitcoin.networks.testnet)
+        let keys = new bitcoin.ECPair.fromWIF(this.bitcoinData.keyPair.toWIF(), bitcoin.networks.testnet)
 
         // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
         tmptx.signatures = tmptx.tosign.map((tosign, n) => {
@@ -137,13 +171,13 @@ class User {
           return keys.sign(BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
         })
 
-        $.post('https://api.blockcypher.com/v1/btc/test3/txs/send',JSON.stringify(tmptx)).then((r) => {
+        $.post('https://api.blockcypher.com/v1/btc/test3/txs/send', JSON.stringify(tmptx)).then((r) => {
           showMess('Платеж прошел', 5, 1)
-          
+
           console.log(r)
-          
+
           const m = $(modal)
-          
+
           if (m.length > 0) {
             m.modal('hide')
           }
@@ -190,7 +224,7 @@ class User {
       try {
         this.data = this.web3.eth.accounts.create()
 
-        localStorage.setItem('privateKey',this.data.privateKey )
+        localStorage.setItem('privateKey', this.data.privateKey)
         this.signBitcoin(this.data.privateKey)
       }
       catch (e) {
@@ -206,10 +240,10 @@ class User {
     // const address =  bitcoin.address.toBase58Check(publicKeyHash, bitcoin.networks.bitcoin.pubKeyHash)
     // const address =  bitcoin.address.toBase58Check(publicKeyHash, bitcoin.networks.testnet.pubKeyHash)
 
-    const hash      = bitcoin.crypto.sha256(key)
-    const d         = BigInteger.fromBuffer(hash)
-    const keyPair   = new bitcoin.ECPair(d, null, {network: bitcoin.networks.testnet})
-    const address   = keyPair.getAddress()
+    const hash = bitcoin.crypto.sha256(key)
+    const d = BigInteger.fromBuffer(hash)
+    const keyPair = new bitcoin.ECPair(d, null, {network: bitcoin.networks.testnet})
+    const address = keyPair.getAddress()
 
     this.bitcoinData = {
       address,
