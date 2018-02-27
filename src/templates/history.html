@@ -9,7 +9,7 @@
       </div>
 
       <div class="row">
-        <div class="col border-right">
+        <div class="col-6 border-right">
           <div class="pr-2">
             <div class="d-flex justify-content-between">
 
@@ -23,9 +23,16 @@
                   <th>BTC</th>
                   <th class="text-right">Address</th>
                   <th class="text-right">Time</th>
+                  <th  >Status</th>
                 </tr>
                 </thead>
                 <tbody>
+                <tr al-repeat="it in btcTransactions">
+                  <td>{{it.value}}</td>
+                  <td>{{it.address}}</td>
+                  <td>1</td>
+                  <td>{{it.status}}</td>
+                </tr>
 
                 </tbody>
               </table>
@@ -33,7 +40,7 @@
           </div>
 
         </div>
-        <div class="col">
+        <div class="col-6">
           <div class="pr-2">
             <div class="d-flex justify-content-between">
 
@@ -47,14 +54,15 @@
                   <th>BTC</th>
                   <th class="text-right">Address</th>
                   <th class="text-right">Time</th>
+                  <th  >Status</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="it in btcTransactions">
-                  <td>{{it.outputs[0].value / 100000000}}</td>
-                  <td>{{it.outputs[0].address}}</td>
-                  <td>{{it.time}}</td>
-
+                <tr al-repeat="it in btcTransactions"  class="{{it.type}}" >
+                  <td>{{it.value}}</td>
+                  <td>{{it.address}}</td>
+                  <td>{{it.date | date:yyyy-mm-dd}}</td>
+                  <td>{{it.status == 1  ? "complete" : "pending"}}</td>
                 </tr>
                 </tbody>
               </table>
