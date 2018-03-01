@@ -16,23 +16,43 @@ alight.controllers.history = function (scope) {
 
   scope.BTCTransaction = function () {
 
-    history.scope.btcTransactions = user.getBtcTransactions()
-    let total = 0;
-    $.each(history.scope.btcTransactions, function (k, i) {
+    $.when(user.getBtcTransactions()).then(
+      function( data, textStatus, jqXHR ) {
+
+        history.scope.btcTransactions = data
+        let total = 0;
+
+        console.log(history.scope.btcTransactions)
+        $.each(history.scope.btcTransactions, function (k, i) {
 
 
-      total += i.value / 1000000;
+          total += i.value / 1000000
+        })
+        scope.total_btc = total
+        scope.$scan()
+      }
+    )
 
-    })
-     scope.total_btc = total
-     scope.$scan()
+
   }
 
   scope.ETHTransaction = function () {
 
     if (user.data.address) {
 
-      history.scope.ethTransactions = user.getEthTransactions()
+
+      $.when(user.getEthTransactions()).then(
+        function(data) {
+          scope.ethTransactions = data
+          console.log(scope.ethTransactions)
+          scope.$scan()
+        }
+      );
+
+
+
+
+
 
     } else {
       console.log('bitcoin_address is missing')
