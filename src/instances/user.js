@@ -15,7 +15,15 @@ class User {
     this.data = {}
     this.bitcoinData = {}
 
+    window.user = this
+
     this.onMount()
+  }
+
+  onMount() {
+    EA.once('ipfs:ready', ({ peer }) => {
+      this.peer = peer
+    })
   }
 
   getTransactionsByAccount(myaccount, startBlockNumber, endBlockNumber) {
@@ -129,13 +137,6 @@ class User {
     }
 
     return transactions;
-  }
-
-
-  onMount() {
-    EA.subscribe('ipfs:ready', ({connection}) => {
-      this.peer = connection._peerInfo.id.toB58String()
-    })
   }
 
   createOrder(data) {

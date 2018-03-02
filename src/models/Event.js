@@ -34,7 +34,11 @@ class Event {
     if (!(priority in this.handlers)) {
       this.handlers[String(priority)] = []
     }
-    return this.handlers[String(priority)].push(handler)
+    return this.handlers[String(priority)].push(handler.bind({
+      remove: () => {
+        this.removeHandler(handler, priority)
+      },
+    }))
   }
 
   /**

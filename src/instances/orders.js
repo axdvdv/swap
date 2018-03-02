@@ -22,8 +22,8 @@ class Orders extends Collection {
       orders.getByKey(orderId).updateStatus(status)
     })
 
-    EA.subscribe('room:startProcessOrder', ({ orderId, peerFrom }) => {
-      orders.getByKey(orderId).startProcessing({
+    EA.subscribe('room:startProcessOrder', ({ order, peerFrom }) => {
+      orders.getByKey(order.id).startProcessing({
         peer: peerFrom,
       })
     })

@@ -1,0 +1,25 @@
+<div al-ctrl="header" class="header mb-3 bg-white border-bottom box-shadow">
+  <div class="h-100 center-1000 d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center">
+      <a class="p-2 text-dark" href="#" al-link="/">
+        <h5 class="my-0 mr-md-auto font-weight-normal">Swap.Online</h5>
+      </a>
+      <div class="headerNav">
+        <a class="p-2 text-dark" href="#" al-link="/history">История</a>
+      </div>
+    </div>
+    <div>
+      <div class="headerNavItem" id="headerBellNavItem" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <audio id="notificationSound" src="https://raw.githubusercontent.com/pavelivanov/notification-audio-file/master/direct.ogg"></audio>
+        <div class="headerBell" id="headerBell"></div>
+        <div class="headerNotificationsList dropdown-menu" aria-labelledby="headerBellNavItem">
+          <div class="dropdown-item" al-repeat="item in data.notifications track by $index">
+            <a href="#" al-link>
+
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

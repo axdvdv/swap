@@ -1,7 +1,7 @@
 import EA from './EA'
 
 
-const ipfsConnection = new Ipfs({
+const ipfs = new Ipfs({
   EXPERIMENTAL: {
     pubsub: true,
   },
@@ -14,11 +14,16 @@ const ipfsConnection = new Ipfs({
   },
 })
 
-ipfsConnection.on('ready', () => {
+ipfs.once('ready', () => ipfs.id((err, info) => {
+  if (err) {
+    throw err
+  }
+
   EA.dispatchEvent('ipfs:ready', {
-    connection: ipfsConnection,
+    peer: info.id,
+    connection: ipfs,
   })
-})
+}))
 
 
-export default ipfsConnection
+export default ipfs

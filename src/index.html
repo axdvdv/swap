@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <script src="https://unpkg.com/ipfs/dist/index.js"></script>
+  <script src="https://unpkg.com/ipfs@0.27.7/dist/index.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
   <style>
     [al-cloak],
     .al-hide {
@@ -14,14 +15,9 @@
   </style>
 </head>
 <body al-app="app">
-<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-  <h5 class="my-0 mr-md-auto font-weight-normal">Company name</h5>
-  <nav class="my-2 my-md-0 mr-md-3">
-    <a class="p-2 text-dark" href="#/history">История</a>
 
-  </nav>
+  <%= require('html-loader!./templates/header.html') %>
 
-</div>
   <div al-cloak>
 
     <%= require('html-loader!./templates/main.html') %>

@@ -1,5 +1,6 @@
 import { orderStatuses } from 'helpers'
 import EA from './EA'
+import room from './room'
 import orders from './orders'
 
 
@@ -21,6 +22,19 @@ class MyOrders {
   }
 
   onMount() {
+    EA.subscribe('room:newPeer', ({ peer }) => {
+      const myOrders = orders.getOwnedByMe()
+
+      console.log(`Send my orders to ${peer}`, myOrders)
+
+      if (myOrders.length) {
+        room.sendMessageToPeer(peer, myOrders.map((order) => ({
+          event: 'newOrder',
+          data: order,
+        })))
+      }
+    })
+
     EA.subscribe('order:onUpdate', () => {
       this.saveProcessingOrdersToLocalStorage()
     })

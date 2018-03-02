@@ -1,7 +1,52 @@
-<div al-if="activeRoute.path == '/eth-to-btc/:id'">
-  <button al-link="/">Назад</button>
-
+<div al-if="data.activeRoute.path == '/eth-to-btc/:id'">
   <div al-ctrl="ethToBtc">
+
+    <div class="content-800">
+
+      <div al-show="data.waitingForRecipient">
+        <div class="sk-fading-circle">
+          <div class="sk-circle1 sk-circle"></div>
+          <div class="sk-circle2 sk-circle"></div>
+          <div class="sk-circle3 sk-circle"></div>
+          <div class="sk-circle4 sk-circle"></div>
+          <div class="sk-circle5 sk-circle"></div>
+          <div class="sk-circle6 sk-circle"></div>
+          <div class="sk-circle7 sk-circle"></div>
+          <div class="sk-circle8 sk-circle"></div>
+          <div class="sk-circle9 sk-circle"></div>
+          <div class="sk-circle10 sk-circle"></div>
+          <div class="sk-circle11 sk-circle"></div>
+          <div class="sk-circle12 sk-circle"></div>
+        </div>
+      </div>
+      <div al-hide="data.step == 1 && data.waitingForRecipient">
+        <h2 class="mb-4">1. Придумайте секретную фразу</h2>
+        <div class="alert alert-danger" role="alert">
+          <b>Сохраните секретную фразу, иначе вы не сможете получить деньги!</b>
+        </div>
+      </div>
+
+      <div class="mt-5" al-show="data.step > 1">
+        <h2 class="mb-4">2. </h2>
+
+      </div>
+
+      <div class="mt-5" al-show="data.step > 1">
+        <h2 class="mb-4">2. </h2>
+
+      </div>
+
+      <div class="mt-5" al-show="data.step > 1">
+        <h2 class="mb-4">2. </h2>
+
+      </div>
+
+      <div class="mt-5" al-show="data.step > 1">
+        <h2 class="mb-4">2. </h2>
+
+      </div>
+
+    </div>
 
   </div>
 </div>

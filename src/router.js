@@ -7,7 +7,7 @@ const router = new Navigo(null, true, '#')
 const bind = (path) => [ path, (params, query) => {
   console.log(`Route changed to ${path}`)
 
-  app.scope.activeRoute = {
+  app.scope.data.activeRoute = {
     path,
     params,
     query,

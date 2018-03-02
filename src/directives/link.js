@@ -1,5 +1,5 @@
 import alight from 'alight'
-import router from 'router'
+import { redirect } from 'helpers'
 
 
 alight.directives.al.link = function (scope, element, expression, env) {
@@ -9,8 +9,6 @@ alight.directives.al.link = function (scope, element, expression, env) {
 
     const link = $(this).attr('al-link') || $(this).attr('data-link')
 
-    router.navigate(link)
-    scope.activeRoute = link
-    scope.$scan()
+    redirect(link)
   })
 }

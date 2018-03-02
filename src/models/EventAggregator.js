@@ -53,6 +53,18 @@ class EventAggregator {
   }
 
   /**
+   *
+   * @param eventName {string}
+   * @param handler {function}
+   * @param priority* {string|number}
+   */
+  unsubscribe(eventName, handler, priority) {
+    const event = this.getEvent(eventName)
+
+    event.removeHandler(handler, priority)
+  }
+
+  /**
    * Subscribe to Event and unsubscribe after call
    *
    * @param eventName {string}

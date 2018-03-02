@@ -1,28 +1,29 @@
 import IpfsRoom from 'ipfs-pubsub-room'
-import { main } from 'controllers'
-import { orderStatuses } from 'helpers'
 import EA from './EA'
 import user from './user'
-import orders from './orders'
-import myOrders from './myOrders'
 
 
 class Room {
 
   constructor() {
+    this.peers = []
     this.connection = null
+    // this.waitList = []
+
+    window.room = this
 
     this.onMount()
   }
 
   onMount() {
-    EA.once('ipfs:ready', (data) => {
-      this.connection = IpfsRoom(data.connection, 'jswaps', {
-        pollInterval: 5000,
+    EA.once('ipfs:ready', ({ connection }) => {
+      this.connection = IpfsRoom(connection, 'jswaps', {
+        pollInterval: 1500,
       })
 
       this.connection.on('message', this.handleNewMessage)
       this.connection.on('peer joined', this.handleNewUserConnected)
+      this.connection.on('peer left', this.handleUserLeft)
       this.connection.on('subscribed', this.handleSubscribe)
     })
   }
@@ -40,30 +41,45 @@ class Room {
 
     console.log('New message', { ...message, data })
 
-    if (data && data.length) {
-      data.forEach(({ type, data }) => {
-        if (data) {
-          console.log(`New message data:`, { ...message, type, data })
+    // if (this.waitList.includes(JSON.stringify({ peer: message.from, message: data }))) {
+    //
+    // }
 
-          EA.dispatchEvent(`room:${type}`, { ...data, peerFrom: message.from })
+    if (data && data.length) {
+      data.forEach(({ event, data }) => {
+        if (data) {
+          console.log(`New message data:`, { ...message, event, data })
+
+          EA.dispatchEvent(`room:${event}`, { ...data, peerFrom: message.from })
         }
       })
     }
   }
 
   handleNewUserConnected = (peer) => {
-    console.info('New peer:', peer)
+    if (!this.peers.includes(peer)) {
+      console.info('New peer:', peer)
 
-    const myOrders = orders.getOwnedByMe()
-
-    console.log('Send my orders:', myOrders)
-
-    if (myOrders.length) {
-      this.sendMessageToPeer(peer, myOrders.map((order) => ({
-        type: 'newOrder',
-        data: order,
-      })))
+      this.peers.push(peer)
+      EA.dispatchEvent('room:newPeer', { peer })
     }
+  }
+
+  handleUserLeft = (peer) => {
+    if (this.peers.includes(peer)) {
+      console.info(`Peer ${peer} disconnected`)
+
+      this.peers.splice(this.peers.indexOf(peer), 1)
+      EA.dispatchEvent('room:peerLeft', { peer })
+    }
+  }
+
+  checkMessageDeliveryStatus() {
+
+  }
+
+  addMessageToWaitList() {
+
   }
 
   sendMessage(message) {
@@ -71,6 +87,11 @@ class Room {
   }
 
   sendMessageToPeer(peer, message) {
+    // this.waitList.push(JSON.stringify({
+    //   peer,
+    //   message
+    // }))
+
     this.connection.sendTo(peer, JSON.stringify(message))
   }
 }

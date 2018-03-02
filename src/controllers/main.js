@@ -177,13 +177,13 @@ alight.controllers.main = function(scope) {
 
       if (removedOrder) {
         message.push({
-          type: 'removeOrder',
+          event: 'removeOrder',
           data: removedOrder,
         })
       }
 
       message.push({
-        type: 'newOrder',
+        event: 'newOrder',
         data: order,
       })
 
@@ -198,7 +198,7 @@ alight.controllers.main = function(scope) {
     myOrders.remove(id, () => {
       room.sendMessage([
         {
-          type: 'removeOrder',
+          event: 'removeOrder',
           data: order,
         },
       ])

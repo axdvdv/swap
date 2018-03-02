@@ -1,6 +1,4 @@
-<div al-if="activeRoute.path == '/btc-to-eth/:id'">
-  <button al-link="/">Назад</button>
-
+<div al-if="data.activeRoute.path == '/btc-to-eth/:id'">
   <div al-ctrl="btcToEth">
 
     <div class="content-800">
@@ -35,7 +33,7 @@
       </div>
 
       <div class="mt-5" al-show="data.step > 2">
-        <div al-show="data.waitingForUser">
+        <div al-show="data.waitingForRecipient">
           <h2 class="mb-4">3. Ожидаем пользователя {Username}</h2>
           <div class="sk-fading-circle">
             <div class="sk-circle1 sk-circle"></div>

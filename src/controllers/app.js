@@ -8,7 +8,9 @@ const app = {
 alight.controllers.app = function (scope) {
   console.log('App controller!')
 
-  scope.activeRoute = {}
+  scope.data = {
+    activeRoute: {},
+  }
 
   app.scope = scope
 }

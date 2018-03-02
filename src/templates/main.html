@@ -1,4 +1,4 @@
-<div al-if="activeRoute.path == '/'">
+<div al-if="data.activeRoute.path == '/'">
   <div al-ctrl="main">
     <div class="content-1000">
       <div class="row">
@@ -181,7 +181,9 @@
                   <td class="text-right trim-order-value">{{item.currency1Amount}}</td>
                   <td class="text-right trim-order-value">{{item.currency2Amount}}</td>
                   <td class="text-right">
-                    <a href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">купить</a>
+                    <div al-if="item.owner.address != user.data.address">
+                      <a href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">купить</a>
+                    </div>
                   </td>
                   <td class="text-right">
                     <button
@@ -222,7 +224,9 @@
                   <td class="text-right trim-order-value">{{item.currency1Amount}}</td>
                   <td class="text-right trim-order-value">{{item.currency2Amount}}</td>
                   <td class="text-right">
-                    <a href="#" al-link data-link="{{'/eth-to-btc/' + item.id}}">купить</a>
+                    <div al-if="item.owner.address != user.data.address">
+                      <a href="#" al-link data-link="{{'/eth-to-btc/' + item.id}}">купить</a>
+                    </div>
                   </td>
                   <td class="text-right">
                     <button
