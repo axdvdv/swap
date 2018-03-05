@@ -12,7 +12,7 @@
           <div class="pr-2">
             <div class="d-flex justify-content-between">
 
-              <div>Всего: <span>0 ETH</span></div>
+              <div>Всего: <span>{{total_eth}} ETH</span></div>
             </div>
 
             <div class="table-responsive">
@@ -26,7 +26,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="it in ethTransactions">
+                <tr al-repeat="it in ethTransactions"  class="{{it.type}}">
                   <td>{{it.value}}</td>
                   <td>{{it.address}}</td>
                   <td>1</td>

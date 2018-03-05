@@ -85,7 +85,9 @@ class User {
     if (this.data.address) {
       let eth_address = this.data.address;
       const url = 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address='+eth_address+'&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken'
-      let transactions = [];
+      var transactions = [];
+
+
       $.getJSON(url, (r) => {
 
 
@@ -99,13 +101,14 @@ class User {
               address: i.to,
               date: i.timeStamp,
               type: eth_address == i.to ? 'text-success' : 'text-danger'
-            }
-          )
+            });
+
 
         })
 
 
-      })
+
+      });
 
       return transactions;
     }
