@@ -246,6 +246,14 @@
           </div>
         </div>
       </div>
+
+      <button id="clearOrders">Clear my orders</button>
+      <script>
+        document.getElementById('clearOrders').addEventListener('click', function() {
+          localStorage.removeItem('myOrders')
+          window.location.reload()
+        })
+      </script>
     </div>
 
     <!-- Modal -->

@@ -1,4 +1,4 @@
-import { Collection } from 'models'
+import { Collection, Order } from 'models'
 import EA from './EA'
 import user from './user'
 
@@ -18,11 +18,15 @@ class Orders extends Collection {
       this.append(order)
     })
 
+    EA.subscribe('room:removeOrder', (order) => {
+      this.remove(order)
+    })
+
     EA.subscribe('room:updateOrderStatus', ({ orderId, status }) => {
       orders.getByKey(orderId).updateStatus(status)
     })
 
-    EA.subscribe('room:startProcessOrder', ({ order, peerFrom }) => {
+    EA.subscribe('room:swap:startProcessOrder', ({ order, peerFrom }) => {
       orders.getByKey(order.id).startProcessing({
         peer: peerFrom,
       })
@@ -46,7 +50,9 @@ class Orders extends Collection {
    * type
    */
   append(data) {
-    super.append(data, data.id)
+    const order = new Order(data)
+
+    super.append(order, order.id)
 
     EA.dispatchEvent('orders:onAppend', data)
   }

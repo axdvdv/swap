@@ -1,8 +1,8 @@
 import alight from 'alight'
 import crypto from 'swap-crypto'
 import { app } from 'controllers'
-import { user, room, orders } from 'instances'
-import { orderStatuses, redirect } from 'helpers'
+import { EA, user, room, orders } from 'instances'
+import { orderStatuses } from 'helpers'
 import { ethSwap, btcSwap } from 'swaps'
 
 
@@ -14,12 +14,18 @@ alight.controllers.btcToEth = (scope) => {
   console.log('BTC to ETH controller!')
 
   scope.data = {
+    statuses: {
+      thereIsNoAnyParticipant: 'thereIsNoAnyParticipant',
+      waitingParticipantToBecomeOnline: 'waitingParticipantToBecomeOnline',
+      waitingParticipantConnectToDeal: 'waitingParticipantConnectToDeal',
+      initialized: 'initialized',
+    },
+    status: null,
+    step: 1,
     order: null,
     secret: 'c0809ce9f484fdcdfb2d5aabd609768ce0374ee97a1a5618ce4cd3f16c00a078',
     secretHash: '',
     btcScriptAddress: '0x0dsgsdhsdhsddsh',
-    waitingForRecipient: true,
-    step: 1,
   }
 
   const { params: { id: orderId } } = app.scope.data.activeRoute
@@ -29,31 +35,86 @@ alight.controllers.btcToEth = (scope) => {
   console.log('Order:', order)
 
   if (order && order.owner.address === user.data.address) {
-    redirect('/main')
-    return
+    console.log('I am this order creator!')
+
+    if (order.participant && order.participant.peer) {
+      tryNotifyParticipant(order.participant.peer)
+        .then(init)
+    }
+    else {
+      scope.data.status = scope.data.statuses.thereIsNoAnyParticipant
+      scope.$scan()
+    }
+  }
+  else {
+    waitParticipantToBecomeOnline()
+      .then(waitParticipantConnectToDeal)
+      .then(notifyParticipant)
+      .then(init)
   }
 
-  if (!order) {
-    EA.subscribe('orders:onAppend', function ({ id }) {
-      if (id === orderId) {
-        order = orders.getByKey(orderId)
-        this.remove()
-        init()
+  function waitParticipantToBecomeOnline() {
+    return new Promise((resolve) => {
+      if (order) {
+        resolve()
+        return
       }
+
+      console.log('Wait until participant to become online!')
+
+      scope.data.status = scope.data.statuses.waitingParticipantToBecomeOnline
+      scope.$scan()
+
+      EA.subscribe('orders:onAppend', function ({ id }) {
+        if (id === orderId) {
+          order = orders.getByKey(orderId)
+          console.log('Participant became online!')
+          console.log('Order:', order)
+
+          // remove 'orders:onAppend' subscription
+          this.remove()
+          resolve()
+        }
+      })
     })
   }
 
-  function init() {
-    console.log('Order:', order)
+  function waitParticipantConnectToDeal() {
+    return new Promise((resolve) => {
+      console.log('Wait until participant connect to this deal!')
 
-    scope.data.order = order
-    scope.data.waitingForUser = false
-    order.status = orderStatuses.processing
+      scope.data.status = scope.data.statuses.waitingParticipantConnectToDeal
+      scope.$scan()
 
-    scope.$scan()
+      notifyParticipant(order.owner.peer)
 
-    // Notify participant
-    room.sendMessageToPeer(order.participant && order.participant.peer || order.owner.peer, [
+      EA.once(`swap:participantConnectedToDeal:${order.id}`, () => {
+        console.log('Participant connected to this deal!')
+
+        resolve()
+      })
+    })
+  }
+
+  function tryNotifyParticipant(peer) {
+    console.log('Try notify the participant')
+
+    return new Promise((resolve) => {
+      if (room.isPeerExist(peer)) {
+        notifyParticipant()
+        resolve()
+        return
+      }
+
+      waitParticipantToBecomeOnline(() => {
+        notifyParticipant()
+        resolve()
+      })
+    })
+  }
+
+  function notifyParticipant(peer) {
+    room.sendMessageToPeer(peer, [
       {
         event: 'swap:startProcessOrder',
         data: {
@@ -61,6 +122,16 @@ alight.controllers.btcToEth = (scope) => {
         },
       },
     ])
+  }
+
+  function init() {
+    console.log(444, order)
+
+    scope.status = scope.data.statuses.initialized
+    scope.data.order = order
+    order.status = orderStatuses.processing
+
+    scope.$scan()
   }
 
   function goStep2() {
@@ -79,7 +150,7 @@ alight.controllers.btcToEth = (scope) => {
   }
 
   function goStep3() {
-    scope.data.waitingForRecipient = true
+    scope.data.waitingForParticipant = true
     scope.$scan()
   }
 

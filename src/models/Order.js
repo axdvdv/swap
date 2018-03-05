@@ -1,4 +1,4 @@
-import { orderStatuses } from 'helpers'
+import orderStatuses from 'helpers/orderStatuses'
 import { merge } from 'lodash'
 import { EA } from 'instances'
 
@@ -18,11 +18,12 @@ class Order {
    * @param {string}          data.type
    */
   constructor(data) {
+    this.participant = null
+    this.status = orderStatuses.active // active, processing, closed
+
     Object.keys(data).forEach((key) => {
       this[key] = data[key]
     })
-
-    this.status = orderStatuses.active // active, processing, closed
   }
 
   update(data) {

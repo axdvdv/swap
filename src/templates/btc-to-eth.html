@@ -3,25 +3,42 @@
 
     <div class="content-800">
 
-      <h2 class="mb-4">1. Придумайте секретную фразу</h2>
-      <div class="alert alert-danger" role="alert">
-        <b>Сохраните секретную фразу, иначе вы не сможете получить деньги!</b>
+      <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
+        <h2>У этой сделки еще нет покупателя.</h2>
+        <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
       </div>
-      <div al-show="data.step == 1">
-        <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
-        <br />
-        <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
+
+      <div al-if="data.status == data.statuses.waitingParticipantToBecomeOnline">
+        <h2>Пользователь создавший этот ордер оффлайн, ожидаем его.</h2>
+        <div class="loader"></div>
       </div>
-      <div class="fs18" al-show="data.step > 1">
-        <div class="alert alert-warning" role="alert">
-          Secret: <b><a href="" al-copy>{{data.secret}}</a></b>
+
+      <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
+        <h2>Пользователь получил уведомление. Ожидаем когда он присоединится к сделке.</h2>
+        <div class="loader"></div>
+      </div>
+
+      <div al-if="data.status == data.statuses.initialized">
+        <h2 class="mb-4">1. Придумайте секретную фразу</h2>
+        <div class="alert alert-danger" role="alert">
+          <b>Сохраните секретную фразу, иначе вы не сможете получить деньги!</b>
         </div>
-        <div class="alert alert-warning" role="alert">
-          Secret Hash: <b><a href="" al-copy>{{data.secretHash}}</a></b>
+        <div al-if="data.step == 1">
+          <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
+          <br />
+          <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
+        </div>
+        <div class="fs18" al-if="data.step > 1">
+          <div class="alert alert-warning" role="alert">
+            Secret: <b><a href="" al-copy>{{data.secret}}</a></b>
+          </div>
+          <div class="alert alert-warning" role="alert">
+            Secret Hash: <b><a href="" al-copy>{{data.secretHash}}</a></b>
+          </div>
         </div>
       </div>
 
-      <div class="mt-5" al-show="data.step > 1">
+      <div class="mt-5" al-if="data.step > 1">
         <h2 class="mb-4">2. Пополните адрес созданного BTC кошелька</h2>
         <div class="alert alert-primary fs-18" role="alert">
           Сумма для пополнения: <b>{{data.order.currency1Amount}} BTC</b>
@@ -32,27 +49,14 @@
         <button type="button" class="btn btn-primary" @click="goNextStep()">Я пополнил, давай проверяй и погнали дальше!</button>
       </div>
 
-      <div class="mt-5" al-show="data.step > 2">
-        <div al-show="data.waitingForRecipient">
+      <div class="mt-5" al-if="data.step > 2">
+        <div al-if="data.waitingForParticipant">
           <h2 class="mb-4">3. Ожидаем пользователя {Username}</h2>
-          <div class="sk-fading-circle">
-            <div class="sk-circle1 sk-circle"></div>
-            <div class="sk-circle2 sk-circle"></div>
-            <div class="sk-circle3 sk-circle"></div>
-            <div class="sk-circle4 sk-circle"></div>
-            <div class="sk-circle5 sk-circle"></div>
-            <div class="sk-circle6 sk-circle"></div>
-            <div class="sk-circle7 sk-circle"></div>
-            <div class="sk-circle8 sk-circle"></div>
-            <div class="sk-circle9 sk-circle"></div>
-            <div class="sk-circle10 sk-circle"></div>
-            <div class="sk-circle11 sk-circle"></div>
-            <div class="sk-circle12 sk-circle"></div>
-          </div>
+          <div class="loader"></div>
         </div>
       </div>
 
-      <div class="mt-5" al-show="data.step > 3">
+      <div class="mt-5" al-if="data.step > 3">
         <div class="page-header">
           <h1>Step 4</h1>
         </div>

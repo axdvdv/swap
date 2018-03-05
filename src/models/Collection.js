@@ -104,12 +104,16 @@ class Collection {
     return this.items[this.itemIds[key]]
   }
 
+  isExist(item) {
+    return this.items.includes(item)
+  }
+
   /**
    * Check if item with such name exists in current collection
    * @param key {string|number}
    * @returns {boolean}
    */
-  isExist(key) {
+  isExistByKey(key) {
     return Boolean(this.getByKey(key))
   }
 

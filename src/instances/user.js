@@ -1,9 +1,8 @@
 import Web3 from 'web3'
 import bitcoin from 'bitcoinjs-lib'
 import BigInteger from 'bigi'
-import {main} from 'controllers'
-import {Order} from 'models'
-import {showMess} from 'helpers'
+import { main } from 'controllers'
+import { showMess } from 'helpers'
 import EA from './EA'
 
 
@@ -143,13 +142,13 @@ class User {
   }
 
   createOrder(data) {
-    return new Order({
+    return {
       ...data,
       owner: {
         address: this.data.address,
         peer: this.peer,
       },
-    })
+    }
   }
 
   sendTransactionEth(modal) {

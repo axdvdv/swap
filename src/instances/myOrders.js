@@ -7,21 +7,19 @@ import orders from './orders'
 class MyOrders {
 
   constructor() {
-    const items = JSON.parse(localStorage.getItem('myOrders') || '[]')
-
-    orders.items = items
-    orders.itemIds = {}
-
-    items.forEach(({ id }, index) => orders.itemIds[id] = index)
-
-    console.log('Initial orders:', JSON.parse(JSON.stringify(orders.items)), JSON.parse(JSON.stringify(orders.itemIds)))
-
-    EA.dispatchEvent('myOrders:onMount')
 
     this.onMount()
   }
 
   onMount() {
+    const myOrders = JSON.parse(localStorage.getItem('myOrders') || '[]')
+
+    myOrders.forEach((order) => {
+      orders.append(order)
+    })
+
+    EA.dispatchEvent('myOrders:onMount')
+
     EA.subscribe('room:newPeer', ({ peer }) => {
       const myOrders = orders.getOwnedByMe()
 

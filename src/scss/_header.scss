@@ -138,8 +138,9 @@ $header-height: 56px;
 
 .headerNotificationsList {
   position: absolute;
-  top: 100%;
-  z-index: 10;
+  top: 100% !important;
   right: 0 !important;
   left: auto !important;
+  z-index: 10;
+  transform: none !important;
 }

@@ -9,6 +9,8 @@ import './style.scss'
 
 import './directives'
 import './controllers'
+import './models'
+import './instances'
 import router from './router'
 
 

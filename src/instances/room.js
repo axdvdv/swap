@@ -18,13 +18,15 @@ class Room {
   onMount() {
     EA.once('ipfs:ready', ({ connection }) => {
       this.connection = IpfsRoom(connection, 'jswaps', {
-        pollInterval: 1500,
+        pollInterval: 5000,
       })
 
       this.connection.on('message', this.handleNewMessage)
       this.connection.on('peer joined', this.handleNewUserConnected)
       this.connection.on('peer left', this.handleUserLeft)
       this.connection.on('subscribed', this.handleSubscribe)
+
+      EA.dispatchEvent('room:ready')
     })
   }
 
@@ -80,6 +82,10 @@ class Room {
 
   addMessageToWaitList() {
 
+  }
+
+  isPeerExist(peer) {
+    return this.connection.hasPeer(peer)
   }
 
   sendMessage(message) {

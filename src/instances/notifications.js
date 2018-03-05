@@ -3,14 +3,12 @@ import { Collection } from 'models'
 import EA from './EA'
 
 
-const $headerBell = $('#headerBell')
-const $notificationSound = $('#notificationSound')
-
-
 class Notifications extends Collection {
 
   constructor() {
     super()
+
+    window.notifications = this
 
     this.onMount()
   }
@@ -22,32 +20,35 @@ class Notifications extends Collection {
   }
 
   animate() {
-    let count = Number($headerBell.attr('data-count')) || 0
+    const $headerBell = $('#headerBell')
+    const $notificationSound = $('#notificationSound')
+    const count = this.items.length
 
-    $headerBell.attr('data-count', ++count)
+    $headerBell.attr('data-count', count)
     $headerBell.removeClass('notify')
 
     setTimeout(() => {
       $headerBell.addClass('notify')
-
-      if (count) {
-        $headerBell.addClass('show-count')
-      }
-      else {
-        $headerBell.removeClass('show-count')
-      }
-
-      $notificationSound[0].play()
     }, 0)
+
+    if (count) {
+      $headerBell.addClass('show-count')
+    }
+    else {
+      $headerBell.removeClass('show-count')
+    }
+
+    $notificationSound[0].play()
   }
 
   append(item) {
-    console.log('New notification:', item)
+    if (!this.isExist(item)) {
+      super.append(item)
+      this.animate()
 
-    super.append(item)
-    this.animate()
-
-    EA.dispatchEvent('newNotification', item)
+      console.log('New notification:', item)
+      EA.dispatchEvent('newNotification', item)
+    }
   }
 }
 

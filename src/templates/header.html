@@ -10,12 +10,12 @@
     </div>
     <div>
       <div class="headerNavItem" id="headerBellNavItem" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <audio id="notificationSound" src="https://raw.githubusercontent.com/pavelivanov/notification-audio-file/master/direct.ogg"></audio>
+        <audio class="hidden" id="notificationSound" src="https://raw.githubusercontent.com/pavelivanov/notification-audio-file/master/direct.ogg"></audio>
         <div class="headerBell" id="headerBell"></div>
         <div class="headerNotificationsList dropdown-menu" aria-labelledby="headerBellNavItem">
-          <div class="dropdown-item" al-repeat="item in data.notifications track by $index">
-            <a href="#" al-link>
-
+          <div al-repeat="item in data.notifications.items track by $index">
+            <a class="dropdown-item" href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">
+              {{item.currency1Amount}} {{item.currency1}} &#10230; {{item.currency2Amount}} {{item.currency2}}
             </a>
           </div>
         </div>
