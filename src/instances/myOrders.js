@@ -13,9 +13,16 @@ class MyOrders {
 
   onMount() {
     const myOrders = JSON.parse(localStorage.getItem('myOrders') || '[]')
+    const myProcessingOrders = JSON.parse(localStorage.getItem('myProcessingOrders') || '[]')
 
     myOrders.forEach((order) => {
       orders.append(order)
+    })
+
+    myProcessingOrders.forEach((order) => {
+      Object.keys(order).forEach((key) => {
+        orders.getByKey(order.id)[key] = order[key]
+      })
     })
 
     EA.dispatchEvent('myOrders:onMount')

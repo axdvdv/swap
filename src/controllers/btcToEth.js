@@ -14,6 +14,7 @@ alight.controllers.btcToEth = (scope) => {
   console.log('BTC to ETH controller!')
 
   scope.data = {
+    isOwner: false,
     statuses: {
       thereIsNoAnyParticipant: 'thereIsNoAnyParticipant',
       waitingParticipantToBecomeOnline: 'waitingParticipantToBecomeOnline',
@@ -26,31 +27,6 @@ alight.controllers.btcToEth = (scope) => {
     secret: 'c0809ce9f484fdcdfb2d5aabd609768ce0374ee97a1a5618ce4cd3f16c00a078',
     secretHash: '',
     btcScriptAddress: '0x0dsgsdhsdhsddsh',
-  }
-
-  const { params: { id: orderId } } = app.scope.data.activeRoute
-
-  let order = orders.getByKey(orderId)
-
-  console.log('Order:', order)
-
-  if (order && order.owner.address === user.data.address) {
-    console.log('I am this order creator!')
-
-    if (order.participant && order.participant.peer) {
-      tryNotifyParticipant(order.participant.peer)
-        .then(init)
-    }
-    else {
-      scope.data.status = scope.data.statuses.thereIsNoAnyParticipant
-      scope.$scan()
-    }
-  }
-  else {
-    waitParticipantToBecomeOnline()
-      .then(waitParticipantConnectToDeal)
-      .then(notifyParticipant)
-      .then(init)
   }
 
   function waitParticipantToBecomeOnline() {
@@ -81,12 +57,12 @@ alight.controllers.btcToEth = (scope) => {
 
   function waitParticipantConnectToDeal() {
     return new Promise((resolve) => {
-      console.log('Wait until participant connect to this deal!')
-
       scope.data.status = scope.data.statuses.waitingParticipantConnectToDeal
       scope.$scan()
 
       notifyParticipant(order.owner.peer)
+
+      console.log('Wait until participant connect to this deal!')
 
       EA.once(`swap:participantConnectedToDeal:${order.id}`, () => {
         console.log('Participant connected to this deal!')
@@ -101,19 +77,21 @@ alight.controllers.btcToEth = (scope) => {
 
     return new Promise((resolve) => {
       if (room.isPeerExist(peer)) {
-        notifyParticipant()
+        notifyParticipant(peer)
         resolve()
         return
       }
 
       waitParticipantToBecomeOnline(() => {
-        notifyParticipant()
+        notifyParticipant(peer)
         resolve()
       })
     })
   }
 
   function notifyParticipant(peer) {
+    console.log('Notify participant that I am joined to this order' )
+
     room.sendMessageToPeer(peer, [
       {
         event: 'swap:startProcessOrder',
@@ -124,52 +102,83 @@ alight.controllers.btcToEth = (scope) => {
     ])
   }
 
-  function init() {
-    console.log(444, order)
 
-    scope.status = scope.data.statuses.initialized
-    scope.data.order = order
-    order.status = orderStatuses.processing
+  const { params: { id: orderId } } = app.scope.data.activeRoute
 
-    scope.$scan()
-  }
+  let order = orders.getByKey(orderId)
 
-  function goStep2() {
-    scope.data.secretHash = crypto.ripemd160(scope.data.secret)
+  console.log('Order:', order)
 
-    room.sendMessageToPeer(order.participant.peer, [
-      {
-        event: 'orderProcessing:sendSecretHash',
-        data: {
-          secretHash: scope.data.secretHash,
+  if (order && order.owner.address === user.data.address) {
+    function init() {
+      console.log('Init')
+
+      scope.data.status = scope.data.statuses.initialized
+      scope.data.order = order
+
+      scope.$scan()
+    }
+
+    function goStep2() {
+      scope.data.secretHash = crypto.ripemd160(scope.data.secret)
+
+      console.log(444, order)
+
+      room.sendMessageToPeer(order.participant.peer, [
+        {
+          event: 'orderProcessing:sendSecretHash',
+          data: {
+            secretHash: scope.data.secretHash,
+          },
         },
-      },
-    ])
+      ])
 
+      scope.$scan()
+    }
+
+    function goStep3() {
+      scope.data.waitingForParticipant = true
+      scope.$scan()
+    }
+
+    function goStep4() {
+
+    }
+
+    scope.goNextStep = () => {
+      scope.data.step++;
+
+      if (scope.data.step === 2) {
+        goStep2()
+      }
+      else if (scope.data.step === 3) {
+        goStep3()
+      }
+      else if (scope.data.step === 4) {
+        goStep4()
+      }
+    }
+
+    console.log('I am the creator!')
+
+    scope.isOwner = true
     scope.$scan()
-  }
 
-  function goStep3() {
-    scope.data.waitingForParticipant = true
-    scope.$scan()
-  }
+    if (!order.participant) {
+      console.log('There is no participant for this order')
 
-  function goStep4() {
-
-  }
-
-  scope.goNextStep = () => {
-    scope.data.step++;
-
-    if (scope.data.step === 2) {
-      goStep2()
+      scope.data.status = scope.data.statuses.thereIsNoAnyParticipant
+      scope.$scan()
     }
-    else if (scope.data.step === 3) {
-      goStep3()
+    else {
+      tryNotifyParticipant(order.participant.peer)
+        .then(init)
     }
-    else if (scope.data.step === 4) {
-      goStep4()
-    }
+  }
+  else {
+    console.log('I am participant!')
+
+
   }
 
   btcToEth.scope = scope

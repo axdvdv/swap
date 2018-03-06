@@ -3,45 +3,55 @@
 
     <div class="content-800">
 
-      <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
-        <h2>У этой сделки еще нет покупателя.</h2>
-        <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
-      </div>
+      <div al-if="!data.isOwner">
+        <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
+          <h2>У этой сделки еще нет покупателя.</h2>
+          <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
+        </div>
 
-      <div al-if="data.status == data.statuses.waitingParticipantToBecomeOnline">
-        <h2>Пользователь создавший этот ордер оффлайн, ожидаем его.</h2>
-        <div class="loader"></div>
-      </div>
+        <div al-if="data.status == data.statuses.waitingParticipantToBecomeOnline">
+          <h2>Пользователь создавший этот ордер оффлайн, ожидаем его</h2>
+          <div class="loader"></div>
+        </div>
 
-      <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
-        <h2>Пользователь получил уведомление. Ожидаем когда он присоединится к сделке.</h2>
-        <div class="loader"></div>
-      </div>
+        <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
+          <h2>Пользователь создавший этот ордер получил уведомление. Ожидаем когда он присоединится к сделке</h2>
+          <div class="loader"></div>
+        </div>
 
-      <div al-if="data.step == 1 && data.status == data.statuses.initialized">
-        <h2 class="mb-4">1. Придумайте секретную фразу</h2>
-        <div class="alert alert-danger" role="alert">
-          <b>Сохраните секретную фразу, иначе вы не сможете получить деньги!</b>
+        <div al-if="!data.secretHash && data.status == data.statuses.initialized">
+          <h2 class="mb-4">1. Ожидаем пользователя, когда он создает секретную фразу</h2>
+          <div class="loader"></div>
+        </div>
+
+        <div al-if="data.secretHash">
+          <div class="alert alert-warning" role="alert">
+            Secret Hash: <b><a href="" al-copy>{{data.secretHash}}</a></b>
+          </div>
+        </div>
+
+        <div class="mt-5" al-if="data.step > 1">
+          <h2 class="mb-4">2. </h2>
+
+        </div>
+
+        <div class="mt-5" al-if="data.step > 1">
+          <h2 class="mb-4">2. </h2>
+
+        </div>
+
+        <div class="mt-5" al-if="data.step > 1">
+          <h2 class="mb-4">2. </h2>
+
+        </div>
+
+        <div class="mt-5" al-if="data.step > 1">
+          <h2 class="mb-4">2. </h2>
+
         </div>
       </div>
 
-      <div class="mt-5" al-if="data.step > 1">
-        <h2 class="mb-4">2. </h2>
-
-      </div>
-
-      <div class="mt-5" al-if="data.step > 1">
-        <h2 class="mb-4">2. </h2>
-
-      </div>
-
-      <div class="mt-5" al-if="data.step > 1">
-        <h2 class="mb-4">2. </h2>
-
-      </div>
-
-      <div class="mt-5" al-if="data.step > 1">
-        <h2 class="mb-4">2. </h2>
+      <div al-if="data.isOwner">
 
       </div>
 

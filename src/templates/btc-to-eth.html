@@ -3,19 +3,25 @@
 
     <div class="content-800">
 
-      <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
-        <h2>У этой сделки еще нет покупателя.</h2>
-        <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
+      <div al-if="data.isOwner">
+        <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
+          <h2>У этой сделки еще нет покупателя.</h2>
+          <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
+        </div>
+
+        <div al-if="data.status == data.statuses.waitingParticipantToBecomeOnline">
+          <h2>Пользователь создавший этот ордер создавший этот ордер оффлайн, ожидаем его.</h2>
+          <div class="loader"></div>
+        </div>
+
+        <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
+          <h2>Пользователь создавший этот ордер получил уведомление. Ожидаем когда он присоединится к сделке.</h2>
+          <div class="loader"></div>
+        </div>
       </div>
 
-      <div al-if="data.status == data.statuses.waitingParticipantToBecomeOnline">
-        <h2>Пользователь создавший этот ордер оффлайн, ожидаем его.</h2>
-        <div class="loader"></div>
-      </div>
+      <div al-if="!data.isOwner">
 
-      <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
-        <h2>Пользователь получил уведомление. Ожидаем когда он присоединится к сделке.</h2>
-        <div class="loader"></div>
       </div>
 
       <div al-if="data.status == data.statuses.initialized">

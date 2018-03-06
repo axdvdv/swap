@@ -14,6 +14,7 @@ alight.controllers.ethToBtc = (scope) => {
   console.log('ETH to BTC controller!')
 
   scope.data = {
+    isOwner: false,
     statuses: {
       waitingParticipantToBecomeOnline: 'waitingParticipantToBecomeOnline',
       waitingParticipantConnectToDeal: 'waitingParticipantConnectToDeal',
@@ -25,31 +26,6 @@ alight.controllers.ethToBtc = (scope) => {
     secret: null,
     secretHash: '',
     btcScriptAddress: '0x0dsgsdhsdhsddsh',
-  }
-
-  const { params: { id: orderId } } = app.scope.data.activeRoute
-
-  let order = orders.getByKey(orderId)
-
-  console.log('Order:', order)
-
-  if (order && order.owner.address === user.data.address) {
-    console.log('I am this order creator!')
-
-    if (order.participant && order.participant.peer) {
-      tryNotifyParticipant(order.participant.peer)
-        .then(init)
-    }
-    else {
-      scope.data.status = scope.data.statuses.thereIsNoAnyParticipant
-      scope.$scan()
-    }
-  }
-  else {
-    waitParticipantToBecomeOnline()
-      .then(waitParticipantConnectToDeal)
-      .then(notifyParticipant)
-      .then(init)
   }
 
   function waitParticipantToBecomeOnline() {
@@ -80,17 +56,21 @@ alight.controllers.ethToBtc = (scope) => {
 
   function waitParticipantConnectToDeal() {
     return new Promise((resolve) => {
-      console.log('Wait until participant connect to this deal!')
-
       scope.data.status = scope.data.statuses.waitingParticipantConnectToDeal
       scope.$scan()
 
       notifyParticipant(order.owner.peer)
 
-      EA.once(`swap:participantConnectedToDeal:${order.id}`, () => {
-        console.log('Participant connected to this deal!')
+      console.log('Wait until the owner connect to this deal!')
 
-        resolve()
+      EA.subscribe('room:swap:startProcessOrder', ({ order, order: { owner: { id } } }) => {
+        console.log('Receive event swap:startProcessOrder', order)
+
+        if (order.owner.id === id) {
+          console.log('The owner connected to this deal!')
+
+          resolve()
+        }
       })
     })
   }
@@ -111,6 +91,8 @@ alight.controllers.ethToBtc = (scope) => {
   }
 
   function notifyParticipant(peer) {
+    console.log('Notify participant that I am joined to this order' )
+
     room.sendMessageToPeer(peer, [
       {
         event: 'swap:startProcessOrder',
@@ -121,40 +103,71 @@ alight.controllers.ethToBtc = (scope) => {
     ])
   }
 
-  function init() {
-    scope.status = scope.data.statuses.initialized
-    scope.data.order = order
-    order.status = orderStatuses.processing
 
+  const { params: { id: orderId } } = app.scope.data.activeRoute
+
+  let order = orders.getByKey(orderId)
+
+  console.log('Order:', order)
+
+  if (order && order.owner.address === user.data.address) {
+    console.log('I am the creator!')
+
+    scope.isOwner = true
     scope.$scan()
   }
+  else {
+    console.log('I am participant!')
 
-  function goStep2() {
-    scope.data.secretHash = crypto.ripemd160(scope.data.secret)
-    scope.$scan()
-  }
+    function init() {
+      console.log('Init')
 
-  function goStep3() {
-    scope.data.waitingForParticipant = true
-    scope.$scan()
-  }
+      scope.data.status = scope.data.statuses.initialized
+      scope.data.order = order
 
-  function goStep4() {
+      scope.$scan()
 
-  }
+      console.log(333333)
 
-  scope.goNextStep = () => {
-    scope.data.step++;
+      EA.once('room:orderProcessing:sendSecretHash', ({ secretHash }) => {
+        console.log('Receive secret hash:', secretHash)
 
-    if (scope.data.step === 2) {
-      goStep2()
+        scope.data.secretHash = secretHash
+        scope.$scan()
+      })
     }
-    else if (scope.data.step === 3) {
-      goStep3()
+
+    function goStep2() {
+
+      scope.$scan()
     }
-    else if (scope.data.step === 4) {
-      goStep4()
+
+    function goStep3() {
+      scope.data.waitingForParticipant = true
+      scope.$scan()
     }
+
+    function goStep4() {
+
+    }
+
+    scope.goNextStep = () => {
+      scope.data.step++;
+
+      if (scope.data.step === 2) {
+        goStep2()
+      }
+      else if (scope.data.step === 3) {
+        goStep3()
+      }
+      else if (scope.data.step === 4) {
+        goStep4()
+      }
+    }
+
+    waitParticipantToBecomeOnline()
+      .then(waitParticipantConnectToDeal)
+      .then(init)
   }
 
   ethToBtc.scope = scope

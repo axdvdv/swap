@@ -25,13 +25,13 @@ class Room {
       this.connection.on('peer joined', this.handleNewUserConnected)
       this.connection.on('peer left', this.handleUserLeft)
       this.connection.on('subscribed', this.handleSubscribe)
-
-      EA.dispatchEvent('room:ready')
     })
   }
 
   handleSubscribe = () => {
     console.info('Now connected!')
+
+    EA.dispatchEvent('room:ready')
   }
 
   handleNewMessage = (message) => {
@@ -50,7 +50,7 @@ class Room {
     if (data && data.length) {
       data.forEach(({ event, data }) => {
         if (data) {
-          console.log(`New message data:`, { ...message, event, data })
+          console.log(`New message data:`, { ...message, event: `room:${event}`, data })
 
           EA.dispatchEvent(`room:${event}`, { ...data, peerFrom: message.from })
         }
