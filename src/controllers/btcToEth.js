@@ -122,12 +122,11 @@ alight.controllers.btcToEth = (scope) => {
     function goStep2() {
       scope.data.secretHash = crypto.ripemd160(scope.data.secret)
 
-      console.log(444, order)
-
       room.sendMessageToPeer(order.participant.peer, [
         {
           event: 'orderProcessing:sendSecretHash',
           data: {
+            orderId: order.id,
             secretHash: scope.data.secretHash,
           },
         },

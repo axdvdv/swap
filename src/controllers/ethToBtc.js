@@ -127,11 +127,12 @@ alight.controllers.ethToBtc = (scope) => {
 
       scope.$scan()
 
-      console.log(333333)
-
       EA.once('room:orderProcessing:sendSecretHash', ({ secretHash }) => {
         console.log('Receive secret hash:', secretHash)
 
+        orders.getByKey(order.id).update({
+          secretHash,
+        })
         scope.data.secretHash = secretHash
         scope.$scan()
       })
