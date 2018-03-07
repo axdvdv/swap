@@ -25,18 +25,6 @@ class Orders extends Collection {
     EA.subscribe('room:updateOrderStatus', ({ orderId, status }) => {
       orders.getByKey(orderId).updateStatus(status)
     })
-
-    EA.subscribe('room:swap:startProcessOrder', ({ order, peerFrom }) => {
-      orders.getByKey(order.id).startProcessing({
-        peer: peerFrom,
-      })
-    })
-
-    EA.subscribe('room:orderProcessing:sendSecretHash', ({ orderId, secretHash }) => {
-      orders.getByKey(orderId).update({
-        secretHash,
-      })
-    })
   }
 
   /**
@@ -70,11 +58,11 @@ class Orders extends Collection {
       return false
     }
 
-    return order.owner.address === user.data.address
+    return order.owner.address === user.ethData.address
   }
 
   getOwnedByMe() {
-    return this.items.length ? this.items.filter(({ owner: { address } }) => address === user.data.address) : []
+    return this.items.length ? this.items.filter(({ owner: { address } }) => address === user.ethData.address) : []
   }
 }
 

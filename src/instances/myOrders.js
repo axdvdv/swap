@@ -13,16 +13,9 @@ class MyOrders {
 
   onMount() {
     const myOrders = JSON.parse(localStorage.getItem('myOrders') || '[]')
-    const myProcessingOrders = JSON.parse(localStorage.getItem('myProcessingOrders') || '[]')
 
     myOrders.forEach((order) => {
       orders.append(order)
-    })
-
-    myProcessingOrders.forEach((order) => {
-      Object.keys(order).forEach((key) => {
-        orders.getByKey(order.id)[key] = order[key]
-      })
     })
 
     EA.dispatchEvent('myOrders:onMount')
@@ -38,10 +31,6 @@ class MyOrders {
           data: order,
         })))
       }
-    })
-
-    EA.subscribe('order:onUpdate', () => {
-      this.saveProcessingOrdersToLocalStorage()
     })
   }
 
@@ -76,10 +65,6 @@ class MyOrders {
     const myOrders = orders.getOwnedByMe()
 
     return myOrders.length ? myOrders.filter(({ status }) => status === orderStatuses.processing) : []
-  }
-
-  saveProcessingOrdersToLocalStorage() {
-    localStorage.setItem('myProcessingOrders', JSON.stringify(this.getProcessingOrders()))
   }
 }
 

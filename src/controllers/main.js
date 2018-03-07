@@ -100,11 +100,11 @@ alight.controllers.main = function(scope) {
   }
 
   scope.updateBalanceEth = function () {
-    user.web3.eth.getBalance(user.data.address).then(function (r) {
+    user.web3.eth.getBalance(user.ethData.address).then(function (r) {
 
       scope.balance = user.web3.utils.fromWei(r);
-      scope.address = user.data.address;
-      scope.bitcoin_address = user.bitcoinData.address;
+      scope.address = user.ethData.address;
+      scope.bitcoin_address = user.btcData.address;
       
       scope.updateBalanceBitcoin();
       scope.$scan();
@@ -149,7 +149,7 @@ alight.controllers.main = function(scope) {
   const getUniqueId = (() => {
     let id = +new Date() // TODO replace with user public key
 
-    return () => sha256(user.data.address + String(++id))
+    return () => sha256(user.ethData.address + String(++id))
   })()
 
   scope.createOrder = (type) => {
@@ -205,11 +205,6 @@ alight.controllers.main = function(scope) {
     })
   }
 
-  scope.sign = () => {
-    user.sign()
-    scope.updateBalanceEth()
-  }
-
   // scope.sell_checked = function () {
   //   $('#sell_ch_active').attr('checked', function() {
   //     if (parseMess.myAdvs) {
@@ -254,8 +249,8 @@ alight.controllers.main = function(scope) {
   }
 
   scope.init()
+  scope.updateBalanceEth()
   scope.getCurrentExchangeRate()
-  scope.sign()
 
   EA.once('myOrders:onMount', () => {
     increaseTotals(orders.items)

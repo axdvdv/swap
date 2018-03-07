@@ -1,5 +1,6 @@
 import $ from 'jquery'
 import { Collection } from 'models'
+import { localStorage } from 'helpers'
 import { user } from 'instances'
 import EA from './EA'
 
@@ -15,8 +16,14 @@ class Notifications extends Collection {
   }
 
   onMount() {
-    EA.subscribe('room:swap:startProcessOrder', ({ order }) => {
+    EA.subscribe('room:swap:participantJoined', ({ order, participant, btcPublicKey }) => {
       if (order.owner.peer === user.peer) {
+        // TODO move this from here
+        localStorage.updateItem(`swap:${order.id}`, {
+          btcPublicKey,
+          participant,
+        })
+
         this.append(order)
       }
     })

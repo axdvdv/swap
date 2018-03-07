@@ -14,7 +14,7 @@
         <div class="headerBell" id="headerBell"></div>
         <div class="headerNotificationsList dropdown-menu" aria-labelledby="headerBellNavItem">
           <div al-repeat="item in data.notifications.items track by $index">
-            <a class="dropdown-item" href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">
+            <a class="dropdown-item" href="#" al-link data-link="{{'/swap/btc-to-eth/' + item.id}}">
               {{item.currency1Amount}} {{item.currency1}} &#10230; {{item.currency2Amount}} {{item.currency2}}
             </a>
           </div>

@@ -181,13 +181,13 @@
                   <td class="text-right trim-order-value">{{item.currency1Amount}}</td>
                   <td class="text-right trim-order-value">{{item.currency2Amount}}</td>
                   <td class="text-right">
-                    <div al-if="item.owner.address != user.data.address">
-                      <a href="#" al-link data-link="{{'/btc-to-eth/' + item.id}}">купить</a>
+                    <div al-if="item.owner.address != user.ethData.address">
+                      <a href="#" al-link data-link="{{'/swap/btc-to-eth/' + item.id}}">купить</a>
                     </div>
                   </td>
                   <td class="text-right">
                     <button
-                      al-if="item.owner.address == user.data.address"
+                      al-if="item.owner.address == user.ethData.address"
                       class="close"
                       type="button"
                       aria-label="Close"
@@ -224,13 +224,13 @@
                   <td class="text-right trim-order-value">{{item.currency1Amount}}</td>
                   <td class="text-right trim-order-value">{{item.currency2Amount}}</td>
                   <td class="text-right">
-                    <div al-if="item.owner.address != user.data.address">
-                      <a href="#" al-link data-link="{{'/eth-to-btc/' + item.id}}">купить</a>
+                    <div al-if="item.owner.address != user.ethData.address">
+                      <a href="#" al-link data-link="{{'/swap/eth-to-btc/' + item.id}}">купить</a>
                     </div>
                   </td>
                   <td class="text-right">
                     <button
-                      al-if="item.owner.address == user.data.address"
+                      al-if="item.owner.address == user.ethData.address"
                       class="close"
                       type="button"
                       aria-label="Close"

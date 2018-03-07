@@ -2,8 +2,7 @@ import app from './app'
 import header from './header'
 import main from './main'
 import history from './history'
-import ethToBtc from './ethToBtc'
-import btcToEth from './btcToEth'
+import swap from './swap'
 
 
 export {
@@ -11,6 +10,5 @@ export {
   header,
   main,
   history,
-  ethToBtc,
-  btcToEth
+  swap,
 }

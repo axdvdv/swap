@@ -18,8 +18,7 @@ const bind = (path) => [ path, (params, query) => {
 router
   .on(...bind('/'))
   .on(...bind('/history'))
-  .on(...bind('/btc-to-eth/:id'))
-  .on(...bind('/eth-to-btc/:id'))
+  .on(...bind('/swap/:slug/:id'))
 
 
 

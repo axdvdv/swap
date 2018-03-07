@@ -10,17 +10,13 @@ const history = {
 alight.controllers.history = function (scope) {
   console.log('history controller!')
 
-  scope.sign = function () {
-    user.sign()
-  }
-
   scope.BTCTransaction = function () {
 
 
     let transactions = [];
     scope.total_btc = 0;
-    if (user.bitcoinData.address) {
-      const url = 'https://api.blocktrail.com/v1/tbtc/address/' + user.bitcoinData.address + '/transactions?api_key=MY_APIKEY'
+    if (user.btcData.address) {
+      const url = 'https://api.blocktrail.com/v1/tbtc/address/' + user.btcData.address + '/transactions?api_key=MY_APIKEY'
       $.getJSON(url, (r) => {
 
         $.each(r.data, function (k, i) {
@@ -31,7 +27,7 @@ alight.controllers.history = function (scope) {
               value: i.outputs[0].value / 100000000,
               address: i.outputs[0].address,
               date: i.time,
-              type: user.bitcoinData.address == i.outputs[0].address ? 'text-success' : 'text-danger'
+              type: user.btcData.address == i.outputs[0].address ? 'text-success' : 'text-danger'
             }
           )
 
@@ -55,8 +51,8 @@ alight.controllers.history = function (scope) {
 
 
     scope.total_eth = 0;
-    if (user.data.address) {
-      let eth_address = user.data.address;
+    if (user.ethData.address) {
+      let eth_address = user.ethData.address;
       const url = 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=' + eth_address + '&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken'
       let transactions = [];
 
@@ -87,8 +83,6 @@ alight.controllers.history = function (scope) {
 
   }
 
-
-  scope.sign()
   scope.BTCTransaction();
   scope.ETHTransaction();
 

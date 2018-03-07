@@ -1,5 +1,5 @@
 import alight from 'alight'
-import { EA, room } from 'instances'
+import { EA, user, room } from 'instances'
 
 
 const app = {
@@ -17,6 +17,8 @@ alight.controllers.app = function (scope) {
   EA.once('room:ready', () => {
     scope.$scan()
   })
+
+  user.sign()
 
   app.scope = scope
 }

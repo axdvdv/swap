@@ -18,7 +18,6 @@ class Order {
    * @param {string}          data.type
    */
   constructor(data) {
-    this.participant = null
     this.status = orderStatuses.active // active, processing, closed
 
     Object.keys(data).forEach((key) => {
@@ -40,13 +39,6 @@ class Order {
 
       EA.dispatchEvent('order:onUpdate', this)
     }
-  }
-
-  startProcessing(participant) {
-    this.status = orderStatuses.processing
-    this.participant = participant
-
-    EA.dispatchEvent('order:onUpdate', this)
   }
 }
 
