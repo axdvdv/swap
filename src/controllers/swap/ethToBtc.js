@@ -28,6 +28,10 @@ alight.controllers.ethToBtc = (scope) => {
 
       scope.data.swapData.secretHash = secretHash
       scope.$scan()
+
+      ethSwap.create({
+        secretHash,
+      })
     }
   })
 

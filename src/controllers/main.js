@@ -2,7 +2,7 @@ import $ from 'jquery'
 import alight from 'alight'
 import sha256 from 'js-sha256'
 import { orderStatuses } from 'helpers'
-import { EA, user, room, myOrders, orders } from 'instances'
+import { EA, web3, user, room, myOrders, orders } from 'instances'
 
 
 const main = {
@@ -100,9 +100,9 @@ alight.controllers.main = function(scope) {
   }
 
   scope.updateBalanceEth = function () {
-    user.web3.eth.getBalance(user.ethData.address).then(function (r) {
+    web3.eth.getBalance(user.ethData.address).then(function (r) {
 
-      scope.balance = user.web3.utils.fromWei(r);
+      scope.balance = web3.utils.fromWei(r);
       scope.address = user.ethData.address;
       scope.bitcoin_address = user.btcData.address;
       

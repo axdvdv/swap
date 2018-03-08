@@ -5,6 +5,7 @@ import myOrders from './myOrders'
 import room from './room'
 import user from './user'
 import ipfs from './ipfs'
+import web3 from './web3'
 
 
 export {
@@ -15,4 +16,5 @@ export {
   room,
   user,
   ipfs,
+  web3,
 }
