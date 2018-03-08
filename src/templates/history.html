@@ -11,28 +11,26 @@
         <div class="col-6 border-right">
           <div class="pr-2">
             <div class="d-flex justify-content-between">
-
               <div>Всего: <span>{{total_eth}} ETH</span></div>
             </div>
 
             <div class="table-responsive">
               <table class="table">
                 <thead>
-                <tr>
-                  <th>BTC</th>
-                  <th class="text-right">Address</th>
-                  <th class="text-right">Time</th>
-                  <th  >Status</th>
-                </tr>
+                  <tr>
+                    <th>BTC</th>
+                    <th class="text-right">Address</th>
+                    <th class="text-right">Time</th>
+                    <th  >Status</th>
+                  </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="it in ethTransactions"  class="{{it.type}}">
-                  <td>{{it.value}}</td>
-                  <td>{{it.address}}</td>
-                  <td>1</td>
-                  <td>{{it.status}}</td>
-                </tr>
-
+                  <tr al-repeat="it in ethTransactions"  class="{{it.type}}">
+                    <td>{{it.value}}</td>
+                    <td>{{it.address}}</td>
+                    <td>1</td>
+                    <td>{{it.status}}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -42,27 +40,26 @@
         <div class="col-6">
           <div class="pr-2">
             <div class="d-flex justify-content-between">
-
               <div>Всего: <span>{{total_btc}} BTC</span></div>
             </div>
 
             <div class="table-responsive">
               <table class="table">
                 <thead>
-                <tr>
-                  <th>BTC</th>
-                  <th class="text-right">Address</th>
-                  <th class="text-right">Time</th>
-                  <th  >Status</th>
-                </tr>
+                  <tr>
+                    <th>BTC</th>
+                    <th class="text-right">Address</th>
+                    <th class="text-right">Time</th>
+                    <th  >Status</th>
+                  </tr>
                 </thead>
                 <tbody>
-                <tr al-repeat="it in btcTransactions"  class="{{it.type}}" >
-                  <td>{{it.value}}</td>
-                  <td>{{it.address}}</td>
-                  <td>{{it.date | date:yyyy-mm-dd}}</td>
-                  <td>{{it.status == 1  ? "complete" : "pending"}}</td>
-                </tr>
+                  <tr al-repeat="it in btcTransactions"  class="{{it.type}}" >
+                    <td>{{it.value}}</td>
+                    <td>{{it.address}}</td>
+                    <td>{{it.date | date:yyyy-mm-dd}}</td>
+                    <td>{{it.status == 1  ? "complete" : "pending"}}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>

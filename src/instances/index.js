@@ -5,7 +5,8 @@ import myOrders from './myOrders'
 import room from './room'
 import user from './user'
 import ipfs from './ipfs'
-import web3 from './web3'
+import ethereum from './ethereum'
+import bitcoin from './bitcoin'
 
 
 export {
@@ -16,5 +17,6 @@ export {
   room,
   user,
   ipfs,
-  web3,
+  ethereum,
+  bitcoin,
 }

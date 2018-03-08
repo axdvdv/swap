@@ -18,8 +18,6 @@ alight.controllers.app = function (scope) {
     scope.$scan()
   })
 
-  user.sign()
-
   app.scope = scope
 }
 

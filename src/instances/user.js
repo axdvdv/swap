@@ -1,8 +1,8 @@
-import bitcoin from 'bitcoinjs-lib'
 import BigInteger from 'bigi'
 import { main } from 'controllers'
-import { showMess } from 'helpers'
-import web3 from 'instances/web3'
+import { showMess, localStorage } from 'helpers'
+import bitcoin from './bitcoin'
+import ethereum from './ethereum'
 import EA from './EA'
 
 
@@ -22,7 +22,15 @@ class User {
     EA.once('ipfs:ready', ({ peer }) => {
       this.peer = peer
     })
+
+    this.sign()
   }
+
+  sign() {
+    this.ethData = ethereum.login()
+    this.btcData = bitcoin.login()
+  }
+
 
   getTransactionsByAccount(myaccount, startBlockNumber, endBlockNumber) {
 
@@ -46,7 +54,7 @@ class User {
 
     for (var i = startBlockNumber; i <= endBlockNumber; i++) {
 
-      web3.eth.getBlock(i, true).then(block => {
+      ethereum.core.eth.getBlock(i, true).then(block => {
 
         if (block != null && block.transactions != null) {
 
@@ -145,9 +153,9 @@ class User {
   }
 
   sendTransactionEth(modal) {
-    web3.eth.getBalance(this.ethData.address).then((r) => {
+    ethereum.core.eth.getBalance(this.ethData.address).then((r) => {
       try {
-        main.scope.balance = web3.utils.fromWei(r)
+        main.scope.balance = ethereum.core.utils.fromWei(r)
 
         if (!main.scope.balance) {
           // throw new Error('Ваш баланс пуст')
@@ -161,7 +169,7 @@ class User {
           return false
         }
 
-        if (!web3.utils.isAddress(main.scope.withdraw_eth_address)) {
+        if (!ethereum.core.utils.isAddress(main.scope.withdraw_eth_address)) {
           // throw new Error('Не верный адрес')
           showMess('Не верный адрес', 5, 0)
           return false
@@ -172,12 +180,12 @@ class User {
           to: main.scope.withdraw_eth_address,
           gas: "21000",
           gasPrice: "20000000000",
-          value: web3.utils.toWei(main.scope.withdraw_eth_amount.toString())
+          value: ethereum.core.utils.toWei(main.scope.withdraw_eth_amount.toString())
         }
 
-        web3.eth.accounts.signTransaction(t, localStorage.getItem('privateEthKey'))
+        ethereum.core.eth.accounts.signTransaction(t, localStorage.getItem('privateEthKey'))
           .then((result) => {
-            return web3.eth.sendSignedTransaction(result.rawTransaction)
+            return ethereum.core.eth.sendSignedTransaction(result.rawTransaction)
           })
           .then((receipt) => {
             showMess('Good', 5, 1)
@@ -192,10 +200,10 @@ class User {
           })
           .catch(error => console.error(error))
 
-        // web3.eth.sendTransaction({
+        // ethereum.core.eth.sendTransaction({
         //   from: main.scope.address,
         //   to: main.scope.withdraw_eth_address,
-        //   amount: web3.utils.toWei(main.scope.withdraw_eth_amount.toString())
+        //   amount: ethereum.core.utils.toWei(main.scope.withdraw_eth_amount.toString())
         // }).then(function(err, resp) {
         //   showMess('Error', 5, 0)
         //   console.log(err)
@@ -278,56 +286,6 @@ class User {
     //   })
     //
     // })
-  }
-
-  sign() {
-    const privateEthKey = localStorage.getItem('privateEthKey')
-
-    if (privateEthKey) {
-      try {
-        this.ethData = web3.eth.accounts.privateKeyToAccount(privateEthKey)
-
-        this.signBitcoin(privateEthKey)
-      }
-      catch (e) {
-        console.error('2 user cant login')
-        console.error(e)
-      }
-    }
-    else {
-      try {
-        this.ethData = web3.eth.accounts.create()
-
-        localStorage.setItem('privateEthKey', this.ethData.privateKey)
-        this.signBitcoin(this.ethData.privateKey)
-      }
-      catch (e) {
-        console.error('1 user cant login')
-        console.error(e)
-      }
-    }
-  }
-
-  signBitcoin(privateEthKey) {
-    // const publicKey = key
-    // const publicKeyHash = bitcoin.crypto.hash160(publicKey)
-    // const address =  bitcoin.address.toBase58Check(publicKeyHash, bitcoin.networks.bitcoin.pubKeyHash)
-    // const address =  bitcoin.address.toBase58Check(publicKeyHash, bitcoin.networks.testnet.pubKeyHash)
-
-    const hash        = bitcoin.crypto.sha256(privateEthKey)
-    const d           = BigInteger.fromBuffer(hash)
-    const keyPair     = new bitcoin.ECPair(d, null, {network: bitcoin.networks.testnet})
-    const keys        = new bitcoin.ECPair.fromWIF(keyPair.toWIF(), bitcoin.networks.testnet)
-    const publicKey   = keys.getPublicKeyBuffer().toString('hex')
-    const address     = keyPair.getAddress()
-
-    this.btcData = {
-      address,
-      keyPair,
-      keys,
-      privateEthKey,
-      publicKey,
-    }
   }
 }
 

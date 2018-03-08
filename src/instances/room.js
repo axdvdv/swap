@@ -71,7 +71,7 @@ class Room {
     if (this.peers.includes(peer)) {
       console.info(`Peer ${peer} disconnected`)
 
-      this.peers.splice(this.peers.indexOf(peer), 1)
+      this.peers.splice(this.peers.indexOf(wpeer), 1)
       EA.dispatchEvent('room:peerLeft', { peer })
     }
   }

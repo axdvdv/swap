@@ -1,4 +1,4 @@
-import { app } from 'controllers'
+import app from 'controllers/app'
 import Navigo from 'navigo'
 
 
