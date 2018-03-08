@@ -29,7 +29,7 @@ class Room {
   }
 
   handleSubscribe = () => {
-    console.info('Now connected!')
+    console.info('Room ready!')
 
     EA.dispatchEvent('room:ready')
   }
@@ -71,7 +71,7 @@ class Room {
     if (this.peers.includes(peer)) {
       console.info(`Peer ${peer} disconnected`)
 
-      this.peers.splice(this.peers.indexOf(wpeer), 1)
+      this.peers.splice(this.peers.indexOf(peer), 1)
       EA.dispatchEvent('room:peerLeft', { peer })
     }
   }

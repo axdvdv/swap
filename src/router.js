@@ -1,5 +1,5 @@
-import app from 'controllers/app'
 import Navigo from 'navigo'
+import { EA } from 'instances'
 
 
 const router = new Navigo(null, true, '#')
@@ -7,12 +7,11 @@ const router = new Navigo(null, true, '#')
 const bind = (path) => [ path, (params, query) => {
   console.log(`Route changed to ${path}`)
 
-  app.scope.data.activeRoute = {
+  EA.dispatchEvent('route:change', {
     path,
     params,
     query,
-  }
-  app.scope.$scan()
+  })
 } ]
 
 router

@@ -22,9 +22,9 @@ alight.controllers.ethToBtc = (scope) => {
 
   EA.subscribe('room:swap:sendSecretHash', ({ orderId, secretHash }) => {
     if (order.id === orderId) {
-      localStorage.updateItem(`swap:${order.id}`, {
-        secretHash,
-      })
+      // localStorage.updateItem(`swap:${order.id}`, {
+      //   secretHash,
+      // })
 
       scope.data.swapData.secretHash = secretHash
       scope.$scan()

@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import alight from 'alight'
 import sha256 from 'js-sha256'
 import { orderStatuses } from 'helpers'
@@ -11,6 +10,11 @@ const main = {
 
 alight.controllers.main = function(scope) {
   console.log('Main controller!')
+
+  scope.data = {
+    eth: user.ethData,
+    btc: user.btcData,
+  }
 
   scope.user = user
   scope.orders = orders
@@ -96,36 +100,6 @@ alight.controllers.main = function(scope) {
     }
     catch (e) {
       console.log(e)
-    }
-  }
-
-  scope.updateBalanceEth = function () {
-    ethereum.core.eth.getBalance(user.ethData.address).then(function (r) {
-
-      scope.balance = ethereum.core.utils.fromWei(r);
-      scope.address = user.ethData.address;
-      scope.bitcoin_address = user.btcData.address;
-      
-      scope.updateBalanceBitcoin();
-      scope.$scan();
-    })
-  }
-
-  scope.updateBalanceBitcoin = function () {
-    if (scope.bitcoin_address) {
-      const url = `https://api.blocktrail.com/v1/tbtc/address/${scope.bitcoin_address}?api_key=MY_APIKEY`
-      //  var url = 'https://api.blockcypher.com/v1/btc/main/addrs/'+scope.bitcoin_address
-
-      //bitcoin
-      $.getJSON(url, function (r) {
-        try {
-          scope.bitcoin_balance = r.balance / 100000000
-          scope.$scan()
-        }
-        catch (e) {
-          console.log(e)
-        }
-      })
     }
   }
 
@@ -249,8 +223,27 @@ alight.controllers.main = function(scope) {
   }
 
   scope.init()
-  scope.updateBalanceEth()
   scope.getCurrentExchangeRate()
+
+  EA.subscribe('eth:login', (data) => {
+    scope.data.eth = data
+    scope.$scan()
+  })
+
+  EA.subscribe('btc:login', (data) => {
+    scope.data.btc = data
+    scope.$scan()
+  })
+
+  EA.subscribe('eth:updateBalance', (balance) => {
+    scope.data.eth.balance = balance
+    scope.$scan()
+  })
+
+  EA.subscribe('btc:updateBalance', (balance) => {
+    scope.data.btc.balance = balance
+    scope.$scan()
+  })
 
   EA.once('myOrders:onMount', () => {
     increaseTotals(orders.items)

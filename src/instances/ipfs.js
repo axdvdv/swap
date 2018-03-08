@@ -16,6 +16,8 @@ const ipfs = new Ipfs({
 })
 
 ipfs.once('ready', () => ipfs.id((err, info) => {
+  console.log('IPFS ready!')
+
   if (err) {
     throw err
   }

@@ -1,6 +1,8 @@
 import BigInteger from 'bigi'
 import bitcoin from 'bitcoinjs-lib'
 import localStorage from 'helpers/localStorage'
+import config from 'helpers/config'
+import EA from './EA'
 
 
 class Bitcoin {
@@ -8,7 +10,10 @@ class Bitcoin {
   constructor() {
     this.core = bitcoin
     this.testnet = bitcoin.networks.testnet
-    this.data = null
+    this.data = {
+      address: '0x0',
+      balance: 0,
+    }
   }
 
   login() {
@@ -22,9 +27,7 @@ class Bitcoin {
       keyPair     = new bitcoin.ECPair(d, null, { network: this.testnet })
     }
     else {
-      const rng   = () => Buffer.from('zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz')
-
-      keyPair     = bitcoin.ECPair.makeRandom({ network: this.testnet, rng })
+      keyPair     = bitcoin.ECPair.makeRandom({ network: this.testnet })
       privateKey  = keyPair.toWIF()
     }
 
@@ -42,7 +45,24 @@ class Bitcoin {
 
     console.log('Logged in with Bitcoin', this.data)
 
+    EA.dispatchEvent('btc:login', this.data)
+
     return this.data
+  }
+
+  getBalance() {
+    return new Promise((resolve) => {
+      const url = `https://api.blocktrail.com/v1/tbtc/address/${this.data.address}?api_key=${config.blocktrailAPIKey}`
+
+      $.getJSON(url, ({ balance }) => {
+        console.log('BTC Balance:', balance)
+
+        this.data.balance = balance
+        resolve(balance)
+
+        EA.dispatchEvent('btc:updateBalance', balance)
+      })
+    })
   }
 }
 

@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { Collection } from 'models'
 import { localStorage } from 'helpers'
 import { user } from 'instances'

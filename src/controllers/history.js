@@ -1,6 +1,5 @@
 import alight from 'alight'
-import {user, room} from 'instances'
-import $ from 'jquery'
+import { user } from 'instances'
 
 
 const history = {

@@ -25,6 +25,7 @@ alight.controllers.swap = (scope) => {
     swapData,
   }
 
+  console.log('Swap data:', swapData)
   console.log('Order:', order)
 
   if (!order) {

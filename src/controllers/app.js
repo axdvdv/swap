@@ -1,5 +1,5 @@
 import alight from 'alight'
-import { EA, user, room } from 'instances'
+import { EA } from 'instances'
 
 
 const app = {
@@ -10,11 +10,21 @@ alight.controllers.app = function (scope) {
   console.log('App controller!')
 
   scope.data = {
+    initialized: false,
     activeRoute: {},
-    room,
   }
 
   EA.once('room:ready', () => {
+    console.log('App initialized!')
+
+    scope.data.initialized = true
+    scope.$scan()
+
+    EA.dispatchEvent('app:ready')
+  })
+
+  EA.once('route:change', (params) => {
+    scope.data.activeRoute = params
     scope.$scan()
   })
 

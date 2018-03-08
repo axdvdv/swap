@@ -1,3 +1,4 @@
+import user from 'instances/user'
 import ethereum from 'instances/ethereum'
 
 const address = '0xffd631cf3ac7a4f1c41027158e17e9d0a1e1de09'
@@ -14,17 +15,31 @@ const contract = ethereum.getContract(abi, address)
  */
 const create = ({ secretHash, unlockTime }) =>
   new Promise((resolve, reject) => {
-    const lockTime = Math.floor(Date.now() / 1000) + 3600 * 3 // 3 days
+    console.log('Start creating ETH Swap', { secretHash, unlockTime })
 
-    contract.open.sendTransaction(secretHash, lockTime, (err, res) => {
-      if (err) {
-        return reject(err)
-      }
+    const hash      = `0x${secretHash.replace(/^0x/, '')}`
+    const lockTime  = Math.floor(Date.now() / 1000) + 3600 * 3 // 3 days
+    const params    = ethereum.getGasParams(0.005)
 
-      console.log('ETH Swap created', res)
+    console.log('hash', hash)
+    console.log('lockTime', lockTime)
+    console.log('params', params)
 
-      resolve(res)
-    })
+    contract.methods.open(hash, lockTime).send(params)
+      .on('transactionHash', (hash) => {
+        console.log('ETH Swap > transactionHash', hash)
+      })
+      .on('confirmation', (confirmationNumber, receipt) => {
+        console.log('ETH Swap > confirmation', confirmationNumber, receipt)
+      })
+      .on('receipt', (receipt) => {
+        console.log('ETH Swap > receipt', receipt)
+
+        resolve()
+      })
+      .on('error', (err) => {
+        console.error('ETH Swap > receipt', err)
+      })
   })
 
 

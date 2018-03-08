@@ -6,11 +6,11 @@
           <div class="pr-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{balance}}</b> ETH</div>
+                <div>Баланс <b>{{data.eth.balance}}</b> ETH</div>
                 <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
               </div>
               <hr />
-              <a href="" al-copy title="скопировать в буффер">{{address}}</a>
+              <a href="" al-copy title="скопировать в буффер">{{data.eth.address}}</a>
             </div>
             <h3 class="pt-4 pb-2">Купить BTC за ETH</h3>
             <form action="" al-submit="createOrder('buy')">
@@ -82,11 +82,11 @@
           <div class="pl-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{bitcoin_balance}}</b> BTC</div>
+                <div>Баланс <b>{{data.btc.balance}}</b> BTC</div>
                 <a href="" data-toggle="modal" data-target="#withdraw_btc">вывести средства</a>
               </div>
               <hr />
-              <a href="" al-copy title="скопировать в буффер">{{bitcoin_address}}</a>
+              <a href="" al-copy title="скопировать в буффер">{{data.btc.address}}</a>
             </div>
             <h3 class="pt-4 pb-2">Купить ETH за BTC</h3>
             <form action="" al-submit="createOrder('sell')">

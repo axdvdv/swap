@@ -10,8 +10,8 @@ class User {
 
   constructor() {
     this.peer = null
-    this.ethData = {}
-    this.btcData = {}
+    this.ethData = ethereum.data
+    this.btcData = bitcoin.data
 
     window.user = this
 
@@ -23,7 +23,10 @@ class User {
       this.peer = peer
     })
 
-    this.sign()
+    EA.once('app:ready', () => {
+      this.sign()
+      this.getBalances()
+    })
   }
 
   sign() {
@@ -31,115 +34,9 @@ class User {
     this.btcData = bitcoin.login()
   }
 
-
-  getTransactionsByAccount(myaccount, startBlockNumber, endBlockNumber) {
-
-    var options = {address: myaccount, fromBlock: '0x1', toBlock : 'latest'};
-
-    return
-
-    if (endBlockNumber == null) {
-      console.log("Using endBlockNumber: is missing " + endBlockNumber);
-      return false;
-    }
-
-    console.log(startBlockNumber)
-
-    if (startBlockNumber == null) {
-      startBlockNumber = endBlockNumber - 10000;
-      console.log("Using startBlockNumber: " + startBlockNumber);
-    }
-
-    console.log("Searching for transactions to/from account \"" + myaccount + "\" within blocks "  + startBlockNumber + " and " + endBlockNumber);
-
-    for (var i = startBlockNumber; i <= endBlockNumber; i++) {
-
-      ethereum.core.eth.getBlock(i, true).then(block => {
-
-        if (block != null && block.transactions != null) {
-
-          block.transactions.forEach( function(e) {
-            if (myaccount === "*" || myaccount === e.from || myaccount === e.to) {
-              console.log("  tx hash          : " + e.hash + "\n"
-                + "   nonce           : " + e.nonce + "\n"
-                + "   blockHash       : " + e.blockHash + "\n"
-                + "   blockNumber     : " + e.blockNumber + "\n"
-                + "   transactionIndex: " + e.transactionIndex + "\n"
-                + "   from            : " + e.from + "\n"
-                + "   to              : " + e.to + "\n"
-                + "   value           : " + e.value + "\n"
-                + "   time            : " + block.timestamp + " " + new Date(block.timestamp * 1000).toGMTString() + "\n"
-                + "   gasPrice        : " + e.gasPrice + "\n"
-                + "   gas             : " + e.gas + "\n"
-                + "   input           : " + e.input);
-            }
-          })
-        }
-      });
-
-    }
-  }
-
-  getEthTransactions() {
-
-    if (this.ethData.address) {
-      let eth_address = this.ethData.address;
-      const url = 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address='+eth_address+'&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken'
-      var transactions = [];
-
-
-      $.getJSON(url, (r) => {
-
-
-
-        $.each(r.result, function (k, i) {
-
-          transactions.push(
-            {
-              status: i.blockHash != null ? 1 : 0,
-              value: i.value / 100000000000,
-              address: i.to,
-              date: i.timeStamp,
-              type: eth_address == i.to ? 'text-success' : 'text-danger'
-            });
-
-
-        })
-
-
-
-      });
-
-      return transactions;
-    }
-  }
-
-  getBtcTransactions() {
-    let transactions = [];
-    if (this.btcData.address) {
-         const url = 'https://api.blocktrail.com/v1/tbtc/address/' + this.btcData.address + '/transactions?api_key=MY_APIKEY'
-        $.getJSON(url, (r) => {
-
-          $.each(r.data, function (k, i) {
-
-            transactions.push(
-              {
-                status: i.block_hash != null ? 1 : 0,
-                value: i.outputs[0].value / 100000000,
-                address: i.outputs[0].address,
-                date: i.time,
-                type: user.btcData.address == i.outputs[0].address ? 'text-success' : 'text-danger'
-              }
-            )
-
-          })
-        })
-
-    } else {
-      console.log('bitcoin_address is missing')
-    }
-
-    return transactions;
+  getBalances() {
+    ethereum.getBalance()
+    bitcoin.getBalance()
   }
 
   createOrder(data) {
