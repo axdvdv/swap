@@ -6,7 +6,9 @@
           <div class="pr-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{data.eth.balance}}</b> ETH</div>
+                <div>Баланс <b>{{data.eth.balance}}</b> ETH <a href="#" al-click="updateEthBalance()">
+                  обновить
+                </a></div>
                 <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
               </div>
               <hr />
@@ -82,7 +84,10 @@
           <div class="pl-2">
             <div class="alert alert-warning fs-16" role="alert">
               <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{data.btc.balance}}</b> BTC</div>
+                <div>Баланс <b>{{data.btc.balance}}</b> BTC<a href="#" al-click="updateBtcBalance()">
+                  обновить
+                </a></div>
+
                 <a href="" data-toggle="modal" data-target="#withdraw_btc">вывести средства</a>
               </div>
               <hr />

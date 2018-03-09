@@ -1,7 +1,7 @@
 import alight from 'alight'
 import sha256 from 'js-sha256'
 import { orderStatuses } from 'helpers'
-import { EA, ethereum, user, room, myOrders, orders } from 'instances'
+import { EA, bitcoin, ethereum, user, room, myOrders, orders } from 'instances'
 
 
 const main = {
@@ -165,6 +165,8 @@ alight.controllers.main = function(scope) {
     })
   }
 
+
+
   scope.removeOrder = (order) => {
     const { id } = order
     console.log('Remove order with id:', id)
@@ -208,6 +210,24 @@ alight.controllers.main = function(scope) {
       return true
     })
   }
+
+  scope.updateEthBalance = async () => {
+
+    const balance = await ethereum.getBalance()
+
+    scope.total_eth = balance
+    scope.$scan()
+  }
+
+  scope.updateBtcBalance = async () => {
+
+    const balance = await bitcoin.getBalance()
+
+    scope.data.btc.balance = balance
+    scope.$scan()
+  }
+
+
 
   scope.init = function () {
     let my_setting = localStorage.getItem('my_setting')
@@ -263,6 +283,8 @@ alight.controllers.main = function(scope) {
   EA.subscribe('order:onStatusUpdate', () => {
     scope.$scan()
   })
+
+
 
   main.scope = scope
 }
