@@ -1,7 +1,9 @@
 import { EA, user } from 'instances'
 import { localStorage } from 'helpers'
+import processStatusNames from './processStatusNames'
 
 
+let scope
 let order
 let swapData
 
@@ -16,8 +18,15 @@ function notifyOwnerThatIJoined() {
         order,
         participant: {
           peer: user.peer,
+          eth: {
+            address: user.ethData.address,
+            publicKey: user.ethData.publicKey,
+          },
+          btc: {
+            address: user.btcData.address,
+            publicKey: user.btcData.publicKey,
+          },
         },
-        btcPublicKey: user.btcData.publicKey,
       },
     },
   ])
@@ -26,27 +35,29 @@ function notifyOwnerThatIJoined() {
 function waitUntilOwnerJoin() {
   console.log('Wait until owner join this order')
 
-  EA.subscribe('room:swap:ownerJoined', ({ order: { id: orderId }, ethAddress }) => {
+  EA.subscribe('room:swap:ownerJoined', function ({ order: { id: orderId }, owner }) {
     if (order.id === orderId) {
       console.log('Owner joined this order')
 
       this.unsubscribe()
 
-      localStorage.updateItem(`swap:${orderId}`, {
-        owner: {
-          ethAddress,
-        },
-      })
+      swapData.participant = owner
+
+      localStorage.updateItem(`swap:${orderId}`, swapData)
+
+      scope.data.status = processStatusNames.initialized
+      scope.$scan()
     }
   })
 }
 
 
-export default (scope) => {
+export default (_scope, _order, _swapData) => {
   console.log('I am participant!')
 
-  order = scope.data.order
-  swapData = scope.data.swapData
+  scope = _scope
+  order = _order
+  swapData = _swapData
 
   notifyOwnerThatIJoined()
   waitUntilOwnerJoin()

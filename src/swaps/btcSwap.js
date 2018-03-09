@@ -1,6 +1,4 @@
-import bitcoin from 'bitcoinjs-lib'
-
-const testnetUtils = {} // TODO HOW?
+import bitcoin from 'instances/bitcoin'
 
 
 const utcNow = () => Math.floor(Date.now() / 1000)
@@ -8,47 +6,53 @@ const lockTime = utcNow() + 3600 * 3 // 3 days from now
 
 
 const createScript = (btcOwnerSecretHash, btcOwnerPublicKey, ethOwnerPublicKey) => {
-  return bitcoin.script.compile([
-    btcOwnerPublicKey,
-    bitcoin.opcodes.OP_CHECKSIG,
+  console.log('Create BTC Swap script')
 
-    bitcoin.opcodes.OP_IF,
-    bitcoin.script.number.encode(lockTime),
-    bitcoin.opcodes.OP_CHECKLOCKTIMEVERIFY,
-    bitcoin.opcodes.OP_ENDIF,
+  return bitcoin.core.script.compile([
+    btcOwnerPublicKey,
+    bitcoin.core.opcodes.OP_CHECKSIG,
+
+    bitcoin.core.opcodes.OP_IF,
+    bitcoin.core.script.number.encode(lockTime),
+    bitcoin.core.opcodes.OP_CHECKLOCKTIMEVERIFY,
+    bitcoin.core.opcodes.OP_ENDIF,
 
     ethOwnerPublicKey,
-    bitcoin.opcodes.OP_CHECKSIG,
+    bitcoin.core.opcodes.OP_CHECKSIG,
 
-    bitcoin.opcodes.OP_IF,
-    bitcoin.opcodes.OP_RIPEMD160,
+    bitcoin.core.opcodes.OP_IF,
+    bitcoin.core.opcodes.OP_RIPEMD160,
     Buffer.from(btcOwnerSecretHash, 'hex'),
-    bitcoin.opcodes.OP_EQUALVERIFY,
-    bitcoin.opcodes.OP_ENDIF,
+    bitcoin.core.opcodes.OP_EQUALVERIFY,
+    bitcoin.core.opcodes.OP_ENDIF,
   ])
 }
 
 const addMoney = (script, amount) => {
   return new Promise(function (resolve, reject) {
-    const scriptPubKey    = bitcoin.script.scriptHash.output.encode(bitcoin.crypto.hash160(script))
-    const scriptAddress   = bitcoin.address.fromOutputScript(scriptPubKey, testnet)
+    const scriptPubKey    = bitcoin.core.script.scriptHash.output.encode(bitcoin.core.crypto.hash160(script))
+    const scriptAddress   = bitcoin.core.address.fromOutputScript(scriptPubKey, bitcoin.networks.testnet)
 
-    testnetUtils.faucet(scriptAddress, amount, function (err, unspent) {
-      if (err) {
-        console.log('fund error:', err)
-        reject()
-        return
-      }
+    const tx = new bitcoin.core.TransactionBuilder(bitcoin.networks.testnet)
 
-      resolve()
-    })
+    tx.setLockTime(lockTime)
+    tx.addInput(bitcoin.data.address, 2e4)
+    tx.addOutput(scriptAddress, 1e4)
+
+    tx.sign(0, bitcoin.data.privateKey)
+
+    const result = tx().toHex()
+
+    console.log(444, result)
+
+    resolve(result)
   })
 }
 
 const withdraw = (script, unspent, secret, withdrawAddress) => {
   return new Promise(function (resolve, reject) {
-    const hashType  = bitcoin.Transaction.SIGHASH_ALL
-    const tx        = new bitcoin.TransactionBuilder(testnet)
+    const hashType  = bitcoin.core.Transaction.SIGHASH_ALL
+    const tx        = new bitcoin.core.TransactionBuilder(bitcoin.networks.testnet)
 
     tx.setLockTime(lockTime)
     tx.addInput(unspent.txId, unspent.vout, 0xfffffffe)
@@ -56,9 +60,10 @@ const withdraw = (script, unspent, secret, withdrawAddress) => {
 
     const txRaw               = tx.buildIncomplete()
     const signatureHash       = txRaw.hashForSignature(0, script, hashType)
+    const ethOwner            = new bitcoin.ECPair.fromWIF(bitcoin.data.privateKey, bitcoin.networks.testnet)
     const ethOwnerSignature   = ethOwner.sign(signatureHash).toScriptSignature(hashType)
 
-    const scriptSig = bitcoin.script.scriptHash.input.encode(
+    const scriptSig = bitcoin.core.script.scriptHash.input.encode(
       [
         ethOwnerSignature,
         Buffer.from(secret, 'hex'),
@@ -88,8 +93,8 @@ const withdraw = (script, unspent, secret, withdrawAddress) => {
 
 const refund = (script, unspent, secret, refundAddress) => {
   return new Promise(function (resolve, reject) {
-    const hashType  = bitcoin.Transaction.SIGHASH_ALL
-    const tx        = new bitcoin.TransactionBuilder(testnet)
+    const hashType  = bitcoin.core.Transaction.SIGHASH_ALL
+    const tx        = new bitcoin.core.TransactionBuilder(bitcoin.networks.testnet)
 
     tx.setLockTime(lockTime)
     tx.addInput(unspent.txId, unspent.vout, 0xfffffffe)
@@ -97,9 +102,10 @@ const refund = (script, unspent, secret, refundAddress) => {
 
     const txRaw               = tx.buildIncomplete()
     const signatureHash       = txRaw.hashForSignature(0, script, hashType)
+    const btcOwner            = new bitcoin.ECPair.fromWIF(bitcoin.data.privateKey, bitcoin.networks.testnet)
     const btcOwnerSignature   = btcOwner.sign(signatureHash).toScriptSignature(hashType)
 
-    const scriptSig = bitcoin.script.scriptHash.input.encode(
+    const scriptSig = bitcoin.core.script.scriptHash.input.encode(
       [
         btcOwnerSignature,
         Buffer.from(secret, 'hex'),

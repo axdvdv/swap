@@ -1,32 +1,48 @@
 import { EA, user } from 'instances'
+import processStatusNames from './processStatusNames'
 
 
+let scope
 let order
 let swapData
 
 
-function notifyParticipantThatIJoined(peer) {
+function notifyParticipantThatIJoined() {
   console.log('Notify participant that I joined to this order')
 
-  room.sendMessageToPeer(peer, [
+  room.sendMessageToPeer(swapData.participant.peer, [
     {
       event: 'swap:ownerJoined',
       data: {
         order,
-        ethAddress: user.ethData.address,
+        owner: {
+          peer: user.peer,
+          eth: {
+            address: user.ethData.address,
+            publicKey: user.ethData.publicKey,
+          },
+          btc: {
+            address: user.btcData.address,
+            publicKey: user.btcData.publicKey,
+          },
+        },
       },
     },
   ])
 }
 
 
-export default (scope) => {
+export default (_scope, _order, _swapData) => {
   console.log('I am the creator!')
 
-  order = scope.data.order
-  swapData = scope.data.swapData
+  scope = _scope
+  order = _order
+  swapData = _swapData
 
   notifyParticipantThatIJoined()
+
+  scope.data.status = processStatusNames.initialized
+  scope.$scan()
 
 
   // TODO this needs in future to check if participant is offline, etc..
@@ -48,7 +64,7 @@ export default (scope) => {
   //       console.log('Participant became online!')
   //
   //       // remove this event subscription
-  //       this.remove()
+  //       this.unsubscribe()
   //       notifyParticipantAboutJoining()
   //     }
   //   })

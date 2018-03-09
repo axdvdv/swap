@@ -1,4 +1,5 @@
 import alight from 'alight'
+import { localStorage } from 'helpers'
 import { EA, ethereum } from 'instances'
 import { ethSwap, btcSwap } from 'swaps'
 
@@ -11,7 +12,7 @@ alight.controllers.ethToBtc = (scope) => {
   console.log('ETH to BTC controller!')
 
   const order = scope.$parent.data.order
-  const swapData = scope.$parent.data.swapData
+  const swapData = localStorage.getItem(`swap:${order.id}`) || {}
 
   scope.data = {
     order,
@@ -21,6 +22,7 @@ alight.controllers.ethToBtc = (scope) => {
     secretHash: null,
 
     // step 2
+    address: ethereum.data.address,
     balance: ethereum.data.balance,
     notEnoughMoney: false,
     checkingBalance: false,
@@ -67,8 +69,8 @@ alight.controllers.ethToBtc = (scope) => {
     scope.data.step++;
     scope.$scan()
 
-    console.log('\n==================================\n')
-    console.log(`STEP ${scope.data.secret}\n`)
+    console.log(`\n\nSTEP ${scope.data.step}\n`)
+    console.log('\n==================================\n\n')
 
     if (scope.data.step === 1) {
       console.log('Waiting until owner creates secretHash')
@@ -83,7 +85,7 @@ alight.controllers.ethToBtc = (scope) => {
         },
       ])
 
-      EA.subscribe('room:swap:sendSecretHash', async ({ orderId, secretHash }) => {
+      EA.subscribe('room:swap:sendSecretHash', async function ({ orderId, secretHash }) {
         if (order.id === orderId) {
           console.log(`Owner created secretHash ${secretHash}`)
 

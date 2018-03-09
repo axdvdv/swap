@@ -14,6 +14,7 @@ alight.controllers.swap = (scope) => {
   console.log('Swap controller!')
 
   const { $parent: { data: { activeRoute: { params: { id: orderId, slug } } } } } = scope
+
   const swapData = localStorage.getItem(`swap:${orderId}`) || {}
   let order = orders.getByKey(orderId)
 
@@ -22,7 +23,6 @@ alight.controllers.swap = (scope) => {
     status: null,
     slug,
     order,
-    swapData,
   }
 
   console.log('Swap data:', swapData)
@@ -42,7 +42,7 @@ alight.controllers.swap = (scope) => {
 
         console.log('Order:', order)
 
-        // this.unsubscribe()
+        this.unsubscribe()
         init()
       }
     })
@@ -54,14 +54,14 @@ alight.controllers.swap = (scope) => {
   function init() {
     const isMyOrder = order.owner.address === user.ethData.address
 
-    scope.data.status = processStatusNames.initialized
+    scope.data.status = processStatusNames.waitingParticipantToBecomeOnline
     scope.$scan()
 
     if (isMyOrder) {
-      myOrderInit(scope)
+      myOrderInit(scope, order, swapData)
     }
     else {
-      otherOrderInit(scope)
+      otherOrderInit(scope, order, swapData)
     }
   }
 
