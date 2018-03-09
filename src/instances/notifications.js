@@ -15,11 +15,10 @@ class Notifications extends Collection {
   }
 
   onMount() {
-    EA.subscribe('room:swap:participantJoined', ({ order, participant, btcPublicKey }) => {
+    EA.subscribe('room:swap:participantJoined', ({ order, participant }) => {
       if (order.owner.peer === user.peer) {
         // TODO move this from here
         localStorage.updateItem(`swap:${order.id}`, {
-          btcPublicKey,
           participant,
         })
 

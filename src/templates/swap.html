@@ -7,17 +7,17 @@
     </div>
 
     <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
-      <h2>У этой сделки еще нет покупателя.</h2>
+      <h2>У этой сделки еще нет покупателя</h2>
       <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
     </div>
 
     <div al-if="data.status == data.statuses.waitingParticipantToBecomeOnline">
-      <h2>Пользователь создавший этот ордер оффлайн, ожидаем его.</h2>
+      <h2>Пользователь создавший этот ордер оффлайн, ожидаем его</h2>
       <div class="loader"></div>
     </div>
 
     <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
-      <h2>Пользователь создавший этот ордер получил уведомление. Ожидаем когда он присоединится к сделке.</h2>
+      <h2>Ожидаем другого пользователя, когда он присоединится к сделке</h2>
       <div class="loader"></div>
     </div>
 
@@ -41,17 +41,17 @@
             Secret: <strong><a href="" al-copy>{{data.secret}}</a></strong>
           </div>
           <div class="alert alert-warning" role="alert">
-            Secret Hash: <strong><a href="" al-copy>{{data.swapData.secretHash}}</a></strong>
+            Secret Hash: <strong><a href="" al-copy>{{data.secretHash}}</a></strong>
           </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 3 && data.notEnoughMoney && !data.checkingBalance">
           <h2 class="mb-4">На вашем балансе недостаточно средств для этой сделки. Пополните кошелек</h2>
           <div class="alert alert-warning fs-16" role="alert">
-            <div>Баланс <strong>{{data.btc.balance}}</strong> ETH</div>
+            <div>Баланс <strong>{{data.balance}}</strong> ETH</div>
             <div>Необходимый баланс <strong>{{data.order.currency1Amount}}</strong> ETH</div>
             <hr />
-            <a href="" al-copy title="скопировать в буффер">{{data.btc.address}}</a>
+            <a href="" al-copy title="скопировать в буффер">{{data.address}}</a>
           </div>
           <br />
           <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
@@ -96,10 +96,10 @@
         <div class="mt-5" al-if="data.step == 2 && data.notEnoughMoney && !data.checkingBalance">
           <h2 class="mb-4">На вашем балансе недостаточно средств для этой сделки. Пополните кошелек</h2>
           <div class="alert alert-warning fs-16" role="alert">
-            <div>Баланс <strong>{{data.eth.balance}}</strong> ETH</div>
+            <div>Баланс <strong>{{data.balance}}</strong> ETH</div>
             <div>Необходимый баланс <strong>{{data.order.currency2Amount}}</strong> ETH</div>
             <hr />
-            <a href="" al-copy title="скопировать в буффер">{{data.eth.address}}</a>
+            <a href="" al-copy title="скопировать в буффер">{{data.address}}</a>
           </div>
           <br />
           <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>

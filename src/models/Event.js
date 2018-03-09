@@ -35,7 +35,7 @@ class Event {
       this.handlers[String(priority)] = []
     }
     return this.handlers[String(priority)].push(handler.bind({
-      remove: () => {
+      unsubscribe: () => {
         this.removeHandler(handler, priority)
       },
     }))
