@@ -26,6 +26,7 @@ class User {
     EA.once('app:ready', () => {
       this.sign()
       this.getBalances()
+      setInterval(this.getBalances, 10000) //set update balance every 10 sec
     })
   }
 
