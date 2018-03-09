@@ -14,13 +14,33 @@ alight.controllers.app = function (scope) {
     activeRoute: {},
   }
 
-  EA.once('room:ready', () => {
-    console.log('App initialized!')
 
-    scope.data.initialized = true
-    scope.$scan()
+  const loggedWith = {
+    eth: false,
+    btc: false,
+  }
 
-    EA.dispatchEvent('app:ready')
+  function checkIfInitialized() {
+    if (loggedWith.eth && loggedWith.btc) {
+      console.log('App initialized!')
+
+      scope.data.initialized = true
+      scope.$scan()
+
+      EA.dispatchEvent('app:ready')
+    }
+  }
+
+  EA.once('eth:login', () => {
+    loggedWith.eth = true
+
+    checkIfInitialized()
+  })
+
+  EA.once('btc:login', () => {
+    loggedWith.btc = true
+
+    checkIfInitialized()
   })
 
   EA.once('route:change', (params) => {
