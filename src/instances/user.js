@@ -1,6 +1,7 @@
 import BigInteger from 'bigi'
 import { main } from 'controllers'
 import { showMess, localStorage } from 'helpers'
+import { ethSwap } from 'swaps'
 import bitcoin from './bitcoin'
 import ethereum from './ethereum'
 import EA from './EA'

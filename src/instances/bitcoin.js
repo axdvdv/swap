@@ -52,7 +52,7 @@ class Bitcoin {
 
   getBalance() {
     return new Promise((resolve) => {
-      const url = `https://api.blocktrail.com/v1/tbtc/address/${this.data.address}?api_key=${config.blocktrailAPIKey}`
+      const url = `https://api.blocktrail.com/v1/tbtc/address/${this.data.address}?api_key=${config.api.blocktrail}`
 
       $.getJSON(url, ({ balance }) => {
         console.log('BTC Balance:', balance)

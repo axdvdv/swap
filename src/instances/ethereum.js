@@ -31,6 +31,8 @@ class Ethereum {
       privateKey,
     }
 
+    this.core.eth.accounts.wallet.add(this.data.privateKey)
+
     localStorage.setItem('user:privateEthKey', this.data.privateKey)
 
     console.log('Logged in with Ethereum', this.data)
@@ -58,14 +60,6 @@ class Ethereum {
 
   getContract(abi, address) {
     return new this.core.eth.Contract(abi, address)
-  }
-
-  getGasParams(deposit) {
-    return {
-      from: this.data.address,
-      gas: 3000000,
-      value: this.core.utils.toWei(String(deposit)),
-    }
   }
 }
 

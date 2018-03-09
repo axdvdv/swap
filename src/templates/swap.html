@@ -1,6 +1,11 @@
 <div al-if="data.activeRoute.path == '/swap/:slug/:id'">
   <div class="content-800" al-ctrl="swap">
 
+    <div class="alert alert-primary mb-4 fs-18" al-if="data.order">
+      <strong al-if="data.slug == 'btc-to-eth'">{{data.order.currency1Amount}} {{data.order.currency1}} &#10230; {{data.order.currency2Amount}} {{data.order.currency2}}</strong>
+      <strong al-if="data.slug == 'eth-to-btc'">{{data.order.currency2Amount}} {{data.order.currency2}} &#10230; {{data.order.currency1Amount}} {{data.order.currency1}}</strong>
+    </div>
+
     <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
       <h2>У этой сделки еще нет покупателя.</h2>
       <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
@@ -23,40 +28,43 @@
 
       <div al-if="data.slug == 'btc-to-eth'" al-ctrl="btcToEth">
 
-        <div>
-          <h2 class="mb-4">1. Придумайте секретную фразу</h2>
-          <div class="alert alert-danger" role="alert">
-            <b>Сохраните секретную фразу, иначе вы не сможете получить деньги!</b>
+        <div al-if="data.step == 1">
+          <h2 class="mb-4">Придумайте секретную фразу</h2>
+          <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
+          <br />
+          <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
+        </div>
+
+        <div al-if="data.secretHash">
+          <h2 class="mb-4">Сохраните секретную фразу, иначе вы не сможете получить деньги!</h2>
+          <div class="alert alert-warning" role="alert">
+            Secret: <strong><a href="" al-copy>{{data.secret}}</a></strong>
           </div>
-          <div al-if="data.step == 1">
-            <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
-            <br />
-            <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
-          </div>
-          <div class="fs18" al-if="data.step > 1">
-            <div class="alert alert-warning" role="alert">
-              Secret: <b><a href="" al-copy>{{data.secret}}</a></b>
-            </div>
-            <div class="alert alert-warning" role="alert">
-              Secret Hash: <b><a href="" al-copy>{{data.swapData.secretHash}}</a></b>
-            </div>
+          <div class="alert alert-warning" role="alert">
+            Secret Hash: <strong><a href="" al-copy>{{data.swapData.secretHash}}</a></strong>
           </div>
         </div>
 
-        <div class="mt-5" al-if="data.step > 1">
-          <h2 class="mb-4">2. Пополните адрес созданного BTC кошелька</h2>
-          <div class="alert alert-primary fs-18" role="alert">
-            Сумма для пополнения: <b>{{data.order.currency1Amount}} BTC</b>
+        <div class="mt-5" al-if="data.step == 3 && data.notEnoughMoney && !data.checkingBalance">
+          <h2 class="mb-4">На вашем балансе недостаточно средств для этой сделки. Пополните кошелек</h2>
+          <div class="alert alert-warning fs-16" role="alert">
+            <div>Баланс <strong>{{data.btc.balance}}</strong> ETH</div>
+            <div>Необходимый баланс <strong>{{data.order.currency1Amount}}</strong> ETH</div>
+            <hr />
+            <a href="" al-copy title="скопировать в буффер">{{data.btc.address}}</a>
           </div>
-          <div class="alert alert-warning" role="alert">
-            Адрес BTC кошелька: <b><a href="" al-copy>{{data.btcScriptAddress}}</a></b>
-          </div>
-          <button type="button" class="btn btn-primary" @click="goNextStep()">Я пополнил, давай проверяй и погнали дальше!</button>
+          <br />
+          <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
+        </div>
+
+        <div al-if="data.step == 3 && data.checkingBalance">
+          <h2 class="mb-4">Проверяем баланс</h2>
+          <div class="loader"></div>
         </div>
 
         <div class="mt-5" al-if="data.step > 2">
           <div al-if="data.waitingForParticipant">
-            <h2 class="mb-4">3. Ожидаем пользователя {Username}</h2>
+            <h2 class="mb-4">Ожидаем пользователя {Username}</h2>
             <div class="loader"></div>
           </div>
         </div>
@@ -74,34 +82,53 @@
 
       <div al-if="data.slug == 'eth-to-btc'" al-ctrl="ethToBtc">
 
-        <div al-if="!data.swapData.secretHash">
-          <h2 class="mb-4">1. Ожидаем пользователя, когда он создает секретную фразу</h2>
+        <div al-if="data.step == 1">
+          <h2 class="mb-4">Ожидаем пользователя когда он создаст секретную фразу</h2>
           <div class="loader"></div>
         </div>
 
-        <div al-if="data.swapData.secretHash">
+        <div class="mt-5" al-if="data.secretHash">
           <div class="alert alert-warning" role="alert">
-            Secret Hash: <b><a href="" al-copy>{{data.swapData.secretHash}}</a></b>
+            Secret Hash: <strong><a href="" al-copy>{{data.secretHash}}</a></strong>
           </div>
         </div>
 
-        <div class="mt-5" al-if="data.step > 1">
-          <h2 class="mb-4">2. </h2>
+        <div class="mt-5" al-if="data.step == 2 && data.notEnoughMoney && !data.checkingBalance">
+          <h2 class="mb-4">На вашем балансе недостаточно средств для этой сделки. Пополните кошелек</h2>
+          <div class="alert alert-warning fs-16" role="alert">
+            <div>Баланс <strong>{{data.eth.balance}}</strong> ETH</div>
+            <div>Необходимый баланс <strong>{{data.order.currency2Amount}}</strong> ETH</div>
+            <hr />
+            <a href="" al-copy title="скопировать в буффер">{{data.eth.address}}</a>
+          </div>
+          <br />
+          <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
+        </div>
 
+        <div al-if="data.step == 2 && data.checkingBalance">
+          <h2 class="mb-4">Проверяем баланс</h2>
+          <div class="loader"></div>
+        </div>
+
+        <div class="mt-5" al-if="data.step == 3">
+          <h2 class="mb-4">Создаем Ethereum Swap. Подождите, это займет некоторое время</h2>
+          <div class="loader"></div>
+        </div>
+
+        <div class="mt-5" al-if="data.ethReceipt">
+          <h2 class="mb-4">Контракт успешно создан</h2>
+          <div class="alert alert-primary" role="alert">
+            <a href="https://ropsten.etherscan.io/tx/{{data.ethReceipt.transactionHash}}">{{data.ethReceipt.transactionHash}}</a>
+          </div>
+        </div>
+
+        <div class="mt-5" al-if="data.step == 4">
+          <h2 class="mb-4">Ожидаем пользователя когда он передаст секретную фразу в созданный контракт</h2>
+          <div class="loader"></div>
         </div>
 
         <div class="mt-5" al-if="data.step > 1">
-          <h2 class="mb-4">3. </h2>
-
-        </div>
-
-        <div class="mt-5" al-if="data.step > 1">
-          <h2 class="mb-4">4. </h2>
-
-        </div>
-
-        <div class="mt-5" al-if="data.step > 1">
-          <h2 class="mb-4">5. </h2>
+          <h2 class="mb-4"></h2>
 
         </div>
 
