@@ -26,11 +26,6 @@ class Ethereum {
       this.core.eth.accounts.wallet.save('qwerty123')
     }
 
-    this.data = {
-      ...this.data,
-      privateKey,
-    }
-
     this.core.eth.accounts.wallet.add(this.data.privateKey)
 
     localStorage.setItem('user:privateEthKey', this.data.privateKey)
