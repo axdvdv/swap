@@ -3,6 +3,7 @@ import bitcoin from 'bitcoinjs-lib'
 import localStorage from 'helpers/localStorage'
 import config from 'helpers/config'
 import EA from './EA'
+import {user} from "./index";
 
 
 class Bitcoin {
@@ -52,9 +53,46 @@ class Bitcoin {
     return this.data
   }
 
+  getTransaction() {
+
+    return new Promise((resolve) => {
+
+      if (this.data.address) {
+        const url = `https://api.blocktrail.com/v1/tbtc/address/${this.data.address}/transactions?api_key=${config.api.blocktrail}`
+        let transactions = [];
+        $.getJSON(url, (r) => {
+
+          if(r.status) {
+
+            $.each(r.result, function (k, i) {
+
+              transactions.push(
+                {
+                  status: i.blockHash != null ? 1 : 0,
+                  value: i.value / 100000000,
+                  address: i.to,
+                  date: i.timeStamp,
+                  type: this.data.address.toLowerCase() == i.to.toLowerCase() ? 'in' : 'out'
+                });
+            })
+
+            resolve(transactions)
+
+            EA.dispatchEvent('btc:updateTransactions', transactions.reverse())
+
+          } else {
+
+            console.log(r.result)
+          }
+        });
+      }
+    })
+  }
+
   getBalance() {
     return new Promise((resolve) => {
       const url = `https://api.blocktrail.com/v1/tbtc/address/${this.data.address}?api_key=${config.api.blocktrail}`
+
 
       $.getJSON(url, ({ balance }) => {
         console.log('BTC Balance:', balance)

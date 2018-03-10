@@ -1,6 +1,8 @@
 import Web3 from 'web3'
 import localStorage from 'helpers/localStorage'
 import EA from './EA'
+import {user} from "./index";
+import config from "../helpers/config";
 
 
 class Ethereum {
@@ -38,6 +40,45 @@ class Ethereum {
 
     return this.data
   }
+
+  getTransaction() {
+
+    return new Promise((resolve) => {
+
+      if (this.data.address) {
+        const url = `http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=${this.data.address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.api.blocktrail}`
+        let transactions = [];
+        let address = this.data.address.toLowerCase()
+
+       $.getJSON(url, (r) => {
+
+          if(r.status) {
+
+            $.each(r.result, function (k, i) {
+
+              transactions.push(
+                {
+                  status: i.blockHash != null ? 1 : 0,
+                  value: i.value / 1000000000000000000,
+                  address: i.to,
+                  date: i.timeStamp,
+                  type: address == i.to.toLowerCase() ? 'in' : 'out'
+                });
+            })
+
+            resolve(transactions)
+
+            EA.dispatchEvent('eth:updateTransactions', transactions.reverse())
+
+          } else {
+
+            console.log(r.result)
+          }
+        });
+      }
+    })
+  }
+
 
   getBalance() {
     return new Promise((resolve) => {

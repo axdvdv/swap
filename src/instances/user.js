@@ -35,6 +35,13 @@ class User {
     this.btcData = bitcoin.login()
   }
 
+  getTransactions() {
+
+    ethereum.getTransaction()
+    bitcoin.getTransaction()
+    //bitcoin.login()
+  }
+
   getBalances() {
     ethereum.getBalance()
     bitcoin.getBalance()

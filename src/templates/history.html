@@ -25,11 +25,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr al-repeat="it in ethTransactions"  class="{{it.type}}">
+                  <tr al-repeat="it in ethTransactions" al-class="text-success: it.type == 'in', text-danger:it.type == 'out' "  al-init="total_eth += it.value">
                     <td>{{it.value}}</td>
                     <td>{{it.address}}</td>
-                    <td>1</td>
-                    <td>{{it.status}}</td>
+                    <td>{{it.date}}</td>
+                    <td>{{it.status == 1  ? "complete" : "pending"}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -54,7 +54,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr al-repeat="it in btcTransactions"  class="{{it.type}}" >
+                  <tr al-repeat="it in btcTransactions"  al-class="text-success: it.type == 'in', text-danger:it.type == 'out' "  al-init="total_btc += it.value" >
                     <td>{{it.value}}</td>
                     <td>{{it.address}}</td>
                     <td>{{it.date | date:yyyy-mm-dd}}</td>

@@ -1,5 +1,6 @@
 import alight from 'alight'
 import { user } from 'instances'
+import {EA} from "../instances";
 
 
 const history = {
@@ -9,11 +10,13 @@ const history = {
 alight.controllers.history = function (scope) {
   console.log('history controller!')
 
+  scope.total_eth = 0;
+  scope.total_eth = 0;
   scope.BTCTransaction = function () {
 
 
     let transactions = [];
-    scope.total_btc = 0;
+
     if (user.btcData.address) {
       const url = 'https://api.blocktrail.com/v1/tbtc/address/' + user.btcData.address + '/transactions?api_key=MY_APIKEY'
       $.getJSON(url, (r) => {
@@ -46,44 +49,27 @@ alight.controllers.history = function (scope) {
 
   }
 
-  scope.ETHTransaction = function () {
 
 
-    scope.total_eth = 0;
-    if (user.ethData.address) {
-      let eth_address = user.ethData.address;
-      const url = 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=' + eth_address + '&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken'
-      let transactions = [];
-
-
-      $.getJSON(url, (r) => {
-
-
-        $.each(r.result, function (k, i) {
-
-          transactions.push(
-            {
-              status: i.blockHash != null ? 1 : 0,
-              value: i.value / 1000000000000000,
-              address: i.to,
-              date: i.timeStamp,
-              type: eth_address.toLowerCase() == i.to.toLowerCase() ? 'text-success' : 'text-danger'
-            });
-
-          scope.total_eth += i.value / 1000000000000000
-        })
-
-        scope.ethTransactions = transactions.reverse();
-        scope.$scan()
-      });
-
-      return transactions;
-    }
+  scope.init = () => {
+    user.getTransactions();
 
   }
 
-  scope.BTCTransaction();
-  scope.ETHTransaction();
+  scope.init()
+
+  EA.subscribe('eth:updateTransactions', (transactions) => {
+    console.log(transactions)
+    scope.ethTransactions = transactions;
+
+    scope.$scan()
+  })
+
+  EA.subscribe('btc:updateTransactions', (transactions) => {
+    scope.btcTransactions = transactions;
+
+    scope.$scan()
+  })
 
   history.scope = scope
 }
