@@ -11,6 +11,8 @@ class Ethereum {
       address: '0x0',
       balance: 0,
     }
+
+    window.ethereum = this
   }
 
   login() {

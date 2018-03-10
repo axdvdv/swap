@@ -245,16 +245,6 @@ alight.controllers.main = function(scope) {
   scope.init()
   scope.getCurrentExchangeRate()
 
-  EA.subscribe('eth:login', (data) => {
-    scope.data.eth = data
-    scope.$scan()
-  })
-
-  EA.subscribe('btc:login', (data) => {
-    scope.data.btc = data
-    scope.$scan()
-  })
-
   EA.subscribe('eth:updateBalance', (balance) => {
     scope.data.eth.balance = balance
     scope.$scan()
