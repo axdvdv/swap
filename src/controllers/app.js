@@ -22,12 +22,15 @@ alight.controllers.app = function (scope) {
 
   function checkIfInitialized() {
     if (loggedWith.eth && loggedWith.btc) {
-      console.log('App initialized!')
+      // put call to the end of call stack
+      setTimeout(() => {
+        console.log('App initialized!')
 
-      scope.data.initialized = true
-      scope.$scan()
+        scope.data.initialized = true
+        scope.$scan()
 
-      EA.dispatchEvent('app:ready')
+        EA.dispatchEvent('app:ready')
+      }, 0)
     }
   }
 

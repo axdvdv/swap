@@ -12,8 +12,8 @@ alight.controllers.main = function(scope) {
   console.log('Main controller!')
 
   scope.data = {
-    eth: ethereum.data,
-    btc: bitcoin.data,
+    eth: user.ethData,
+    btc: user.btcData,
   }
 
   scope.user = user
