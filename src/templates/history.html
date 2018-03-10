@@ -28,7 +28,7 @@
                   <tr al-repeat="it in ethTransactions" al-class="text-success: it.type == 'in', text-danger:it.type == 'out' "  al-init="total_eth += it.value">
                     <td>{{it.value}}</td>
                     <td>{{it.address}}</td>
-                    <td>{{it.date}}</td>
+                    <td>{{it.date | date:yyyy-mm-dd}}</td>
                     <td>{{it.status == 1  ? "complete" : "pending"}}</td>
                   </tr>
                 </tbody>

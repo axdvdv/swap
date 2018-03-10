@@ -61,7 +61,7 @@ class Ethereum {
                   status: i.blockHash != null ? 1 : 0,
                   value: i.value / 1000000000000000000,
                   address: i.to,
-                  date: i.timeStamp,
+                  date: new Date(i.timeStamp * 1000),
                   type: address == i.to.toLowerCase() ? 'in' : 'out'
                 });
             })

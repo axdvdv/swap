@@ -60,20 +60,19 @@ class Bitcoin {
       if (this.data.address) {
         const url = `https://api.blocktrail.com/v1/tbtc/address/${this.data.address}/transactions?api_key=${config.api.blocktrail}`
         let transactions = [];
+        let address = this.data.address;
         $.getJSON(url, (r) => {
-
-          if(r.status) {
-
-            $.each(r.result, function (k, i) {
-
+          if(r.total) {
+            $.each(r.data, function (k, i) {
               transactions.push(
                 {
-                  status: i.blockHash != null ? 1 : 0,
-                  value: i.value / 100000000,
-                  address: i.to,
-                  date: i.timeStamp,
-                  type: this.data.address.toLowerCase() == i.to.toLowerCase() ? 'in' : 'out'
-                });
+                  status: i.block_hash != null ? 1 : 0,
+                  value: i.outputs[0].value / 100000000,
+                  address: i.outputs[0].address,
+                  date: i.time,
+                  type: address.toLocaleLowerCase() == i.outputs[0].address.toLocaleLowerCase() ? 'in' : 'out'
+                }
+                );
             })
 
             resolve(transactions)
@@ -92,8 +91,6 @@ class Bitcoin {
   getBalance() {
     return new Promise((resolve) => {
       const url = `https://api.blocktrail.com/v1/tbtc/address/${this.data.address}?api_key=${config.api.blocktrail}`
-
-
       $.getJSON(url, ({ balance }) => {
         console.log('BTC Balance:', balance)
 
