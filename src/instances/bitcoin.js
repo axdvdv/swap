@@ -14,6 +14,8 @@ class Bitcoin {
       address: '0x0',
       balance: 0,
     }
+
+    window.bitcoin = this
   }
 
   login() {
