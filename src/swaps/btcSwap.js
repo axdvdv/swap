@@ -51,7 +51,10 @@ const fundScript = async (script, amount) => {
     })
     tx.addOutput(scriptAddress, fundValue)
     tx.addOutput(bitcoin.data.address, skipValue)
-    tx.sign(0, bitcoin.data.keyPair)
+    
+    tx.inputs.forEach(function(_input,_num){
+      tx.sign(_num, _bitcoin2.default.data.keyPair);
+	  })
 
     const txRaw = tx.buildIncomplete().toHex()
 
