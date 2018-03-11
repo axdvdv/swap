@@ -1,7 +1,7 @@
 import alight from 'alight'
 import crypto from 'swap-crypto'
 import { localStorage } from 'helpers'
-import { EA, room, ethereum, bitcoin } from 'instances'
+import { EA, user, room, ethereum, bitcoin } from 'instances'
 import { ethSwap, btcSwap } from 'swaps'
 
 
@@ -72,7 +72,7 @@ alight.controllers.btcToEth = (scope) => {
     scope.$scan()
 
     console.log(`\n\nSTEP ${scope.data.step}\n`)
-    console.log('\n==================================\n\n')
+    console.log('\n-------------------------------------------\n\n')
 
     if (scope.data.step === 1) {
 
@@ -108,7 +108,7 @@ alight.controllers.btcToEth = (scope) => {
     }
     else if (scope.data.step === 4) {
       btcScript = btcSwap.createScript(scope.data.secretHash, user.btcData.publicKey, swapData.participant.btc.publicKey)
-      btcSwap.addMoney(btcScript, 0.01)
+      btcSwap.fundScript(btcScript, order.currency2Amount)
     }
     else if (scope.data.step === 5) {
 

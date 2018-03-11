@@ -36,10 +36,8 @@ class User {
   }
 
   getTransactions() {
-
     ethereum.getTransaction()
     bitcoin.getTransaction()
-    //bitcoin.login()
   }
 
   getBalances() {
@@ -175,7 +173,7 @@ class User {
     // const txb = new bitcoin.TransactionBuilder(bitcoin.networks.testnet)
     //
     // //https://api.blocktrail.com/v1/btc/address/17hFoVScNKVDfDTT6vVhjYwvCu6iDEiXC4/transactions?api_key=MY_APIKEY
-    // url = 'https://api.blocktrail.com/v1/tbtc/address/'+main.scope.bitcoin_address+'/unspent-outputs?api_key=MY_APIKEY'
+    // url = '${config.api.blocktrail}address/'+main.scope.bitcoin_address+'/unspent-outputs?api_key=MY_APIKEY'
     // jQuery.getJSON(url, (r) => {
     //   txb.addInput(r.data[0].hash, 1)
     //   txb.addOutput(main.scope.withdraw_btc_address, main.scope.withdraw_btc_amount * 100000000)

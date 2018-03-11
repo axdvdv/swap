@@ -29,20 +29,21 @@ const create = ({ secretHash, lockTime }) =>
 
     console.log('Start creating ETH Swap', { arguments: { secretHash: hash, lockTime }, params })
 
-    const receipt = await contract.methods.open(hash, lockTime).send(params)
-      .on('transactionHash', (hash) => {
-        console.log('ETH Swap > transactionHash', `https://ropsten.etherscan.io/tx/${hash}`)
-      })
-      .on('confirmation', (confirmationNumber) => {
-        console.log('ETH Swap > confirmation', confirmationNumber)
-      })
-      .on('error', (err) => {
-        console.error('ETH Swap > receipt', err)
-
-        reject()
-      })
-
-    console.log('ETH Swap created:', receipt)
+    const receipt = {}
+    // const receipt = await contract.methods.open(hash, lockTime).send(params)
+    //   .on('transactionHash', (hash) => {
+    //     console.log('ETH Swap > transactionHash', `https://ropsten.etherscan.io/tx/${hash}`)
+    //   })
+    //   .on('confirmation', (confirmationNumber) => {
+    //     console.log('ETH Swap > confirmation', confirmationNumber)
+    //   })
+    //   .on('error', (err) => {
+    //     console.error('ETH Swap > receipt', err)
+    //
+    //     reject()
+    //   })
+    //
+    // console.log('ETH Swap created:', receipt)
     resolve(receipt)
   })
 

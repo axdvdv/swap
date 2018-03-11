@@ -131,8 +131,8 @@ alight.controllers.main = function(scope) {
 
     const order = user.createOrder({
       id,
-      currency1: 'BTC',
-      currency2: 'ETH',
+      currency1: type === 'buy' ? 'ETH' : 'BTC', // TODO fix this
+      currency2: type === 'buy' ? 'BTC' : 'ETH', // TODO fix this
       currency1Amount: type === 'buy' ? scope.eth : scope.sell_eth, // TODO fix this
       currency2Amount: type === 'buy' ? scope.btc : scope.sell_btc, // TODO fix this
       exchangeRate: scope.eth_exchange_rate, // TODO fix this

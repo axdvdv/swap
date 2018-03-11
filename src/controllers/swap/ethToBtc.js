@@ -70,7 +70,7 @@ alight.controllers.ethToBtc = (scope) => {
     scope.$scan()
 
     console.log(`\n\nSTEP ${scope.data.step}\n`)
-    console.log('\n==================================\n\n')
+    console.log('\n-------------------------------------------\n\n')
 
     if (scope.data.step === 1) {
       console.log('Waiting until owner creates secretHash')

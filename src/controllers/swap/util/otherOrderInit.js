@@ -35,6 +35,9 @@ function notifyOwnerThatIJoined() {
 function waitUntilOwnerJoin() {
   console.log('Wait until owner join this order')
 
+  scope.data.status = processStatusNames.waitingParticipantConnectToDeal
+  scope.$scan()
+
   EA.subscribe('room:swap:ownerJoined', function ({ order: { id: orderId }, owner }) {
     if (order.id === orderId) {
       console.log('Owner joined this order')

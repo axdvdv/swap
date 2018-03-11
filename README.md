@@ -42,9 +42,9 @@ Alice wants to sell BTC and buy ETH, Bob owerthise wants to sell ETH and buy ETH
 * [x] 2. Bob pushes a 'Buy' button in the orders list and is redirected to /eth-to-btc/:id page.
 * [x] 3. Alice is notified about Bob and is redirected to /btc-to-eth/:id page.
 * [x] 4. Alice is asked to create a 'Secret Key'. 
-* [ ] 5. The system automatically generates the 'Secret Hash', shows it to Alice and sends to Bob.
-* [ ] 6. The system automatically calls the ETH Swap contract method to create a swap. 
-* [ ] 7. The system asks Bob to sign the transaction (Bob fund the ETH Swap contract here).
+* [x] 5. The system automatically generates the 'Secret Hash', shows it to Alice and sends to Bob.
+* [x] 6. The system automatically calls the ETH Swap contract method to create a swap.
+* [-] 7. The system asks Bob to sign the transaction (Bob fund the ETH Swap contract here).
 * [x] 8. The system automatically creates a BTC Swap script.
 * [x] 9. Alice is notified that Bob fund the ETH Swap contract. The system asks Alice to fund the script (Alice fund the script here).
 * [x] 10. Bob is notified that Alice fund the script.
