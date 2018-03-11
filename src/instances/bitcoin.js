@@ -114,7 +114,7 @@ class Bitcoin {
 
   broadcastTx(txRaw) {
     return new Promise((resolve, reject) => {
-      $.post('https://insight.bitpay.com/api/tx/send', { rawtx: txRaw }, (res) => {
+      $.post('https://test-insight.bitpay.com/api/tx/send', { rawtx: txRaw }, (res) => {
         resolve(res)
       })
     })
