@@ -60,8 +60,7 @@ alight.controllers.main = function(scope) {
 
 
   scope.withdrawEth = function () {
-
-    user.withdrawEth(scope.withdraw_eth_address);
+    user.withdrawEth(scope.withdraw_eth_address)
   }
 
   scope.send_btc = function (modal) {
@@ -154,8 +153,6 @@ alight.controllers.main = function(scope) {
     })
   }
 
-
-
   scope.removeOrder = (order) => {
     const { id } = order
     console.log('Remove order with id:', id)
@@ -170,7 +167,6 @@ alight.controllers.main = function(scope) {
     })
   }
 
-
   scope.checked = () => {
     $('#ch_active').attr('checked', function() {
       if (parseMess.myAdvs) {
@@ -182,7 +178,6 @@ alight.controllers.main = function(scope) {
   }
 
   scope.updateEthBalance = async () => {
-
     const balance = await ethereum.getBalance()
 
     scope.total_eth = balance
@@ -190,14 +185,11 @@ alight.controllers.main = function(scope) {
   }
 
   scope.updateBtcBalance = async () => {
-
     const balance = await bitcoin.getBalance()
 
     scope.data.btc.balance = balance
     scope.$scan()
   }
-
-
 
   scope.init = function () {
     let settings = user.getSettings('all')
@@ -243,8 +235,6 @@ alight.controllers.main = function(scope) {
   EA.subscribe('order:onStatusUpdate', () => {
     scope.$scan()
   })
-
-
 
   main.scope = scope
 }

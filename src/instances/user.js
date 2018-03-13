@@ -57,38 +57,36 @@ class User {
       },
     }
   }
-  saveSettings(data) {
 
-    let settings =  localStorage.getItem(this.localStorageName) || {};
-    settings = merge(settings, data);
+  saveSettings(data) {
+    let settings = localStorage.getItem(this.localStorageName) || {}
+    settings = merge(settings, data)
 
     console.log(settings)
 
-    if(1) {
-      localStorage.setItem(this.localStorageName,  settings)
+    if (true) {
+      localStorage.setItem(this.localStorageName, settings)
     }
   }
 
   getSettings(name) {
+    let settings = localStorage.getItem('user:settings')
 
-    let settings =  localStorage.getItem('user:settings');
-    if(name == 'all') {
-
-      return settings;
+    if (name === 'all') {
+      return settings
     }
 
     if(settings[name]) {
-
-      return settings[name];
+      return settings[name]
     }
+
     console.log(`setting {$name} is missing`)
-    return false;
+
+    return false
   }
 
   withdrawEth(to, amount) {
-
-
-    this.saveSettings({withdraw_eth_address: to});
+    this.saveSettings({withdraw_eth_address: to})
 
     ethereum.core.eth.getBalance(this.ethData.address).then((r) => {
       try {

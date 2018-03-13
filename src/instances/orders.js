@@ -13,17 +13,12 @@ class Orders extends Collection {
     this.onMount()
   }
 
-  updateExchanges()
-  {
-
-
-
-        $.getJSON('https://noxonfund.com/curs.php', ({ price_btc }) => {
-          scope.eth_exchange_rate = price_btc
-          scope.btc_exchange_rate = price_btc
-          scope.$scan()
-        })
-
+  updateExchanges() {
+    $.getJSON('https://noxonfund.com/curs.php', ({ price_btc }) => {
+      // scope.eth_exchange_rate = price_btc
+      // scope.btc_exchange_rate = price_btc
+      // scope.$scan()
+    })
   }
 
   onMount() {

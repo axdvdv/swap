@@ -7,12 +7,12 @@ import user from './user'
 import ipfs from './ipfs'
 import ethereum from './ethereum'
 import bitcoin from './bitcoin'
-import exchange from './exchange'
+// import exchange from './exchange'
 
 
 export {
   EA,
-  exchange,
+  // exchange,
   notifications,
   orders,
   myOrders,

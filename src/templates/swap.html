@@ -57,8 +57,23 @@
           <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
         </div>
 
-        <div al-if="data.step == 3 && data.checkingBalance">
+        <div class="mt-5" al-if="data.step == 3 && data.checkingBalance">
           <h2 class="mb-4">Проверяем баланс</h2>
+          <div class="loader"></div>
+        </div>
+
+        <div class="mt-5" al-if="data.step == 4">
+          <h2 class="mb-4">Создаем Bitcoin Swap скрипт. Подождите, это займет некоторое время</h2>
+          <div class="loader"></div>
+        </div>
+
+        <div class="mt-5" al-if="data.step == 5">
+          <h2 class="mb-4">Пополняем баланс Bitcoin Swap скрипта. Подождите, это займет некоторое время</h2>
+          <div class="loader"></div>
+        </div>
+
+        <div class="mt-5" al-if="data.step == 6">
+          <h2 class="mb-4">Мы отправили созданный скрипт и secretHash участнику сделки. Ожидаем когда он создаст ETH Swap контракт</h2>
           <div class="loader"></div>
         </div>
 
@@ -69,14 +84,45 @@
 
       <div al-if="data.slug == 'eth-to-btc'" al-ctrl="ethToBtc">
 
-        <div al-if="data.step == 1">
-          <h2 class="mb-4">Ожидаем пользователя когда он создаст секретную фразу</h2>
+        <div al-if="data.step == 1 && !(data.secretHash || data.btcScriptData)">
+          <h2 class="mb-4">Ожидаем пользователя когда он создаст секретную фразу и пополнит BTC Swap скрипт</h2>
           <div class="loader"></div>
         </div>
 
-        <div class="mt-5" al-if="data.secretHash">
+        <div class="mt-5" al-if="data.secretHash && data.btcScriptData">
+          <h2 class="mb-4">Bitcoin Swap скрипт успешно создан и пополнен. Проверьте информацию ниже, если требуется</h2>
           <div class="alert alert-warning" role="alert">
             Secret Hash: <strong><a href="" al-copy>{{data.secretHash}}</a></strong>
+          </div>
+          <div class="alert alert-warning" role="alert">
+            <!--div>Баланс <strong>{{data.btcScriptData.balance}}</strong> BTC</div>
+            <hr /-->
+            Адрес скрипта: <strong><a href="https://www.blocktrail.com/tBTC/address/{{data.btcScriptData.address}}" target="_blank">{{data.btcScriptData.address}}</a></strong>
+          </div>
+          <pre>
+            <code class="code">
+  bitcoinjs.script.compile([
+    '{{data.btcScriptData.btcOwnerPublicKey}}',
+    bitcoin.core.opcodes.OP_CHECKSIG,
+
+    bitcoin.core.opcodes.OP_IF,
+    bitcoin.core.script.number.encode({{data.btcScriptData.lockTime}}),
+    bitcoin.core.opcodes.OP_CHECKLOCKTIMEVERIFY,
+    bitcoin.core.opcodes.OP_ENDIF,
+
+    '{{data.btcScriptData.ethOwnerPublicKey}}',
+    bitcoin.core.opcodes.OP_CHECKSIG,
+
+    bitcoin.core.opcodes.OP_IF,
+    bitcoin.core.opcodes.OP_RIPEMD160,
+    Buffer.from('{{data.btcScriptData.secretHash}}', 'hex'),
+    bitcoin.core.opcodes.OP_EQUALVERIFY,
+    bitcoin.core.opcodes.OP_ENDIF,
+  ])
+            </code>
+          </pre>
+          <div class="mt-3" al-if="data.step == 1">
+            <button type="button" class="btn btn-primary" @click="goNextStep()">Я проверил</button>
           </div>
         </div>
 
@@ -92,13 +138,16 @@
           <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
         </div>
 
-        <div al-if="data.step == 2 && data.checkingBalance">
+        <div class="mt-5" al-if="data.step == 2 && data.checkingBalance">
           <h2 class="mb-4">Проверяем баланс</h2>
           <div class="loader"></div>
         </div>
 
         <div class="mt-5" al-if="data.step == 3">
           <h2 class="mb-4">Создаем Ethereum Swap. Подождите, это займет некоторое время</h2>
+          <div class="alert alert-warning" role="alert">
+            Транзакция: <strong><a href="{{data.ethSwapCreationTransactionUrl}}" target="_blank">{{data.ethSwapCreationTransactionUrl}}</a></strong>
+          </div>
           <div class="loader"></div>
         </div>
 
@@ -110,7 +159,7 @@
         </div>
 
         <div class="mt-5" al-if="data.step == 4">
-          <h2 class="mb-4">Ожидаем пользователя когда он передаст секретную фразу в созданный контракт</h2>
+          <h2 class="mb-4">Ожидаем пользователя когда он передаст секретную фразу в созданный ETH Swap контракт</h2>
           <div class="loader"></div>
         </div>
 
