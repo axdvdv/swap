@@ -264,7 +264,7 @@
     <!-- Modal -->
     <div class="modal fade" id="withdraw_eth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
-        <form action="" al-submit="send_eth('#withdraw_eth')">
+        <form action="" al-submit="withdrawEth('#withdraw_eth')">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title" id="myModalLabel">Вывести ETH</h4>
@@ -276,7 +276,7 @@
               <div class="form-group">
                 <label>Адрес</label>
                 <div class="input-group mb-3">
-                  <input class="form-control" value="" al-value="withdraw_eth_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
+                  <input class="form-control" value="" pattern="(0x){1}[0-9a-fA-F]{40}" al-value="withdraw_eth_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
 
                 </div>
               </div>

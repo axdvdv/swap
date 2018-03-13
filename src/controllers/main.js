@@ -59,15 +59,9 @@ alight.controllers.main = function(scope) {
   }
 
 
-  scope.send_eth = function (modal) {
-    scope.saveApps()
-    scope.$scan()
-    user.sendTransactionEth(modal)
+  scope.withdrawEth = function () {
 
-    // var m = $(modal)
-    // if (m.length > 0) {
-    //     m.modal('hide')
-    // }
+    user.withdrawEth(scope.withdraw_eth_address);
   }
 
   scope.send_btc = function (modal) {
@@ -75,10 +69,6 @@ alight.controllers.main = function(scope) {
     scope.$scan()
     user.sendTransactionBtc(modal)
 
-    // var m = $(modal)
-    // if (m.length > 0) {
-    //     m.modal('hide')
-    // }
   }
 
   scope.saveApps = function () {
@@ -102,7 +92,6 @@ alight.controllers.main = function(scope) {
       console.log(e)
     }
   }
-
   scope.showError = (msg) => {
     alert(msg)
   }
@@ -181,25 +170,6 @@ alight.controllers.main = function(scope) {
     })
   }
 
-  // scope.sell_checked = function () {
-  //   $('#sell_ch_active').attr('checked', function() {
-  //     if (parseMess.myAdvs) {
-  //       return parseMess.myAdvs.active
-  //     }
-  //
-  //     return true
-  //   })
-  // }
-  //
-  // scope.checked = function () {
-  //   $('#ch_active').attr('checked', function() {
-  //     if (parseMess.myAdvs) {
-  //       return parseMess.myAdvs.active
-  //     }
-  //
-  //     return true
-  //   })
-  // }
 
   scope.checked = () => {
     $('#ch_active').attr('checked', function() {
@@ -230,20 +200,20 @@ alight.controllers.main = function(scope) {
 
 
   scope.init = function () {
-    let my_setting = localStorage.getItem('my_setting')
+    let settings = user.getSettings('all')
 
-    if (my_setting) {
-      my_setting = JSON.parse(my_setting)
+    scope.getCurrentExchangeRate()
 
-      scope.withdraw_eth_address = my_setting.withdraw_eth_address
-      scope.withdraw_btc_address = my_setting.withdraw_btc_address
+    if (settings) {
+
+      scope.withdraw_eth_address = settings.withdraw_eth_address
+      scope.withdraw_btc_address = settings.withdraw_btc_address
     }
 
     scope.$scan()
   }
 
   scope.init()
-  scope.getCurrentExchangeRate()
 
   EA.subscribe('eth:updateBalance', (balance) => {
     scope.data.eth.balance = balance

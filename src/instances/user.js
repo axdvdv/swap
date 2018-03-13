@@ -5,6 +5,8 @@ import { ethSwap } from 'swaps'
 import bitcoin from './bitcoin'
 import ethereum from './ethereum'
 import EA from './EA'
+import { merge } from 'lodash'
+
 
 
 class User {
@@ -13,6 +15,7 @@ class User {
     this.peer = null
     this.ethData = ethereum.data
     this.btcData = bitcoin.data
+    this.localStorageName = 'user:settings';
 
     window.user = this
 
@@ -54,29 +57,65 @@ class User {
       },
     }
   }
+  saveSettings(data) {
 
-  sendTransactionEth(modal) {
+    let settings =  localStorage.getItem(this.localStorageName) || {};
+    settings = merge(settings, data);
+
+    console.log(settings)
+
+    if(1) {
+      localStorage.setItem(this.localStorageName,  settings)
+    }
+  }
+
+  getSettings(name) {
+
+    let settings =  localStorage.getItem('user:settings');
+    if(name == 'all') {
+
+      return settings;
+    }
+
+    if(settings[name]) {
+
+      return settings[name];
+    }
+    console.log(`setting {$name} is missing`)
+    return false;
+  }
+
+  withdrawEth(to, amount) {
+
+
+    this.saveSettings({withdraw_eth_address: to});
+
     ethereum.core.eth.getBalance(this.ethData.address).then((r) => {
       try {
-        main.scope.balance = ethereum.core.utils.fromWei(r)
 
-        if (!main.scope.balance) {
+        let balance = ethereum.core.utils.fromWei(r)
+
+
+        if (!balance) {
           // throw new Error('Ваш баланс пуст')
           showMess('Ваш баланс пуст', 5, 0)
           return false
         }
 
-        if (main.scope.balance < main.scope.withdraw_eth_amount) {
+        if (balance < amount) {
           // throw new Error('На вашем балансе недостаточно средств')
           showMess('На вашем балансе недостаточно средств', 5, 0)
           return false
         }
 
-        if (!ethereum.core.utils.isAddress(main.scope.withdraw_eth_address)) {
+        if (!ethereum.core.utils.isAddress(to)) {
           // throw new Error('Не верный адрес')
           showMess('Не верный адрес', 5, 0)
           return false
         }
+
+
+        return
 
         const t = {
           from: main.scope.address,
@@ -94,24 +133,10 @@ class User {
             showMess('Good', 5, 1)
 
             console.log('good')
-
             const m = $(modal)
 
-            if (m.length > 0) {
-              m.modal('hide')
-            }
           })
           .catch(error => console.error(error))
-
-        // ethereum.core.eth.sendTransaction({
-        //   from: main.scope.address,
-        //   to: main.scope.withdraw_eth_address,
-        //   amount: ethereum.core.utils.toWei(main.scope.withdraw_eth_amount.toString())
-        // }).then(function(err, resp) {
-        //   showMess('Error', 5, 0)
-        //   console.log(err)
-        //   console.log(resp)
-        // })
       }
       catch (e) {
         main.scope.showError(e)
