@@ -18,22 +18,12 @@ alight.controllers.main = function(scope) {
 
   scope.user = user
   scope.orders = orders
-  scope.advs = []
-  scope.balance = 0
-  scope.address = ''
+  scope.total_btc = 0
+  scope.total_eth = 0
   scope.eth_exchange_rate = ''
   scope.btc_exchange_rate = ''
-  scope.eth = ''
-  scope.btc = ''
-  scope.sell_eth = ''
-  scope.sell_btc = ''
-  scope.total_eth = 0
-  scope.total_btc = 0
-  scope.bitcoin_address = 0
-  scope.min_withdraw_eth = 0.01
-  scope.min_withdraw_btc = 0.1
-  scope.my_setting = {}
-  scope.btcTransactions = []
+  scope.withdraw_eth_min_amount = 0.01
+  scope.withdraw_btc_min_amount = 0.1
 
 
   const increaseTotals = (orders) => {
@@ -59,38 +49,30 @@ alight.controllers.main = function(scope) {
   }
 
 
-  scope.withdrawEth = function () {
-    user.withdrawEth(scope.withdraw_eth_address)
+  scope.withdrawEth =  () => {
+
+    user.saveSettings({withdraw_eth_address: scope.withdraw_eth_address});
+    ethereum.send(scope.withdraw_eth_address,  scope.withdraw_eth_amount)
   }
 
-  scope.send_btc = function (modal) {
-    scope.saveApps()
+  scope.withdrawBtc =  () => {
+
+    user.saveSettings({withdraw_btc_address: scope.withdraw_btc_address});
+    bitcoin.send(scope.withdraw_btc_address, scope.withdraw_btc_amount)
+  }
+
+  scope.updateRates = async () => {
+    /**
+     *
+     *   Promise.all([ ethereum.getRate()]).then(values  => {
+       console.log(values)
+     })
+     */
+    scope.eth_exchange_rate = await ethereum.getRate();
+    scope.btc_exchange_rate = await bitcoin.getRate();
     scope.$scan()
-    user.sendTransactionBtc(modal)
-
   }
 
-  scope.saveApps = function () {
-    const mySetting = JSON.stringify({
-      'withdraw_eth_address': scope.withdraw_eth_address,
-      'withdraw_btc_address': scope.withdraw_btc_address,
-    })
-
-    localStorage.setItem('my_setting',  mySetting)
-  }
-
-  scope.getCurrentExchangeRate = () => {
-    try {
-      $.getJSON('https://noxonfund.com/curs.php', ({ price_btc }) => {
-        scope.eth_exchange_rate = price_btc
-        scope.btc_exchange_rate = price_btc
-        scope.$scan()
-      })
-    }
-    catch (e) {
-      console.log(e)
-    }
-  }
   scope.showError = (msg) => {
     alert(msg)
   }
@@ -192,20 +174,17 @@ alight.controllers.main = function(scope) {
   }
 
   scope.init = function () {
+
     let settings = user.getSettings('all')
-
-    scope.getCurrentExchangeRate()
-
     if (settings) {
-
       scope.withdraw_eth_address = settings.withdraw_eth_address
       scope.withdraw_btc_address = settings.withdraw_btc_address
     }
-
     scope.$scan()
   }
 
   scope.init()
+  scope.updateRates()
 
   EA.subscribe('eth:updateBalance', (balance) => {
     scope.data.eth.balance = balance

@@ -4,6 +4,8 @@ import localStorage from 'helpers/localStorage'
 import config from 'helpers/config'
 import EA from './EA'
 import rates from "./rates";
+import {main} from "../controllers";
+import {showMess} from "../helpers";
 
 
 class Bitcoin {
@@ -24,6 +26,51 @@ class Bitcoin {
 
     const rate = rates.getRate()
     return rate;
+  }
+
+  send(to, amount) {
+    const newtx = {
+      inputs: [
+        {
+          addresses: [this.data.address],
+        },
+      ],
+      outputs: [
+        {
+          addresses: [to],
+          value: amount * 100000000,
+        },
+      ],
+    }
+
+    if (amount > this.data.balance) {
+      showMess('На вашем балансе недостаточно средств', 5, 0)
+
+      return false
+    }
+    $.post('https://api.blockcypher.com/v1/btc/test3/txs/new', JSON.stringify(newtx))
+      .then((d) => {
+        // convert response body to JSON
+        let tmptx = d
+
+        // attribute to store public keys
+        tmptx.pubkeys = []
+
+        // build signer from WIF
+        let keys = new bitcoin.ECPair.fromWIF(this.data.keyPair.toWIF(), bitcoin.networks.testnet)
+
+        // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
+        tmptx.signatures = tmptx.tosign.map((tosign, n) => {
+          tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'));
+
+          return keys.sign(BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
+        })
+
+        $.post('https://api.blockcypher.com/v1/btc/test3/txs/send', JSON.stringify(tmptx)).then((r) => {
+          showMess('Платеж прошел', 5, 1)
+        })
+      })
+
   }
 
   login() {
