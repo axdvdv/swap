@@ -57,29 +57,89 @@ class User {
       },
     }
   }
-  saveSettings(data) {
-    let settings =  localStorage.getItem(this.localStorageName) || {};
-    settings = merge(settings, data);
 
-    if(1) { //@todo
-      localStorage.setItem(this.localStorageName,  settings)
+  saveSettings(data) {
+    let settings = localStorage.getItem(this.localStorageName) || {}
+    settings = merge(settings, data)
+
+    console.log(settings)
+
+    if (true) {
+      localStorage.setItem(this.localStorageName, settings)
     }
   }
 
   getSettings(name) {
+    let settings = localStorage.getItem('user:settings')
 
-    let settings =  localStorage.getItem('user:settings');
-    if(name == 'all') {
-
-      return settings;
+    if (name === 'all') {
+      return settings
     }
 
     if(settings[name]) {
-
-      return settings[name];
+      return settings[name]
     }
+
     console.log(`setting {$name} is missing`)
-    return false;
+
+    return false
+  }
+
+  withdrawEth(to, amount) {
+    this.saveSettings({withdraw_eth_address: to})
+
+    ethereum.core.eth.getBalance(this.ethData.address).then((r) => {
+      try {
+
+        let balance = ethereum.core.utils.fromWei(r)
+
+
+        if (!balance) {
+          // throw new Error('Ваш баланс пуст')
+          showMess('Ваш баланс пуст', 5, 0)
+          return false
+        }
+
+        if (balance < amount) {
+          // throw new Error('На вашем балансе недостаточно средств')
+          showMess('На вашем балансе недостаточно средств', 5, 0)
+          return false
+        }
+
+        if (!ethereum.core.utils.isAddress(to)) {
+          // throw new Error('Не верный адрес')
+          showMess('Не верный адрес', 5, 0)
+          return false
+        }
+
+
+        return
+
+        const t = {
+          from: main.scope.address,
+          to: main.scope.withdraw_eth_address,
+          gas: "21000",
+          gasPrice: "20000000000",
+          value: ethereum.core.utils.toWei(main.scope.withdraw_eth_amount.toString())
+        }
+
+        ethereum.core.eth.accounts.signTransaction(t, localStorage.getItem('privateEthKey'))
+          .then((result) => {
+            return ethereum.core.eth.sendSignedTransaction(result.rawTransaction)
+          })
+          .then((receipt) => {
+            showMess('Good', 5, 1)
+
+            console.log('good')
+            const m = $(modal)
+
+          })
+          .catch(error => console.error(error))
+      }
+      catch (e) {
+        main.scope.showError(e)
+      }
+    })
   }
 
   sendTransactionBtc(modal) {

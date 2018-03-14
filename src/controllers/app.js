@@ -1,6 +1,5 @@
 import alight from 'alight'
 import { EA } from 'instances'
-import {orders} from "../instances";
 
 
 const app = {
@@ -14,7 +13,6 @@ alight.controllers.app = function (scope) {
     initialized: false,
     activeRoute: {},
   }
-
 
   const loggedWith = {
     eth: false,
@@ -51,8 +49,6 @@ alight.controllers.app = function (scope) {
     scope.data.activeRoute = params
     scope.$scan()
   })
-
-  
 
   app.scope = scope
 }

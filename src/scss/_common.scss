@@ -56,3 +56,15 @@ body, html {
   text-overflow: ellipsis;
   max-width: 130px;
 }
+
+pre {
+  font-size: 0;
+}
+
+.code {
+  display: block;
+  background-color: #2a2633;
+  font-size: 14px;
+  color: #b7b4c1;
+  border-radius: 4px;
+}

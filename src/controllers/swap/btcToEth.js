@@ -14,8 +14,9 @@ alight.controllers.btcToEth = (scope) => {
 
   const order = scope.$parent.data.order
   const swapData = localStorage.getItem(`swap:${order.id}`) || {}
+  let btcScriptData
 
-  let btcScript
+  window.swapData = swapData
 
   scope.data = {
     order,
@@ -33,6 +34,7 @@ alight.controllers.btcToEth = (scope) => {
     // step 3
 
     // step 4
+    btcScriptData: null,
   }
 
   function checkBalance() {
@@ -71,8 +73,8 @@ alight.controllers.btcToEth = (scope) => {
     scope.data.step++;
     scope.$scan()
 
-    console.log(`\n\nSTEP ${scope.data.step}\n`)
     console.log('\n-------------------------------------------\n\n')
+    console.log(`\nSTEP ${scope.data.step}\n\n`)
 
     if (scope.data.step === 1) {
 
@@ -87,16 +89,6 @@ alight.controllers.btcToEth = (scope) => {
       //   secretHash,
       // })
 
-      room.sendMessageToPeer(swapData.participant.peer, [
-        {
-          event: 'swap:sendSecretHash',
-          data: {
-            orderId: order.id,
-            secretHash,
-          },
-        },
-      ])
-
       scope.goNextStep()
     }
     else if (scope.data.step === 3) {
@@ -107,21 +99,51 @@ alight.controllers.btcToEth = (scope) => {
       }
     }
     else if (scope.data.step === 4) {
-      btcScript = btcSwap.createScript(scope.data.secretHash, user.btcData.publicKey, swapData.participant.btc.publicKey)
-      btcSwap.fundScript(btcScript, order.currency2Amount)
+      btcScriptData = btcSwap.createScript(scope.data.secretHash, user.btcData.publicKey, swapData.participant.btc.publicKey)
+
+      setTimeout(() => {
+        scope.$scan()
+        scope.goNextStep()
+      }, 1500)
     }
     else if (scope.data.step === 5) {
-
+      btcSwap.fundScript(btcScriptData.script, btcScriptData.lockTime, order.currency2Amount)
+        .then(() => {
+          scope.goNextStep()
+        })
     }
     else if (scope.data.step === 6) {
+      room.sendMessageToPeer(swapData.participant.peer, [
+        {
+          event: 'swap:btcScriptCreated',
+          data: {
+            orderId: order.id,
+            secretHash: scope.data.secretHash,
+            btcScriptData,
+          },
+        },
+      ])
 
-    }
-    else if (scope.data.step === 7) {
       EA.subscribe('room:swap:ethSwapCreated', function ({ orderId }) {
         if (order.id === orderId) {
           this.unsubscribe()
+
+          ethSwap.withdraw(scope.data.secret, swapData.participant.eth.address)
+            .then(() => {
+              room.sendMessageToPeer(swapData.participant.peer, [
+                {
+                  event: 'swap:ethWithdrawDone',
+                  data: {
+                    orderId: order.id,
+                  },
+                },
+              ])
+            })
         }
       })
+    }
+    else if (scope.data.step === 7) {
+
     }
     else if (scope.data.step === 8) {
 

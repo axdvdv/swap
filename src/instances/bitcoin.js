@@ -63,11 +63,7 @@ class Bitcoin {
 
   getBalance() {
     return new Promise((resolve) => {
-      const url = `${config.api.blocktrail}/address/${this.data.address}?api_key=${config.apiKeys.blocktrail}`
-
-      $.getJSON(url, ({ balance: wu }) => {
-        const balance = Number(wu) / 1e8
-
+      $.getJSON(`${config.api.bitpay}/addr/${this.data.address}`, ({ balance }) => {
         console.log('BTC Balance:', balance)
 
         this.data.balance = balance
@@ -111,17 +107,15 @@ class Bitcoin {
 
   fetchUnspents() {
     return new Promise((resolve, reject) => {
-      const url = `${config.api.blocktrail}/address/${this.data.address}/unspent-outputs?api_key=${config.apiKeys.blocktrail}`
-
-      $.getJSON(url, (res) => {
-        resolve(res.data)
+      $.getJSON(`${config.api.bitpay}/addr/${this.data.address}/utxo`, (res) => {
+        resolve(res)
       })
     })
   }
 
   broadcastTx(txRaw) {
     return new Promise((resolve, reject) => {
-      $.post('https://test-insight.bitpay.com/api/tx/send', { rawtx: txRaw }, (res) => {
+      $.post(`${config.api.bitpay}/tx/send`, { rawtx: txRaw }, (res) => {
         resolve(res)
       })
     })

@@ -13,8 +13,9 @@ const contract = ethereum.getContract(abi, address)
  * @param {object} data
  * @param {string} data.secretHash
  * @param {number} data.lockTime
+ * @param {function} handleTransaction
  */
-const create = ({ secretHash, lockTime }) =>
+const create = ({ secretHash, lockTime }, handleTransaction) =>
   new Promise(async (resolve, reject) => {
     const hash      = `0x${secretHash.replace(/^0x/, '')}`
     const lockTime  = Math.floor(Date.now() / 1000) + 3600 * 3 // 3 days
@@ -24,30 +25,81 @@ const create = ({ secretHash, lockTime }) =>
     const params = {
       from: user.ethData.address,
       gas: config.eth.gasLimit,
+      // gasPrice: config.eth.gasPrice,
       value: ethereum.core.utils.toWei(String(0.005)),
     }
 
     console.log('Start creating ETH Swap', { arguments: { secretHash: hash, lockTime }, params })
 
-    const receipt = {}
-    // const receipt = await contract.methods.open(hash, lockTime).send(params)
-    //   .on('transactionHash', (hash) => {
-    //     console.log('ETH Swap > transactionHash', `https://ropsten.etherscan.io/tx/${hash}`)
-    //   })
-    //   .on('confirmation', (confirmationNumber) => {
-    //     console.log('ETH Swap > confirmation', confirmationNumber)
-    //   })
-    //   .on('error', (err) => {
-    //     console.error('ETH Swap > receipt', err)
-    //
-    //     reject()
-    //   })
-    //
-    // console.log('ETH Swap created:', receipt)
+    const receipt = await contract.methods.open(hash, lockTime).send(params)
+      .on('transactionHash', (hash) => {
+        console.log('ETH Swap > transactionHash', `https://ropsten.etherscan.io/tx/${hash}`)
+        handleTransaction && handleTransaction(`https://ropsten.etherscan.io/tx/${hash}`)
+      })
+      .on('confirmation', (confirmationNumber) => {
+        // console.log('ETH Swap > confirmation', confirmationNumber)
+      })
+      .on('error', (err) => {
+        console.error('ETH Swap > receipt', err)
+
+        reject()
+      })
+
+    console.log('ETH Swap created:', receipt)
     resolve(receipt)
+  })
+
+const withdraw = (secret, ownerAddress) =>
+  new Promise(async (resolve, reject) => {
+    const params = {
+      from: user.ethData.address,
+      gas: config.eth.gasLimit,
+      // gasPrice: config.eth.gasPrice,
+    }
+
+    console.log('Start withdraw from ETH Swap', { arguments: { secret, ownerAddress }, params })
+
+    const receipt = await contract.methods.withdraw(secret, ownerAddress).send(params)
+      .on('transactionHash', (hash) => {
+        console.log('ETH Swap > transactionHash', `https://ropsten.etherscan.io/tx/${hash}`)
+      })
+      .on('confirmation', (confirmationNumber) => {
+        // console.log('ETH Swap > confirmation', confirmationNumber)
+      })
+      .on('error', (err) => {
+        console.error('ETH Swap > receipt', err)
+
+        reject()
+      })
+
+    console.log('ETH Swap withdraw complete:', receipt)
+    resolve(receipt)
+  })
+
+const getSecret = () =>
+  new Promise(async (resolve, reject) => {
+    console.log('Start getting secret from ETH Swap')
+
+    const secret = await contract.methods.getSecret().call()
+      .on('transactionHash', (hash) => {
+        console.log('ETH Swap > transactionHash', `https://ropsten.etherscan.io/tx/${hash}`)
+      })
+      .on('confirmation', (confirmationNumber) => {
+        // console.log('ETH Swap > confirmation', confirmationNumber)
+      })
+      .on('error', (err) => {
+        console.error('ETH Swap > receipt', err)
+
+        reject()
+      })
+
+    console.log('ETH Swap secret:', secret)
+    resolve(secret)
   })
 
 
 export default {
   create,
+  withdraw,
+  getSecret,
 }

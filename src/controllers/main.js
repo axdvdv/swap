@@ -1,7 +1,7 @@
 import alight from 'alight'
 import sha256 from 'js-sha256'
 import { orderStatuses } from 'helpers'
-import { EA, bitcoin, ethereum, user, room, myOrders, orders, exchange } from 'instances'
+import { EA, bitcoin, ethereum, user, room, myOrders, orders } from 'instances'
 
 
 const main = {
@@ -14,17 +14,26 @@ alight.controllers.main = function(scope) {
   scope.data = {
     eth: user.ethData,
     btc: user.btcData,
-
   }
 
   scope.user = user
   scope.orders = orders
-  scope.total_btc = 0
-  scope.total_eth = 0
+  scope.advs = []
+  scope.balance = 0
+  scope.address = ''
   scope.eth_exchange_rate = ''
   scope.btc_exchange_rate = ''
-  scope.withdraw_eth_min_amount = 0.01
-  scope.withdraw_btc_min_amount = 0.1
+  scope.eth = ''
+  scope.btc = ''
+  scope.sell_eth = ''
+  scope.sell_btc = ''
+  scope.total_eth = 0
+  scope.total_btc = 0
+  scope.bitcoin_address = 0
+  scope.min_withdraw_eth = 0.01
+  scope.min_withdraw_btc = 0.1
+  scope.my_setting = {}
+  scope.btcTransactions = []
 
 
   const increaseTotals = (orders) => {
@@ -51,23 +60,37 @@ alight.controllers.main = function(scope) {
 
 
   scope.withdrawEth = function () {
-    user.saveSettings({withdraw_eth_address: scope.withdraw_eth_address});
-    ethereum.send(scope.withdraw_eth_address, scope.withdraw_eth_amount);
-  }
-
-  scope.withdrawBtc = function () {
-
-    user.withdrawEth(scope.withdraw_eth_address, scope.withdraw_eth_amount);
+    user.withdrawEth(scope.withdraw_eth_address)
   }
 
   scope.send_btc = function (modal) {
-
+    scope.saveApps()
+    scope.$scan()
     user.sendTransactionBtc(modal)
 
   }
 
+  scope.saveApps = function () {
+    const mySetting = JSON.stringify({
+      'withdraw_eth_address': scope.withdraw_eth_address,
+      'withdraw_btc_address': scope.withdraw_btc_address,
+    })
 
+    localStorage.setItem('my_setting',  mySetting)
+  }
 
+  scope.getCurrentExchangeRate = () => {
+    try {
+      $.getJSON('https://noxonfund.com/curs.php', ({ price_btc }) => {
+        scope.eth_exchange_rate = price_btc
+        scope.btc_exchange_rate = price_btc
+        scope.$scan()
+      })
+    }
+    catch (e) {
+      console.log(e)
+    }
+  }
   scope.showError = (msg) => {
     alert(msg)
   }
@@ -130,8 +153,6 @@ alight.controllers.main = function(scope) {
     })
   }
 
-
-
   scope.removeOrder = (order) => {
     const { id } = order
     console.log('Remove order with id:', id)
@@ -146,7 +167,6 @@ alight.controllers.main = function(scope) {
     })
   }
 
-
   scope.checked = () => {
     $('#ch_active').attr('checked', function() {
       if (parseMess.myAdvs) {
@@ -158,38 +178,26 @@ alight.controllers.main = function(scope) {
   }
 
   scope.updateEthBalance = async () => {
-
     const balance = await ethereum.getBalance()
 
-    scope.data.eth.balance = balance
+    scope.total_eth = balance
     scope.$scan()
   }
 
   scope.updateBtcBalance = async () => {
-
     const balance = await bitcoin.getBalance()
 
     scope.data.btc.balance = balance
     scope.$scan()
   }
 
-  scope.updateRates = async () => {
-    /**
-     *
-     *   Promise.all([ ethereum.getRate()]).then(values  => {
-       console.log(values)
-     })
-     */
-    scope.eth_exchange_rate = await ethereum.getRate();
-    scope.btc_exchange_rate = await bitcoin.getRate();
-    scope.$scan()
-  }
-
   scope.init = function () {
-``
     let settings = user.getSettings('all')
 
+    scope.getCurrentExchangeRate()
+
     if (settings) {
+
       scope.withdraw_eth_address = settings.withdraw_eth_address
       scope.withdraw_btc_address = settings.withdraw_btc_address
     }
@@ -198,7 +206,6 @@ alight.controllers.main = function(scope) {
   }
 
   scope.init()
-  scope.updateRates()
 
   EA.subscribe('eth:updateBalance', (balance) => {
     scope.data.eth.balance = balance
@@ -226,16 +233,6 @@ alight.controllers.main = function(scope) {
   })
 
   EA.subscribe('order:onStatusUpdate', () => {
-
-    scope.$scan()
-  })
-
-  EA.subscribe('eth:updateRate', (data) => {
-     scope.eth_exchange_rate = data;
-     scope.$scan()
-  })
-  EA.subscribe('btc:updateRate', (data) => {
-    scope.btc_exchange_rate = data;
     scope.$scan()
   })
 

@@ -35,7 +35,7 @@ contract Swaps {
     clean();
   }
 
-  function getSecret() returns (bytes32) {
+  function getSecret() constant returns (bytes32) {
     return secrets[msg.sender];
     clean();
   }
