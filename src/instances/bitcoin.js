@@ -3,6 +3,7 @@ import bitcoin from 'bitcoinjs-lib'
 import localStorage from 'helpers/localStorage'
 import config from 'helpers/config'
 import EA from './EA'
+import rates from "./rates";
 
 
 class Bitcoin {
@@ -17,6 +18,12 @@ class Bitcoin {
     }
 
     window.bitcoin = this
+  }
+
+  async getRate() {
+
+    const rate = rates.getRate()
+    return rate;
   }
 
   login() {

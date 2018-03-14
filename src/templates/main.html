@@ -168,7 +168,7 @@
           <div class="pr-2">
             <div class="d-flex justify-content-between">
               <label>Продают</label>
-              <div>Всего: <span>{{total_eth}} ETH</span></div>
+              <div>Всего: <span>{{data.eth.balance}} ETH</span></div>
             </div>
             <div class="table-responsive">
               <table class="table">
@@ -261,10 +261,10 @@
       </script>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal eth-->
     <div class="modal fade" id="withdraw_eth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
-        <form action="" al-submit="withdrawEth('#withdraw_eth')">
+        <form action="" al-submit="withdrawEth()">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title" id="myModalLabel">Вывести ETH</h4>
@@ -276,7 +276,8 @@
               <div class="form-group">
                 <label>Адрес</label>
                 <div class="input-group mb-3">
-                  <input class="form-control" value="" pattern="(0x){1}[0-9a-fA-F]{40}" al-value="withdraw_eth_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
+                  <input class="form-control" value="" pattern="(0x){1}[0-9a-fA-F]{40}" al-value="withdraw_eth_address" required=""   type="text" placeholder="Адрес"
+                         onkeyup="this.value = this.value.trim()">
 
                 </div>
               </div>
@@ -284,13 +285,13 @@
               <div class="form-group">
                 <label>Сумма</label>
                 <div class="input-group mb-3">
-                  <input class="form-control" onkeyup="this.value=this.value.match(/^[\d.]+$/)" value="" al-init="withdraw_eth_amount = min_withdraw_eth"  al-value="withdraw_eth_amount" required=""
+                  <input class="form-control" onkeyup="this.value=this.value.match(/^[\d.]+$/)" value="" al-init="withdraw_eth_amount = withdraw_eth_min_amount"  al-value="withdraw_eth_amount" required=""
                          type="text" placeholder="Сумма">
                   <div class="input-group-append">
                     <span class="input-group-text">ETH</span>
                   </div>
                 </div>
-                <p class="list-text">мин: <a href="" @click="withdraw_eth_amount=min_withdraw_eth">{{min_withdraw_eth}}</a>, макс <a href="" @click="withdraw_eth_amount=balance">{{balance}}</a>
+                <p class="list-text">мин: <a href="" @click="withdraw_eth_amount=min_withdraw_eth">{{withdraw_eth_min_amount}}</a>, макс <a href="" @click="withdraw_eth_amount=data.eth.balance">{{data.eth.balance}}</a>
                 </p>
               </div>
 
@@ -306,7 +307,7 @@
 
     <div class="modal fade" id="withdraw_btc" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
-        <form action="" al-submit="send_btc('#withdraw_btc')">
+        <form action="" al-submit="withdrawBtc()">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title" >Вывести BTC</h4>
@@ -324,13 +325,13 @@
               <div class="form-group">
                 <label>Сумма</label>
                 <div class="input-group mb-3">
-                  <input class="form-control"  value="" al-init="withdraw_btc_amount = min_withdraw_btc"  al-value="withdraw_btc_amount"required=""   type="text"  >
+                  <input class="form-control"  value="" al-init="withdraw_btc_amount = withdraw_btc_min_amount"  al-value="withdraw_btc_amount"required=""   type="text"  >
                   <div class="input-group-append">
                     <span class="input-group-text">BTC</span>
                   </div>
 
                 </div>
-                <p class="list-text">мин: <a href="" @click="withdraw_btc_amount=min_withdraw_btc">{{min_withdraw_btc}}</a>, макс <a href="" @click="withdraw_btc_amount=bitcoin_balance">{{bitcoin_balance}}</a>
+                <p class="list-text">мин: <a href="" @click="withdraw_btc_amount=min_withdraw_btc">{{withdraw_btc_min_amount}}</a>, макс <a href="" @click="withdraw_btc_amount=bitcoin_balance">{{data.btc.balance}}</a>
                 </p>
               </div>
             </div>

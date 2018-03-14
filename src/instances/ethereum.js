@@ -2,6 +2,10 @@ import Web3 from 'web3'
 import localStorage from 'helpers/localStorage'
 import config from 'helpers/config'
 import EA from './EA'
+import rates from './rates'
+import {showMess} from "../helpers";
+
+
 
 
 class Ethereum {
@@ -10,7 +14,8 @@ class Ethereum {
     this.core = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/JCnK5ifEPH9qcQkX0Ahl"))
     this.data = {
       address: '0x0',
-      balance: 0,
+      balance: 0
+
     }
 
     window.ethereum = this
@@ -85,6 +90,63 @@ class Ethereum {
         })
       }
     })
+  }
+
+  send(to, amount) {
+
+    ethereum.core.eth.getBalance(this.data.address).then((r) => {
+      try {
+
+        let balance = ethereum.core.utils.fromWei(r)
+
+
+        if (!balance) {
+          // throw new Error('Ваш баланс пуст')
+          showMess('Ваш баланс пуст', 5, 0)
+          return false
+        }
+
+        if (balance < amount) {
+          // throw new Error('На вашем балансе недостаточно средств')
+          showMess('На вашем балансе недостаточно средств', 5, 0)
+          return false
+        }
+
+        if (!ethereum.core.utils.isAddress(to)) {
+          // throw new Error('Не верный адрес')
+          showMess('Не верный адрес', 5, 0)
+          return false
+        }
+
+        const t = {
+          from: this.ethData.address,
+          to: to,
+          gas: "21000",
+          gasPrice: "20000000000",
+          value: ethereum.core.utils.toWei(amount.trim())
+        }
+
+        ethereum.core.eth.accounts.signTransaction(t, localStorage.getItem('privateEthKey'))
+          .then((result) => {
+            return ethereum.core.eth.sendSignedTransaction(result.rawTransaction)
+          })
+          .then((receipt) => {
+
+            showMess('Good', 5, 1)
+
+          })
+          .catch(error => console.error(error))
+      }
+      catch (e) {
+        console.error(e)
+      }
+    })
+  }
+
+  getRate()  {
+
+    const rate = rates.getRate()
+    return rate;
   }
 
   getContract(abi, address) {
