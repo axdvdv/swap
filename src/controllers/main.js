@@ -196,12 +196,18 @@ alight.controllers.main = function(scope) {
     scope.$scan()
   })
 
-  EA.subscribe('form:showError', (formId) => {
+  EA.subscribe('form:showError', (formId, messange) => {
 
+    let form = $(formId)
+
+    if(form.length) {
+      form.find('.text-danger').text(messange).slideDown(1000)
+    }
   })
 
-  EA.subscribe('notification', (messange) => {
+  EA.subscribe('form:hideError', (formId, messange) => {
 
+      $('form .text-danger').text('').slideUp(1000)
   })
 
   EA.once('myOrders:onMount', () => {

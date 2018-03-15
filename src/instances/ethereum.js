@@ -91,28 +91,27 @@ class Ethereum {
   }
 
   send(to, amount) {
-
+    EA.dispatchEvent('form:hideError')
     ethereum.core.eth.getBalance(this.data.address).then((r) => {
       try {
         let balance = ethereum.core.utils.fromWei(r)
 
 
         if (balance == 0) {
-          console.log('empty')
           notifications.append({type: 'notification', text: 'Ваш баланс пуст'})
           $('.modal').modal('hide')
           return false
         }
 
         if (balance < amount) {
-          // throw new Error('На вашем балансе недостаточно средств')
-          showMess('На вашем балансе недостаточно средств', 5, 0)
+
+          EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
           return false
         }
 
         if (!ethereum.core.utils.isAddress(to)) {
-          // throw new Error('Не верный адрес')
-          showMess('Не верный адрес', 5, 0)
+
+          EA.dispatchEvent('form:showError', '#withdrawEth', 'Адрес не верный')
           return false
         }
 
@@ -130,7 +129,8 @@ class Ethereum {
           })
           .then((receipt) => {
 
-            showMess('Good', 5, 1)
+            notifications.append({type: 'notification', text: 'Вывод денег'})
+            $('.modal').modal('hide')
 
           })
           .catch(error => console.error(error))
