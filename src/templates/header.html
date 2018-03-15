@@ -18,9 +18,12 @@
         </div>
         <div class="headerNotificationsList dropdown-menu" aria-labelledby="headerBellNavItem">
           <div al-repeat="item in data.notifications.items track by $index">
-            <a class="dropdown-item" href="#" al-link data-link="{{'/swap/btc-to-eth/' + item.id}}">
+            <a al-if="item.type == 'newOrder'" class="dropdown-item" href="#" al-link data-link="{{'/swap/btc-to-eth/' + item.id}}">
               {{item.currency1Amount}} {{item.currency1}} &#10230; {{item.currency2Amount}} {{item.currency2}}
             </a>
+            <div al-if="item.type == 'smthElse'" class="dropdown-item">
+              Smth else
+            </div>
           </div>
         </div>
       </div>

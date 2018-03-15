@@ -22,7 +22,10 @@ class Notifications extends Collection {
           participant,
         })
 
-        this.append(order)
+        this.append({
+          ...order,
+          type: 'newOrder',
+        })
       }
     })
   }
