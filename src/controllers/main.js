@@ -50,13 +50,11 @@ alight.controllers.main = function(scope) {
 
 
   scope.withdrawEth =  () => {
-
     user.saveSettings({withdraw_eth_address: scope.withdraw_eth_address});
     ethereum.send(scope.withdraw_eth_address,  scope.withdraw_eth_amount)
   }
 
   scope.withdrawBtc =  () => {
-
     user.saveSettings({withdraw_btc_address: scope.withdraw_btc_address});
     bitcoin.send(scope.withdraw_btc_address, scope.withdraw_btc_amount)
   }
@@ -80,7 +78,6 @@ alight.controllers.main = function(scope) {
   // check if address was created
   scope.check = () => {
     const address = '' + scope.address
-
     if (!address.length) {
       scope.showError('Адрес не был сгенеррован')
       return false
@@ -160,15 +157,15 @@ alight.controllers.main = function(scope) {
   }
 
   scope.updateEthBalance = async () => {
-    const balance = await ethereum.getBalance()
 
+    const balance = await ethereum.getBalance()
     scope.total_eth = balance
     scope.$scan()
   }
 
   scope.updateBtcBalance = async () => {
-    const balance = await bitcoin.getBalance()
 
+    const balance = await bitcoin.getBalance()
     scope.data.btc.balance = balance
     scope.$scan()
   }

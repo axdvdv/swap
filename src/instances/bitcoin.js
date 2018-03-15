@@ -41,8 +41,7 @@ class Bitcoin {
     }
 
     if (amount > this.data.balance) {
-      showMess('На вашем балансе недостаточно средств', 5, 0)
-
+      EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
       return false
     }
     $.post('https://api.blockcypher.com/v1/btc/test3/txs/new', JSON.stringify(newtx))
@@ -64,8 +63,9 @@ class Bitcoin {
         })
 
         $.post('https://api.blockcypher.com/v1/btc/test3/txs/send', JSON.stringify(tmptx)).then((r) => {
-          showMess('Платеж прошел', 5, 1)
-        })
+          notifications.append({type: 'notification', text: 'Вывод денег'})
+          $('.modal').modal('hide')
+        }).fail(error => console.error(error))
       })
 
   }
