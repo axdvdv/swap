@@ -99,7 +99,7 @@ class Ethereum {
 
         if (balance == 0) {
           console.log('empty')
-          notifications.append('Ваш баланс пуст')
+          notifications.append({type: 'notification', text: 'Ваш баланс пуст'})
           $('.modal').modal('hide')
           return false
         }
