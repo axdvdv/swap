@@ -77,6 +77,18 @@
           <div class="loader"></div>
         </div>
 
+        <div class="mt-5" al-if="data.step == 7">
+          <h2 class="mb-4">ETH Swap контракт создан и пополнен. Запрашиваем деньги с ETH Swap контракта. Ожидайте</h2>
+          <div al-if="data.ethSwapWithdrawTransactionUrl" class="alert alert-warning" role="alert">
+            Транзакция: <strong><a href="{{data.ethSwapWithdrawTransactionUrl}}" target="_blank">{{data.ethSwapWithdrawTransactionUrl}}</a></strong>
+          </div>
+          <div class="loader"></div>
+        </div>
+
+        <div class="mt-5" al-if="data.step == 8">
+          <h2 class="mb-4">Деньги переведены на Ваш счет. Спасибо за использование сервиса Swap.Online!</h2>
+        </div>
+
       </div>
 
 
@@ -145,7 +157,7 @@
 
         <div class="mt-5" al-if="data.step == 3">
           <h2 class="mb-4">Создаем Ethereum Swap. Подождите, это займет некоторое время</h2>
-          <div class="alert alert-warning" role="alert">
+          <div al-if="data.ethSwapCreationTransactionUrl" class="alert alert-warning" role="alert">
             Транзакция: <strong><a href="{{data.ethSwapCreationTransactionUrl}}" target="_blank">{{data.ethSwapCreationTransactionUrl}}</a></strong>
           </div>
           <div class="loader"></div>
@@ -154,12 +166,17 @@
         <div class="mt-5" al-if="data.ethReceipt">
           <h2 class="mb-4">Контракт успешно создан</h2>
           <div class="alert alert-primary" role="alert">
-            <a href="https://ropsten.etherscan.io/tx/{{data.ethReceipt.transactionHash}}">{{data.ethReceipt.transactionHash}}</a>
+            <a href="https://rinkeby.etherscan.io/tx/{{data.ethReceipt.transactionHash}}">{{data.ethReceipt.transactionHash}}</a>
           </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 4">
           <h2 class="mb-4">Ожидаем пользователя когда он передаст секретную фразу в созданный ETH Swap контракт</h2>
+          <div class="loader"></div>
+        </div>
+
+        <div class="mt-5" al-if="data.step == 5">
+          <h2 class="mb-4">Участник сделки забрал деньги с ETH Swap контракта и передал секретный ключ. Забираем деньги с BTC Swap скрипта. Ожидайте</h2>
           <div class="loader"></div>
         </div>
 

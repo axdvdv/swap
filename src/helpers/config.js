@@ -9,7 +9,7 @@ const config = {
     blocktrail: '1835368c0fa8e71907ca26f3c978ab742a7db42e',
   },
   eth: {
-    gasPrice : 40 * 1e9,
+    gasPrice : 80 * 1e9,
     gasLimit : 40 * 1e5,
   },
 }

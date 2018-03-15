@@ -32,12 +32,12 @@ contract Swaps {
     require(now >= unlockTimes[msg.sender]);
 
     msg.sender.transfer(balances[msg.sender]);
-    clean();
+    clean(msg.sender);
   }
 
   function getSecret() constant returns (bytes32) {
     return secrets[msg.sender];
-    clean();
+    clean(msg.sender);
   }
   
   function clean(address ownerAddress) internal {

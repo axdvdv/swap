@@ -1,17 +1,15 @@
 import Web3 from 'web3'
 import localStorage from 'helpers/localStorage'
 import config from 'helpers/config'
-import EA from './EA'
+import showMess from 'helpers/showMess'
 import rates from './rates'
-import {showMess} from "../helpers";
-
-
+import EA from './EA'
 
 
 class Ethereum {
 
   constructor() {
-    this.core = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/JCnK5ifEPH9qcQkX0Ahl"))
+    this.core = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/JCnK5ifEPH9qcQkX0Ahl"))
     this.data = {
       address: '0x0',
       balance: 0
@@ -64,7 +62,7 @@ class Ethereum {
   getTransaction() {
     return new Promise((resolve) => {
       if (this.data.address) {
-        const url = `http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=${this.data.address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.apiKeys.blocktrail}`
+        const url = `http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${this.data.address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.apiKeys.blocktrail}`
         let address = this.data.address.toLowerCase()
         let transactions = []
 
@@ -93,7 +91,6 @@ class Ethereum {
   }
 
   send(to, amount) {
-
     ethereum.core.eth.getBalance(this.data.address).then((r) => {
       try {
 
@@ -144,9 +141,7 @@ class Ethereum {
   }
 
   getRate()  {
-
-    const rate = rates.getRate()
-    return rate;
+    return rates.getRate()
   }
 
   getContract(abi, address) {

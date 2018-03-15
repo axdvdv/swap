@@ -1,11 +1,41 @@
 import bitcoin from 'instances/bitcoin'
+import { TextEncoder, TextDecoder } from 'text-encoding'
 
 
-const createScript = (btcOwnerSecretHash, btcOwnerPublicKey, ethOwnerPublicKey) => {
-  console.log('Create BTC Swap Script', { btcOwnerSecretHash, btcOwnerPublicKey, ethOwnerPublicKey })
+function byteToHexString(uint8arr) {
+  if (!uint8arr) {
+    return '';
+  }
+
+  var hexStr = '';
+  for (var i = 0; i < uint8arr.length; i++) {
+    var hex = (uint8arr[i] & 0xff).toString(16);
+    hex = (hex.length === 1) ? '0' + hex : hex;
+    hexStr += hex;
+  }
+
+  return hexStr.toUpperCase();
+}
+
+function hexStringToByte(str) {
+  if (!str) {
+    return new Uint8Array();
+  }
+
+  var a = [];
+  for (var i = 0, len = str.length; i < len; i+=2) {
+    a.push(parseInt(str.substr(i,2),16));
+  }
+
+  return new Uint8Array(a);
+}
+
+
+const createScript = ({ btcOwnerSecretHash, btcOwnerPublicKey, ethOwnerPublicKey, lockTime: _lockTime }) => {
+  console.log('Create BTC Swap Script', { btcOwnerSecretHash, btcOwnerPublicKey, ethOwnerPublicKey, lockTime: _lockTime })
 
   const utcNow = () => Math.floor(Date.now() / 1000)
-  const lockTime = utcNow() + 3600 * 3 // 3 days from now
+  const lockTime = _lockTime || utcNow() + 3600 * 3 // 3 days from now
 
   const script = bitcoin.core.script.compile([
     btcOwnerPublicKey,
@@ -26,16 +56,19 @@ const createScript = (btcOwnerSecretHash, btcOwnerPublicKey, ethOwnerPublicKey) 
     bitcoin.core.opcodes.OP_ENDIF,
   ])
 
+  const scriptHash      = byteToHexString(script)
   const scriptPubKey    = bitcoin.core.script.scriptHash.output.encode(bitcoin.core.crypto.hash160(script))
   const scriptAddress   = bitcoin.core.address.fromOutputScript(scriptPubKey, bitcoin.testnet)
 
   console.log('BTC Swap created', {
     script,
+    scriptHash,
     scriptAddress,
   })
 
   return {
     script,
+    scriptHash,
     address: scriptAddress,
     lockTime,
     secretHash: btcOwnerSecretHash,
@@ -44,20 +77,29 @@ const createScript = (btcOwnerSecretHash, btcOwnerPublicKey, ethOwnerPublicKey) 
   }
 }
 
-const fundScript = async (script, lockTime, amount) => {
+const fundScript = async ({ script, lockTime, amount }) => {
   console.log('Fund BTC Swap Script')
 
+  console.log('\n+++++++++++++++++++++++++++++++++++++++++++++++\n\n')
+  console.log('+++++++++++++++++++++++++++++++++++++++++++++++')
+  console.log('\nscript', script)
+
   return new Promise(async (resolve, reject) => {
-    const scriptPubKey    = bitcoin.core.script.scriptHash.output.encode(bitcoin.core.crypto.hash160(script))
-    const scriptAddress   = bitcoin.core.address.fromOutputScript(scriptPubKey, bitcoin.testnet)
+    // const script        = hexStringToByte(scriptHash)
+    const scriptPubKey  = bitcoin.core.script.scriptHash.output.encode(bitcoin.core.crypto.hash160(script))
+    const scriptAddress = bitcoin.core.address.fromOutputScript(scriptPubKey, bitcoin.testnet)
 
-    const tx = new bitcoin.core.TransactionBuilder(bitcoin.testnet)
-    const unspents = await bitcoin.fetchUnspents()
+    console.log('scriptAddress\n', scriptAddress)
+    console.log('\n\n+++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++\n')
 
-    const fundValue = Number(amount) * 1e8
-    const feeValue = 4e5
-    const totalUnspent = unspents.reduce((summ, { satoshis }) => summ + satoshis, 0)
-    const skipValue = totalUnspent - fundValue - feeValue
+    const tx            = new bitcoin.core.TransactionBuilder(bitcoin.testnet)
+    const unspents      = await bitcoin.fetchUnspents()
+
+    const fundValue     = Number(amount) * 1e8
+    const feeValue      = 4e5
+    const totalUnspent  = unspents.reduce((summ, { satoshis }) => summ + satoshis, 0)
+    const skipValue     = totalUnspent - fundValue - feeValue
 
     console.log('Data', { fundValue, feeValue, skipValue, tx, scriptAddress })
 
@@ -71,32 +113,57 @@ const fundScript = async (script, lockTime, amount) => {
       tx.sign(index, bitcoin.data.keyPair)
 	  })
 
-    const txRaw = tx.buildIncomplete().toHex()
+    const txRaw     = tx.buildIncomplete()
+    const txRawHex  = txRaw.toHex()
 
     console.log('tx', tx)
-    console.log('txRaw', txRaw)
+    console.log('txRawHex', txRawHex)
 
-    const result = await bitcoin.broadcastTx(txRaw)
+    const result = await bitcoin.broadcastTx(txRawHex)
 
     resolve(result)
   })
 }
 
-const withdraw = (script, unspent, secret, withdrawAddress) => {
+const withdraw = ({ script, lockTime, secret }) => {
   console.log('Withdraw money from BTC Swap Script')
 
-  return new Promise(function (resolve, reject) {
-    const hashType  = bitcoin.core.Transaction.SIGHASH_ALL
-    const tx        = new bitcoin.core.TransactionBuilder(bitcoin.testnet)
+  console.log('\n+++++++++++++++++++++++++++++++++++++++++++++++\n\n')
+  console.log('+++++++++++++++++++++++++++++++++++++++++++++++')
+  console.log('\nscript', script)
+
+  return new Promise(async (resolve, reject) => {
+    // const script        = hexStringToByte(scriptHash)
+    const scriptPubKey  = bitcoin.core.script.scriptHash.output.encode(bitcoin.core.crypto.hash160(script))
+    const scriptAddress = bitcoin.core.address.fromOutputScript(scriptPubKey, bitcoin.testnet)
+
+    console.log('scriptAddress\n', scriptAddress)
+    console.log('\n\n+++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++\n')
+
+    const hashType      = bitcoin.core.Transaction.SIGHASH_ALL
+    const tx            = new bitcoin.core.TransactionBuilder(bitcoin.testnet)
+
+    const unspents      = await bitcoin.fetchUnspents(scriptAddress)
+
+    const feeValue      = 4e5
+    const totalUnspent  = unspents.reduce((summ, { satoshis }) => summ + satoshis, 0)
+
+    console.log('Data', { totalUnspent, scriptAddress, hashType, tx })
 
     tx.setLockTime(lockTime)
-    tx.addInput(unspent.txId, unspent.vout, 0xfffffffe)
-    tx.addOutput(withdrawAddress, 1e4)
+    unspents.forEach(({ txid, vout }) => {
+      tx.addInput(txid, vout, 0xfffffffe)
+    })
+    tx.addOutput(bitcoin.data.address, totalUnspent - feeValue)
 
     const txRaw               = tx.buildIncomplete()
+    const txRawHex            = txRaw.toHex()
     const signatureHash       = txRaw.hashForSignature(0, script, hashType)
-    const ethOwner            = new bitcoin.ECPair.fromWIF(bitcoin.data.privateKey, bitcoin.testnet)
+    const ethOwner            = new bitcoin.core.ECPair.fromWIF(bitcoin.data.privateKey, bitcoin.testnet)
     const ethOwnerSignature   = ethOwner.sign(signatureHash).toScriptSignature(hashType)
+
+    console.log('Data2', { txRaw, signatureHash, ethOwner, ethOwnerSignature })
 
     const scriptSig = bitcoin.core.script.scriptHash.input.encode(
       [
@@ -110,13 +177,20 @@ const withdraw = (script, unspent, secret, withdrawAddress) => {
 
     const txId = txRaw.getId()
 
-    console.log('final txid', txId)
-    console.log('final txRaw', txRaw)
+    console.log('tx', tx)
+    console.log('txId', txId)
+    console.log('txRawHex', txRawHex)
+
+    const result = await bitcoin.broadcastTx(txRawHex)
+
+    resolve(result)
   })
 }
 
-const refund = (script, unspent, secret, refundAddress) => {
+const refund = (scriptHash, secret, refundAddress) => {
   return new Promise(function (resolve, reject) {
+    const script        = hexStringToByte(scriptHash)
+
     const hashType  = bitcoin.core.Transaction.SIGHASH_ALL
     const tx        = new bitcoin.core.TransactionBuilder(bitcoin.testnet)
 

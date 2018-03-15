@@ -2,10 +2,9 @@ import BigInteger from 'bigi'
 import bitcoin from 'bitcoinjs-lib'
 import localStorage from 'helpers/localStorage'
 import config from 'helpers/config'
+import showMess from 'helpers/showMess'
+import rates from './rates'
 import EA from './EA'
-import rates from "./rates";
-import {main} from "../controllers";
-import {showMess} from "../helpers";
 
 
 class Bitcoin {
@@ -22,10 +21,8 @@ class Bitcoin {
     window.bitcoin = this
   }
 
-  async getRate() {
-
-    const rate = rates.getRate()
-    return rate;
+  getRate() {
+    return rates.getRate()
   }
 
   send(to, amount) {
@@ -57,7 +54,7 @@ class Bitcoin {
         tmptx.pubkeys = []
 
         // build signer from WIF
-        let keys = new bitcoin.ECPair.fromWIF(this.data.keyPair.toWIF(), bitcoin.networks.testnet)
+        let keys = new this.core.ECPair.fromWIF(this.data.keyPair.toWIF(), this.testnet)
 
         // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
         tmptx.signatures = tmptx.tosign.map((tosign, n) => {
@@ -78,18 +75,18 @@ class Bitcoin {
     let keyPair
 
     if (privateKey) {
-      const hash  = bitcoin.crypto.sha256(privateKey)
+      const hash  = this.core.crypto.sha256(privateKey)
       const d     = BigInteger.fromBuffer(hash)
 
-      keyPair     = new bitcoin.ECPair(d, null, { network: this.testnet })
+      keyPair     = new this.core.ECPair(d, null, { network: this.testnet })
     }
     else {
-      keyPair     = bitcoin.ECPair.makeRandom({ network: this.testnet })
+      keyPair     = this.core.ECPair.makeRandom({ network: this.testnet })
       privateKey  = keyPair.toWIF()
     }
 
     const address     = keyPair.getAddress()
-    const keys        = new bitcoin.ECPair.fromWIF(privateKey, this.testnet)
+    const keys        = new this.core.ECPair.fromWIF(privateKey, this.testnet)
     const publicKey   = keys.getPublicKeyBuffer().toString('hex')
 
     this.data = {
@@ -152,9 +149,9 @@ class Bitcoin {
     })
   }
 
-  fetchUnspents() {
+  fetchUnspents(address) {
     return new Promise((resolve, reject) => {
-      $.getJSON(`${config.api.bitpay}/addr/${this.data.address}/utxo`, (res) => {
+      $.getJSON(`${config.api.bitpay}/addr/${address || this.data.address}/utxo`, (res) => {
         resolve(res)
       })
     })

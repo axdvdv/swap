@@ -1,15 +1,18 @@
 class Rates {
 
-  getRate() {
+  rate = null
 
+  getRate() {
     return new Promise((resolve) => {
-      if(!this.rate) {
-        $.getJSON('https://noxonfund.com/curs.php', (r) => {
-          this.rate = r.price_btc;
-          resolve(r.price_btc)
+      if (!this.rate) {
+        $.getJSON('https://noxonfund.com/curs.php', ({ price_btc }) => {
+          this.rate = price_btc
+
+          resolve(price_btc)
         })
-      } else {
-        resolve( this.rate )
+      }
+      else {
+        resolve(this.rate)
       }
     })
   }

@@ -130,9 +130,29 @@ alight.controllers.ethToBtc = (scope) => {
         if (order.id === orderId) {
           this.unsubscribe()
 
-          console.log('withdraw BTC')
+          scope.goNextStep()
         }
       })
+    }
+    else if (scope.data.step === 5) {
+      ethSwap.getSecret()
+        .then((secret) => {
+          const scriptData = btcSwap.createScript({
+            btcOwnerSecretHash: scope.data.btcScriptData.secretHash,
+            btcOwnerPublicKey: scope.data.btcScriptData.btcOwnerPublicKey,
+            ethOwnerPublicKey: scope.data.btcScriptData.ethOwnerPublicKey,
+            lockTime: scope.data.btcScriptData.lockTime,
+          })
+
+          btcSwap.withdraw({
+            script: scriptData.script,
+            secret,
+            lockTime: scope.data.btcScriptData.lockTime,
+          })
+        })
+    }
+    else if (scope.data.step === 6) {
+
     }
   }
 

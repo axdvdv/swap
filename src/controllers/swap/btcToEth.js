@@ -35,6 +35,9 @@ alight.controllers.btcToEth = (scope) => {
 
     // step 4
     btcScriptData: null,
+
+    // step 7
+    ethSwapWithdrawTransactionUrl: null,
   }
 
   function checkBalance() {
@@ -99,7 +102,11 @@ alight.controllers.btcToEth = (scope) => {
       }
     }
     else if (scope.data.step === 4) {
-      btcScriptData = btcSwap.createScript(scope.data.secretHash, user.btcData.publicKey, swapData.participant.btc.publicKey)
+      btcScriptData = btcSwap.createScript({
+        btcOwnerSecretHash: scope.data.secretHash,
+        btcOwnerPublicKey: user.btcData.publicKey,
+        ethOwnerPublicKey: swapData.participant.btc.publicKey,
+      })
 
       setTimeout(() => {
         scope.$scan()
@@ -107,7 +114,11 @@ alight.controllers.btcToEth = (scope) => {
       }, 1500)
     }
     else if (scope.data.step === 5) {
-      btcSwap.fundScript(btcScriptData.script, btcScriptData.lockTime, order.currency2Amount)
+      btcSwap.fundScript({
+        script: btcScriptData.script,
+        lockTime: btcScriptData.lockTime,
+        amount: order.currency2Amount,
+      })
         .then(() => {
           scope.goNextStep()
         })
@@ -128,25 +139,31 @@ alight.controllers.btcToEth = (scope) => {
         if (order.id === orderId) {
           this.unsubscribe()
 
-          ethSwap.withdraw(scope.data.secret, swapData.participant.eth.address)
-            .then(() => {
-              room.sendMessageToPeer(swapData.participant.peer, [
-                {
-                  event: 'swap:ethWithdrawDone',
-                  data: {
-                    orderId: order.id,
-                  },
-                },
-              ])
-            })
+          scope.goNextStep()
         }
       })
     }
     else if (scope.data.step === 7) {
-
+      ethSwap.withdraw({
+        secret: scope.data.secret,
+        ownerAddress: swapData.participant.eth.address,
+      }, (transactionUrl) => {
+        scope.data.ethSwapWithdrawTransactionUrl = transactionUrl
+        scope.$scan()
+      })
+        .then(() => {
+          scope.goNextStep()
+        })
     }
     else if (scope.data.step === 8) {
-
+      room.sendMessageToPeer(swapData.participant.peer, [
+        {
+          event: 'swap:ethWithdrawDone',
+          data: {
+            orderId: order.id,
+          },
+        },
+      ])
     }
   }
 
