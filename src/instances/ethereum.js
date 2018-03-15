@@ -91,15 +91,16 @@ class Ethereum {
   }
 
   send(to, amount) {
+
     ethereum.core.eth.getBalance(this.data.address).then((r) => {
       try {
-
         let balance = ethereum.core.utils.fromWei(r)
 
 
-        if (!balance) {
-          // throw new Error('Ваш баланс пуст')
-          showMess('Ваш баланс пуст', 5, 0)
+        if (balance == 0) {
+          console.log('empty')
+          notifications.append('Ваш баланс пуст')
+          $('.modal').modal('hide')
           return false
         }
 

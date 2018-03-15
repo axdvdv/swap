@@ -1,7 +1,7 @@
 import alight from 'alight'
 import sha256 from 'js-sha256'
 import { orderStatuses } from 'helpers'
-import { EA, bitcoin, ethereum, user, room, myOrders, orders } from 'instances'
+import { EA, bitcoin, ethereum, user, room, myOrders, orders, notifications } from 'instances'
 
 
 const main = {
@@ -194,6 +194,14 @@ alight.controllers.main = function(scope) {
   EA.subscribe('btc:updateBalance', (balance) => {
     scope.data.btc.balance = balance
     scope.$scan()
+  })
+
+  EA.subscribe('form:showError', (formId) => {
+
+  })
+
+  EA.subscribe('notification', (messange) => {
+
   })
 
   EA.once('myOrders:onMount', () => {

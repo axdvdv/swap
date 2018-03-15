@@ -285,7 +285,7 @@
               <div class="form-group">
                 <label>Сумма</label>
                 <div class="input-group mb-3">
-                  <input class="form-control" onkeyup="this.value=this.value.match(/^[\d.]+$/)" value="" al-init="withdraw_eth_amount = withdraw_eth_min_amount"  al-value="withdraw_eth_amount" required=""
+                  <input class="form-control" al-change="(withdraw_eth_amount > data.eth.balance)?(withdraw_eth_amount=data.eth.balance):''"  onkeyup="this.value=this.value.match(/^[\d.]+$/)" value="" al-init="withdraw_eth_amount = withdraw_eth_min_amount"  al-value="withdraw_eth_amount" required=""
                          type="text" placeholder="Сумма">
                   <div class="input-group-append">
                     <span class="input-group-text">ETH</span>
@@ -294,7 +294,6 @@
                 <p class="list-text">мин: <a href="" @click="withdraw_eth_amount=min_withdraw_eth">{{withdraw_eth_min_amount}}</a>, макс <a href="" @click="withdraw_eth_amount=data.eth.balance">{{data.eth.balance}}</a>
                 </p>
               </div>
-
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -311,27 +310,27 @@
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title" >Вывести BTC</h4>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <button type="button" class="close"  data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
 
               <div class="form-group">
                 <label>Адрес</label>
                 <div class="input-group mb-3">
-                  <input class="form-control" value="" al-value="withdraw_btc_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
+                  <input class="form-control" value=""  pattern="[a-zA-HJ-NP-Z0-9]{25,34}" al-value="withdraw_btc_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
                 </div>
               </div>
 
               <div class="form-group">
                 <label>Сумма</label>
                 <div class="input-group mb-3">
-                  <input class="form-control"  value="" al-init="withdraw_btc_amount = withdraw_btc_min_amount"  al-value="withdraw_btc_amount"required=""   type="text"  >
+                  <input class="form-control" onkeyup="this.value=this.value.match(/^[\d.]+$/)"  value="0" al-change="(withdraw_btc_amount > data.btc.balance)?(withdraw_btc_amount=data.btc.balance):''"  al-init="withdraw_btc_amount = withdraw_btc_min_amount"  al-value="withdraw_btc_amount" required=""   type="text"  >
                   <div class="input-group-append">
                     <span class="input-group-text">BTC</span>
                   </div>
 
                 </div>
-                <p class="list-text">мин: <a href="" @click="withdraw_btc_amount=min_withdraw_btc">{{withdraw_btc_min_amount}}</a>, макс <a href="" @click="withdraw_btc_amount=bitcoin_balance">{{data.btc.balance}}</a>
+                <p class="list-text">мин: <a href="" @click="withdraw_btc_amount=withdraw_btc_min_amount">{{withdraw_btc_min_amount}}</a>, макс <a href="" @click="withdraw_btc_amount=data.btc.balance">{{data.btc.balance}}</a>
                 </p>
               </div>
             </div>
