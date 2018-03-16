@@ -1,7 +1,6 @@
 import Web3 from 'web3'
 import localStorage from 'helpers/localStorage'
 import config from 'helpers/config'
-import showMess from 'helpers/showMess'
 import rates from './rates'
 import EA from './EA'
 
@@ -29,7 +28,7 @@ class Ethereum {
       this.data = this.core.eth.accounts.create()
 
       this.core.eth.accounts.wallet.add(this.data)
-      this.core.eth.accounts.wallet.save('qwerty123')
+      // this.core.eth.accounts.wallet.save('qwerty123')
     }
 
     this.core.eth.accounts.wallet.add(this.data.privateKey)

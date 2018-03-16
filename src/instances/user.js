@@ -1,7 +1,4 @@
-import BigInteger from 'bigi'
-import { main } from 'controllers'
-import { showMess, localStorage } from 'helpers'
-import { ethSwap } from 'swaps'
+import { localStorage } from 'helpers'
 import bitcoin from './bitcoin'
 import ethereum from './ethereum'
 import EA from './EA'
@@ -15,7 +12,7 @@ class User {
     this.peer = null
     this.ethData = ethereum.data
     this.btcData = bitcoin.data
-    this.localStorageName = 'user:settings';
+    this.localStorageName = 'user:settings'
 
     window.user = this
 

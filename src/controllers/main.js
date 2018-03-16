@@ -57,6 +57,10 @@ alight.controllers.main = function(scope) {
   scope.withdrawBtc =  () => {
     user.saveSettings({withdraw_btc_address: scope.withdraw_btc_address});
     bitcoin.send(scope.withdraw_btc_address, scope.withdraw_btc_amount)
+      .then(() => {
+        notifications.append({ type: 'notification', text: 'Вывод денег' })
+        $('.modal').modal('hide')
+      })
   }
 
   scope.updateRates = async () => {

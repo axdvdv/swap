@@ -2,7 +2,8 @@ import BigInteger from 'bigi'
 import bitcoin from 'bitcoinjs-lib'
 import localStorage from 'helpers/localStorage'
 import config from 'helpers/config'
-import showMess from 'helpers/showMess'
+
+// import notifications from './notifications'
 import rates from './rates'
 import EA from './EA'
 
@@ -26,48 +27,50 @@ class Bitcoin {
   }
 
   send(to, amount) {
-    const newtx = {
-      inputs: [
-        {
-          addresses: [this.data.address],
-        },
-      ],
-      outputs: [
-        {
-          addresses: [to],
-          value: amount * 100000000,
-        },
-      ],
-    }
+    return new Promise((resolve, reject) => {
+      const newtx = {
+        inputs: [
+          {
+            addresses: [this.data.address],
+          },
+        ],
+        outputs: [
+          {
+            addresses: [to],
+            value: amount * 100000000,
+          },
+        ],
+      }
 
-    if (amount > this.data.balance) {
-      EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
-      return false
-    }
-    $.post('https://api.blockcypher.com/v1/btc/test3/txs/new', JSON.stringify(newtx))
-      .then((d) => {
-        // convert response body to JSON
-        let tmptx = d
+      if (amount > this.data.balance) {
+        EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
+        reject()
+        return
+      }
 
-        // attribute to store public keys
-        tmptx.pubkeys = []
+      $.post('https://api.blockcypher.com/v1/btc/test3/txs/new', JSON.stringify(newtx))
+        .then((d) => {
+          // convert response body to JSON
+          let tmptx = d
 
-        // build signer from WIF
-        let keys = new this.core.ECPair.fromWIF(this.data.keyPair.toWIF(), this.testnet)
+          // attribute to store public keys
+          tmptx.pubkeys = []
 
-        // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
-        tmptx.signatures = tmptx.tosign.map((tosign, n) => {
-          tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'));
+          // build signer from WIF
+          let keys = new this.core.ECPair.fromWIF(this.data.keyPair.toWIF(), this.testnet)
 
-          return keys.sign(BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
+          // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
+          tmptx.signatures = tmptx.tosign.map((tosign, n) => {
+            tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'));
+
+            return keys.sign(BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
+          })
+
+          $.post('https://api.blockcypher.com/v1/btc/test3/txs/send', JSON.stringify(tmptx))
+            .then((res) => resolve(res))
+            .fail(error => console.error(error))
         })
-
-        $.post('https://api.blockcypher.com/v1/btc/test3/txs/send', JSON.stringify(tmptx)).then((r) => {
-          notifications.append({type: 'notification', text: 'Вывод денег'})
-          $('.modal').modal('hide')
-        }).fail(error => console.error(error))
-      })
-
+    })
   }
 
   login() {

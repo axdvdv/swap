@@ -1,7 +1,7 @@
-import router from 'router'
+import EA from 'instances/EA'
 
 
-const redirect = (path) => router.navigate(path)
+const redirect = (path) => EA.dispatchEvent('redirect', path)
 
 
 export default redirect

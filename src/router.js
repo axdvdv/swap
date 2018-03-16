@@ -1,5 +1,5 @@
 import Navigo from 'navigo'
-import { EA } from 'instances'
+import EA from 'instances/EA'
 
 
 const router = new Navigo(null, true, '#')
@@ -19,6 +19,7 @@ router
   .on(...bind('/history'))
   .on(...bind('/swap/:slug/:id'))
 
+EA.subscribe('redirect', (path) => router.navigate(path))
 
 
 export default router

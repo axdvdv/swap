@@ -1,5 +1,5 @@
 import bitcoin from 'instances/bitcoin'
-import { TextEncoder, TextDecoder } from 'text-encoding'
+// import { TextEncoder, TextDecoder } from 'text-encoding'
 
 
 function byteToHexString(uint8arr) {
@@ -205,8 +205,8 @@ const refund = (scriptHash, secret, refundAddress) => {
 
     const scriptSig = bitcoin.core.script.scriptHash.input.encode(
       [
-        btcOwnerSignature,
         Buffer.from(secret, 'hex'),
+        btcOwnerSignature,
       ],
       script
     )
