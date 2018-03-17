@@ -90,7 +90,9 @@ const getSecret = () =>
   new Promise(async (resolve, reject) => {
     console.log('Start getting secret from ETH Swap')
 
-    const secret = await contract.methods.getSecret().call()
+    const secret = await contract.methods.getSecret().call({
+      from: user.ethData.address,
+    })
 
     console.log('ETH Swap secret:', secret)
     resolve(secret)

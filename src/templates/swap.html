@@ -51,7 +51,7 @@
             <div>Баланс <strong>{{data.balance}}</strong> ETH</div>
             <div>Необходимый баланс <strong>{{data.order.currency1Amount}}</strong> ETH</div>
             <hr />
-            <a href="" al-copy title="скопировать в буффер">{{data.address}}</a>
+            <a href="" al-copy title="скопировать в буффер">{{data.address}}</a>&nbsp;&nbsp;&nbsp;<a href="https://www.blocktrail.com/tBTC/address/{{data.address}}/transactions" target="_blank">Посмотреть</a>
           </div>
           <br />
           <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
@@ -79,8 +79,8 @@
 
         <div class="mt-5" al-if="data.step == 7">
           <h2 class="mb-4">ETH Swap контракт создан и пополнен. Запрашиваем деньги с ETH Swap контракта. Ожидайте</h2>
-          <div al-if="data.ethSwapWithdrawTransactionUrl" class="alert alert-warning" role="alert">
-            Транзакция: <strong><a href="{{data.ethSwapWithdrawTransactionUrl}}" target="_blank">{{data.ethSwapWithdrawTransactionUrl}}</a></strong>
+          <div al-if="data.ethSwapWithdrawTransactionHash" class="alert alert-warning" role="alert">
+            Транзакция: <strong><a href="{{data.ethSwapWithdrawTransactionHash}}" target="_blank">{{data.ethSwapWithdrawTransactionHash}}</a></strong>
           </div>
           <div class="loader"></div>
         </div>
@@ -97,7 +97,7 @@
       <div al-if="data.slug == 'eth-to-btc'" al-ctrl="ethToBtc">
 
         <div al-if="data.step == 1 && !(data.secretHash || data.btcScriptData)">
-          <h2 class="mb-4">Ожидаем пользователя когда он создаст секретную фразу и пополнит BTC Swap скрипт</h2>
+          <h2 class="mb-4">Ожидаем участника сделки когда он создаст секретную фразу и пополнит BTC Swap скрипт</h2>
           <div class="loader"></div>
         </div>
 
@@ -114,21 +114,25 @@
           <pre>
             <code class="code">
   bitcoinjs.script.compile([
-    '{{data.btcScriptData.btcOwnerPublicKey}}',
-    bitcoin.core.opcodes.OP_CHECKSIG,
-
-    bitcoin.core.opcodes.OP_IF,
-    bitcoin.core.script.number.encode({{data.btcScriptData.lockTime}}),
-    bitcoin.core.opcodes.OP_CHECKLOCKTIMEVERIFY,
-    bitcoin.core.opcodes.OP_ENDIF,
-
-    '{{data.btcScriptData.ethOwnerPublicKey}}',
-    bitcoin.core.opcodes.OP_CHECKSIG,
-
-    bitcoin.core.opcodes.OP_IF,
     bitcoin.core.opcodes.OP_RIPEMD160,
     Buffer.from('{{data.btcScriptData.secretHash}}', 'hex'),
     bitcoin.core.opcodes.OP_EQUALVERIFY,
+
+    Buffer.from('{{data.btcScriptData.ethOwnerPublicKey}}', 'hex'),
+    bitcoin.core.opcodes.OP_EQUAL,
+    bitcoin.core.opcodes.OP_IF,
+
+    Buffer.from('{{data.btcScriptData.ethOwnerPublicKey}}', 'hex'),
+    bitcoin.core.opcodes.OP_CHECKSIG,
+
+    bitcoin.core.opcodes.OP_ELSE,
+
+    bitcoin.core.script.number.encode({{data.btcScriptData.lockTime}}),
+    bitcoin.core.opcodes.OP_CHECKLOCKTIMEVERIFY,
+    bitcoin.core.opcodes.OP_DROP,
+    Buffer.from('{{data.btcScriptData.btcOwnerPublicKey}}', 'hex'),
+    bitcoin.core.opcodes.OP_CHECKSIG,
+
     bitcoin.core.opcodes.OP_ENDIF,
   ])
             </code>
@@ -157,8 +161,8 @@
 
         <div class="mt-5" al-if="data.step == 3">
           <h2 class="mb-4">Создаем Ethereum Swap. Подождите, это займет некоторое время</h2>
-          <div al-if="data.ethSwapCreationTransactionUrl" class="alert alert-warning" role="alert">
-            Транзакция: <strong><a href="{{data.ethSwapCreationTransactionUrl}}" target="_blank">{{data.ethSwapCreationTransactionUrl}}</a></strong>
+          <div al-if="data.ethSwapCreationTransactionHash" class="alert alert-warning" role="alert">
+            Транзакция: <strong><a href="{{data.ethSwapCreationTransactionHash}}" target="_blank">{{data.ethSwapCreationTransactionHash}}</a></strong>
           </div>
           <div class="loader"></div>
         </div>
@@ -171,13 +175,20 @@
         </div>
 
         <div class="mt-5" al-if="data.step == 4">
-          <h2 class="mb-4">Ожидаем пользователя когда он передаст секретную фразу в созданный ETH Swap контракт</h2>
+          <h2 class="mb-4">Ожидаем участника сделки когда он передаст секретную фразу в созданный ETH Swap контракт</h2>
           <div class="loader"></div>
         </div>
 
         <div class="mt-5" al-if="data.step == 5">
           <h2 class="mb-4">Участник сделки забрал деньги с ETH Swap контракта и передал секретный ключ. Забираем деньги с BTC Swap скрипта. Ожидайте</h2>
+          <div al-if="data.ethSwapCreationTransactionHash" class="alert alert-warning" role="alert">
+            Транзакция: <strong><a href="https://www.blocktrail.com/tBTC/tx/{{data.btcSwapWithdrawTransactionHash}}" target="_blank">{{data.btcSwapWithdrawTransactionHash}}</a></strong>
+          </div>
           <div class="loader"></div>
+        </div>
+
+        <div class="mt-5" al-if="data.step == 6">
+          <h2 class="mb-4">Деньги переведены на Ваш счет. Спасибо за использование сервиса Swap.Online!</h2>
         </div>
 
       </div>

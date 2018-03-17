@@ -26,8 +26,8 @@ alight.controllers.btcToEth = (scope) => {
     secret: 'c0809ce9f484fdcdfb2d5aabd609768ce0374ee97a1a5618ce4cd3f16c00a078',
 
     // step 2
-    address: bitcoin.data.address,
-    balance: bitcoin.data.balance,
+    address: user.btcData.address,
+    balance: user.btcData.balance,
     notEnoughMoney: false,
     checkingBalance: false,
 
@@ -42,8 +42,10 @@ alight.controllers.btcToEth = (scope) => {
 
   function checkBalance() {
     console.log('Checking if there is enough money on balance')
+    console.log('Available balance', user.btcData.balance)
+    console.log('Required', order.currency2Amount)
 
-    scope.data.notEnoughMoney = ethereum.data.balance < order.currency2Amount
+    scope.data.notEnoughMoney = user.btcData.balance < order.currency2Amount
     scope.$scan()
 
     if (scope.data.notEnoughMoney) {
@@ -60,7 +62,7 @@ alight.controllers.btcToEth = (scope) => {
     scope.data.checkingBalance = true
     scope.$scan()
 
-    const balance = await ethereum.getBalance()
+    const balance = await bitcoin.getBalance(user.btcData.address)
 
     scope.data.balance = balance
     scope.$scan()
@@ -103,7 +105,7 @@ alight.controllers.btcToEth = (scope) => {
     }
     else if (scope.data.step === 4) {
       btcScriptData = btcSwap.createScript({
-        btcOwnerSecretHash: scope.data.secretHash,
+        secretHash: scope.data.secretHash,
         btcOwnerPublicKey: user.btcData.publicKey,
         ethOwnerPublicKey: swapData.participant.btc.publicKey,
       })
@@ -115,8 +117,8 @@ alight.controllers.btcToEth = (scope) => {
     }
     else if (scope.data.step === 5) {
       btcSwap.fundScript({
+        btcData: user.btcData,
         script: btcScriptData.script,
-        lockTime: btcScriptData.lockTime,
         amount: order.currency2Amount,
       })
         .then(() => {
@@ -147,8 +149,8 @@ alight.controllers.btcToEth = (scope) => {
       ethSwap.withdraw({
         secret: scope.data.secret,
         ownerAddress: swapData.participant.eth.address,
-      }, (transactionUrl) => {
-        scope.data.ethSwapWithdrawTransactionUrl = transactionUrl
+      }, (transactionHash) => {
+        scope.data.ethSwapWithdrawTransactionUrl = transactionHash
         scope.$scan()
       })
         .then(() => {

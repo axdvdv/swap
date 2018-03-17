@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import localStorage from 'helpers/localStorage'
+import request from 'swap-request'
 import config from 'helpers/config'
 import rates from './rates'
 import EA from './EA'
@@ -9,82 +9,67 @@ class Ethereum {
 
   constructor() {
     this.core = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/JCnK5ifEPH9qcQkX0Ahl"))
-    this.data = {
-      address: '0x0',
-      balance: 0
-
-    }
 
     window.ethereum = this
   }
 
-  login() {
-    let privateKey = localStorage.getItem('user:privateEthKey')
+  login(privateKey) {
+    let data
 
     if (privateKey) {
-      this.data = this.core.eth.accounts.privateKeyToAccount(privateKey)
+      data = this.core.eth.accounts.privateKeyToAccount(privateKey)
     }
     else {
-      this.data = this.core.eth.accounts.create()
+      data = this.core.eth.accounts.create()
 
-      this.core.eth.accounts.wallet.add(this.data)
+      this.core.eth.accounts.wallet.add(data)
       // this.core.eth.accounts.wallet.save('qwerty123')
     }
 
-    this.core.eth.accounts.wallet.add(this.data.privateKey)
+    this.core.eth.accounts.wallet.add(data.privateKey)
 
-    localStorage.setItem('user:privateEthKey', this.data.privateKey)
+    console.log('Logged in with Ethereum', data)
+    EA.dispatchEvent('eth:login', data)
 
-    console.log('Logged in with Ethereum', this.data)
-
-    EA.dispatchEvent('eth:login', this.data)
-
-    return this.data
+    return data
   }
 
-  getBalance() {
-    return new Promise((resolve) => {
-      this.core.eth.getBalance(this.data.address)
-        .then((wei) => {
-          const balance = Number(this.core.utils.fromWei(wei))
+  getBalance(address) {
+    return this.core.eth.getBalance(address)
+      .then((wei) => {
+        const balance = Number(this.core.utils.fromWei(wei))
 
-          console.log('ETH Balance:', balance)
+        console.log('ETH Balance:', balance)
+        EA.dispatchEvent('eth:updateBalance', balance)
 
-          this.data.balance = balance
-          resolve(balance)
-
-          EA.dispatchEvent('eth:updateBalance', balance)
-        })
-    })
+        return balance
+      })
   }
 
-  getTransaction() {
+  getTransaction(address) {
     return new Promise((resolve) => {
-      if (this.data.address) {
+      if (address) {
         const url = `http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${this.data.address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.apiKeys.blocktrail}`
-        let address = this.data.address.toLowerCase()
-        let transactions = []
+        let transactions
 
-        $.getJSON(url, (r) => {
-          if (r.status) {
-            $.each(r.result, function (k, i) {
-              transactions.push({
-                status: i.blockHash != null ? 1 : 0,
-                value: i.value / 1000000000000000000,
-                address: i.to,
-                date: new Date(i.timeStamp * 1000),
-                type: address == i.to.toLowerCase() ? 'in' : 'out'
-              })
-            })
+        request.get(url)
+          .then((res) => {
+            if (res.status) {
+              transactions = res.result.map((item) => ({
+                status: item.blockHash != null ? 1 : 0,
+                value: item.value / 1e18,
+                address: item.to,
+                date: new Date(item.timeStamp * 1000),
+                type: address.toLowerCase() === item.to.toLowerCase() ? 'in' : 'out'
+              }))
 
-            resolve(transactions)
-
-            EA.dispatchEvent('eth:updateTransactions', transactions.reverse())
-          }
-          else {
-            console.log(r.result)
-          }
-        })
+              EA.dispatchEvent('eth:updateTransactions', transactions.reverse())
+              resolve(transactions)
+            }
+            else {
+              console.log(res.result)
+            }
+          })
       }
     })
   }
@@ -95,9 +80,9 @@ class Ethereum {
       try {
         let balance = ethereum.core.utils.fromWei(r)
 
-
-        if (balance == 0) {
-          notifications.append({type: 'notification', text: 'Ваш баланс пуст'})
+        if (balance === 0) {
+          // TODO move this logic outside
+          // notifications.append({type: 'notification', text: 'Ваш баланс пуст'})
           $('.modal').modal('hide')
           return false
         }
@@ -122,15 +107,15 @@ class Ethereum {
           value: ethereum.core.utils.toWei(amount.trim())
         }
 
+        // TODO Wtf? pass argument privateKey and take it from user.ethData.privateKey!
         ethereum.core.eth.accounts.signTransaction(t, localStorage.getItem('privateEthKey'))
           .then((result) => {
             return ethereum.core.eth.sendSignedTransaction(result.rawTransaction)
           })
           .then((receipt) => {
-
-            notifications.append({type: 'notification', text: 'Вывод денег'})
+            // TODO move this logic outside
+            // notifications.append({type: 'notification', text: 'Вывод денег'})
             $('.modal').modal('hide')
-
           })
           .catch(error => console.error(error))
       }
@@ -151,3 +136,7 @@ class Ethereum {
 
 
 export default new Ethereum()
+
+export {
+  Ethereum,
+}

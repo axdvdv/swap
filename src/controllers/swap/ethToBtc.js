@@ -25,22 +25,25 @@ alight.controllers.ethToBtc = (scope) => {
     btcScriptData: null,
 
     // step 2
-    address: ethereum.data.address,
-    balance: ethereum.data.balance,
+    address: user.ethData.address,
+    balance: user.ethData.balance,
     notEnoughMoney: false,
     checkingBalance: false,
 
     // step 3
     ethReceipt: null,
-    ethSwapCreationTransactionUrl: null,
+    ethSwapCreationTransactionHash: null,
 
     // step 4
+
+    // step 5
+    btcSwapWithdrawTransactionHash: null,
   }
 
   function checkBalance() {
     console.log('Checking if there is enough money on balance')
 
-    scope.data.notEnoughMoney = ethereum.data.balance < order.currency2Amount
+    scope.data.notEnoughMoney = user.ethData.balance < order.currency2Amount
     scope.$scan()
 
     if (scope.data.notEnoughMoney) {
@@ -106,8 +109,8 @@ alight.controllers.ethToBtc = (scope) => {
     else if (scope.data.step === 3) {
       const receipt = await ethSwap.create({
         secretHash: scope.data.secretHash,
-      }, (transactionUrl) => {
-        scope.data.ethSwapCreationTransactionUrl = transactionUrl
+      }, (transactionHash) => {
+        scope.data.ethSwapCreationTransactionHash = transactionHash
         scope.$scan()
       })
 
@@ -137,18 +140,18 @@ alight.controllers.ethToBtc = (scope) => {
     else if (scope.data.step === 5) {
       ethSwap.getSecret()
         .then((secret) => {
-          const scriptData = btcSwap.createScript({
-            btcOwnerSecretHash: scope.data.btcScriptData.secretHash,
-            btcOwnerPublicKey: scope.data.btcScriptData.btcOwnerPublicKey,
-            ethOwnerPublicKey: scope.data.btcScriptData.ethOwnerPublicKey,
-            lockTime: scope.data.btcScriptData.lockTime,
-          })
+          const { script } = btcSwap.createScript(scope.data.btcScriptData)
 
           btcSwap.withdraw({
-            script: scriptData.script,
+            btcData: user.btcData,
+            script,
             secret,
-            lockTime: scope.data.btcScriptData.lockTime,
+          }, (transactionHash) => {
+            scope.data.btcSwapWithdrawTransactionHash = transactionHash
           })
+            .then(() => {
+              scope.goNextStep()
+            })
         })
     }
     else if (scope.data.step === 6) {

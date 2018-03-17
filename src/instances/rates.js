@@ -1,3 +1,6 @@
+import request from 'swap-request'
+
+
 class Rates {
 
   rate = null
@@ -5,11 +8,12 @@ class Rates {
   getRate() {
     return new Promise((resolve) => {
       if (!this.rate) {
-        $.getJSON('https://noxonfund.com/curs.php', ({ price_btc }) => {
-          this.rate = price_btc
+        request.get('https://noxonfund.com/curs.php')
+          .then(({ price_btc }) => {
+            this.rate = price_btc
 
-          resolve(price_btc)
-        })
+            resolve(price_btc)
+          })
       }
       else {
         resolve(this.rate)

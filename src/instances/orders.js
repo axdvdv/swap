@@ -1,3 +1,4 @@
+import request from 'swap-request'
 import { Collection, Order } from 'models'
 import EA from './EA'
 import user from './user'
@@ -14,7 +15,8 @@ class Orders extends Collection {
   }
 
   updateExchanges() {
-    $.getJSON('https://noxonfund.com/curs.php', ({ price_btc }) => {
+    request.get('https://noxonfund.com/curs.php')
+      .then(({ price_btc }) => {
       // scope.eth_exchange_rate = price_btc
       // scope.btc_exchange_rate = price_btc
       // scope.$scan()

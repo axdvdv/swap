@@ -5,13 +5,18 @@ import EA from './EA'
 import { merge } from 'lodash'
 
 
-
 class User {
 
   constructor() {
     this.peer = null
-    this.ethData = ethereum.data
-    this.btcData = bitcoin.data
+    this.ethData = {
+      address: '0x0',
+      balance: 0,
+    }
+    this.btcData = {
+      address: '0x0',
+      balance: 0,
+    }
     this.localStorageName = 'user:settings'
 
     window.user = this
@@ -31,8 +36,14 @@ class User {
   }
 
   sign() {
-    this.ethData = ethereum.login()
-    this.btcData = bitcoin.login()
+    const ethPrivateKey = localStorage.getItem('user:privateEthKey')
+    const btcPrivateKey = localStorage.getItem('user:privateBtcKey')
+
+    this.ethData = ethereum.login(ethPrivateKey)
+    this.btcData = bitcoin.login(btcPrivateKey)
+
+    localStorage.setItem('user:privateEthKey', this.ethData.privateKey)
+    localStorage.setItem('user:privateBtcKey', this.btcData.privateKey)
   }
 
   getTransactions() {
@@ -40,9 +51,9 @@ class User {
     bitcoin.getTransaction()
   }
 
-  getBalances() {
-    ethereum.getBalance()
-    bitcoin.getBalance()
+  async getBalances() {
+    this.ethData.balance = await ethereum.getBalance(this.ethData.address)
+    this.btcData.balance = await bitcoin.getBalance(this.btcData.address)
   }
 
   createOrder(data) {

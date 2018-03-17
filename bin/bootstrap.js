@@ -8,7 +8,11 @@ modPath.addPath(path.join(__dirname, '../src'))
 global.$ = require('jquery')
 global.window = {}
 global.log = global.console.log
-global.console.log = () => {}
+// global.console.log = () => {}
+global.localstorage = {
+  getItem: () => {},
+  setItem: () => {},
+}
 
 
 require('babel-polyfill')
