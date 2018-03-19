@@ -51,9 +51,14 @@ class User {
     bitcoin.getTransaction()
   }
 
-  async getBalances() {
-    this.ethData.balance = await ethereum.getBalance(this.ethData.address)
-    this.btcData.balance = await bitcoin.getBalance(this.btcData.address)
+  async getBalances(currency='all') {
+
+    if(currency == 'eth' || currency=='all') {
+      this.ethData.balance = await ethereum.getBalance(this.ethData.address)
+    }
+    if(currency == 'btc' || currency == 'all') {
+      this.btcData.balance = await bitcoin.getBalance(this.btcData.address)
+    }
   }
 
   createOrder(data) {

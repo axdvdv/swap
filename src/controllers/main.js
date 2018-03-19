@@ -162,18 +162,13 @@ alight.controllers.main = function(scope) {
 
   scope.updateEthBalance = async () => {
 
-    const balance = await ethereum.getBalance()
-    scope.total_eth = balance
-    scope.$scan()
+    user.getBalances('eth')
   }
 
-  scope.updateBtcBalance = async () => {
+  scope.updateBtcBalance =  () => {
 
-    const balance = await bitcoin.getBalance()
-    scope.data.btc.balance = balance
-    scope.$scan()
+    user.getBalances('btc')
   }
-
   scope.init = function () {
 
     let settings = user.getSettings('all')
