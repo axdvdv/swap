@@ -1,4 +1,5 @@
 import IpfsRoom from 'ipfs-pubsub-room'
+import log from 'log-with-style'
 import EA from './EA'
 import user from './user'
 
@@ -41,7 +42,7 @@ class Room {
 
     const data = JSON.parse(message.data.toString())
 
-    console.log('New message', { ...message, data })
+    // console.log('New message', { ...message, data })
 
     // if (this.waitList.includes(JSON.stringify({ peer: message.from, message: data }))) {
     //
@@ -50,7 +51,7 @@ class Room {
     if (data && data.length) {
       data.forEach(({ event, data }) => {
         if (data) {
-          console.log(`New message data:`, { ...message, event: `room:${event}`, data })
+          log(`[c="color: #ff3b84"]room:${event}[c]`, { ...message, event: `room:${event}`, data })
 
           EA.dispatchEvent(`room:${event}`, { ...data, peerFrom: message.from })
         }

@@ -1,0 +1,147 @@
+<div al-if="data.activeRoute.path == '/' || data.activeRoute.path == '/orders'">
+  <div al-ctrl="orders">
+
+    <div class="content-800">
+      <div class="d-flex justify-content-between mb-4">
+        <h3 class="mb-0">
+          Купить
+          <div class="btn-group">
+            <button type="button" id="buyCurrencyDropdown" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{data.selectedCurrencies.buy}}
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#" al-hide="data.selectedCurrencies.buy == 'BTC'" al-click="updateSelectedCurrency('buy', 'BTC')">BTC</a>
+              <a class="dropdown-item" href="#" al-hide="data.selectedCurrencies.buy == 'ETH'" al-click="updateSelectedCurrency('buy', 'ETH')">ETH</a>
+            </div>
+          </div>
+          за
+          <div class="btn-group">
+            <button type="button" id="sellCurrencyDropdown" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{data.selectedCurrencies.sell}}
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#" al-hide="data.selectedCurrencies.sell == 'BTC'" al-click="updateSelectedCurrency('sell', 'BTC')">BTC</a>
+              <a class="dropdown-item" href="#" al-hide="data.selectedCurrencies.sell == 'ETH'" al-click="updateSelectedCurrency('sell', 'ETH')">ETH</a>
+            </div>
+          </div>
+        </h3>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newOrderModal">
+          Добавить ордер
+        </button>
+      </div>
+
+      <div class="modal fade" id="newOrderModal" tabindex="-1" role="dialog" aria-labelledby="newOrderModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="newOrderModalLongTitle">Купить {{data.selectedCurrencies.buy}} за {{data.selectedCurrencies.sell}}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+
+              <div class="alert alert-warning fs-16" role="alert">
+                <div class="d-flex justify-content-between">
+                  <div>Баланс <b>{{data.balance}}</b> {{data.selectedCurrencies.sell}} <a href="#" al-click="updateEthBalance()">обновить</a></div>
+                </div>
+                <hr />
+                <a href="" al-copy title="скопировать в буффер">{{data.balanceAddress}}</a>
+              </div>
+              <form al-if="data.isFormVisible" action="" al-submit="createOrder()">
+                <div class="form-group">
+                  <label>Курс</label>
+                  <h3 class="mb-0">1 {{data.selectedCurrencies.buy}} = {{data.createOrderModal.exchangeRate}} {{data.selectedCurrencies.sell}}</h3>
+                </div>
+                <div class="form-group">
+                  <label>Количество <b>{{data.selectedCurrencies.buy}}</b> которое вы хотите <b>получить</b></label>
+                  <div class="input-group mb-3">
+                    <input
+                      class="form-control"
+                      type="type"
+                      @input.change_buy_amount=""
+                      al-value="data.createOrderModal.buyAmount"
+                      required
+                    >
+                    <div class="input-group-append">
+                      <span class="input-group-text">{{data.selectedCurrencies.buy}}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Количество <b>{{data.selectedCurrencies.sell}}</b> которое вы хотите <b>продать</b></label>
+                  <div class="input-group mb-3">
+                    <input
+                      class="form-control"
+                      type="type"
+                      @input.change_sell_amount=""
+                      al-value="data.createOrderModal.sellAmount"
+                      required
+                    >
+                    <div class="input-group-append">
+                      <span class="input-group-text">{{data.selectedCurrencies.sell}}</span>
+                    </div>
+                  </div>
+                </div>
+                <!--div class="form-check">
+                  <label class="form-check-label">
+                    <input
+                      id="ch_active"
+                      class="form-check-input"
+                      type="checkbox"
+                      al-init="checked()"
+                      al-value="active"
+                    />
+                    Обьявление активно
+                  </label>
+                  <div class="text-muted">поставьте галочку, что бы объявление появилось в онлайне в списке выше</div>
+                </div-->
+                <div class="pt-3">
+                  <input type="submit" class="btn btn-primary btn-block" value="Создать объявление" data-dismiss="modal">
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive mt-4">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Цена</th>
+            <th class="text-right">{{data.selectedCurrencies.buy}}</th>
+            <th class="text-right">{{data.selectedCurrencies.sell}}</th>
+            <th colspan="2"></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr al-repeat="item in data.orders track by item.id" data-id="{{item.id}}">
+            <td>{{item.exchangeRate}}</td>
+            <td class="text-right trim-order-value">{{item.buyAmount}}</td>
+            <td class="text-right trim-order-value">{{item.sellAmount}}</td>
+            <td class="text-right">
+              <div al-if="item.owner.address != data.myAddress">
+                <a href="#" al-link data-link="{{'/swap/btc-to-eth/' + item.id}}">купить</a>
+              </div>
+            </td>
+            <td class="text-right">
+              <button
+                al-if="item.owner.address == data.myAddress"
+                class="close"
+                type="button"
+                aria-label="Close"
+                @click="removeOrder(item)"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>

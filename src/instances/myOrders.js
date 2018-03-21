@@ -1,4 +1,4 @@
-import { orderStatuses } from 'helpers'
+import { orderStatuses, localStorage } from 'helpers'
 import EA from './EA'
 import room from './room'
 import orders from './orders'
@@ -12,7 +12,11 @@ class MyOrders {
   }
 
   onMount() {
-    const myOrders = JSON.parse(localStorage.getItem('myOrders') || '[]')
+    let myOrders = localStorage.getItem('myOrders') || []
+
+    // TODO remove this filter
+    myOrders = myOrders.filter(({ currency1 }) => currency1 === undefined)
+    localStorage.setItem('myOrders', myOrders)
 
     myOrders.forEach((order) => {
       orders.append(order)
@@ -58,7 +62,7 @@ class MyOrders {
   }
 
   saveToLocalStorage() {
-    localStorage.setItem('myOrders', JSON.stringify(orders.getOwnedByMe()))
+    localStorage.setItem('myOrders', orders.getOwnedByMe())
   }
 
   getProcessingOrders() {

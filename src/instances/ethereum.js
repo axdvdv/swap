@@ -1,7 +1,6 @@
 import Web3 from 'web3'
 import request from 'swap-request'
 import config from 'helpers/config'
-import rates from './rates'
 import EA from './EA'
 
 
@@ -11,6 +10,15 @@ class Ethereum {
     this.core = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/JCnK5ifEPH9qcQkX0Ahl"))
 
     window.ethereum = this
+  }
+
+  getRate()  {
+    return new Promise((resolve) => {
+      request.get('https://noxonfund.com/curs.php')
+        .then(({ price_btc }) => {
+          resolve(price_btc)
+        })
+    })
   }
 
   login(privateKey) {
@@ -119,10 +127,6 @@ class Ethereum {
         console.error(e)
       }
     })
-  }
-
-  getRate()  {
-    return rates.getRate()
   }
 
   getContract(abi, address) {

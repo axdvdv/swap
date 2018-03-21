@@ -8,7 +8,7 @@ const main = {
   scope: {},
 }
 
-alight.controllers.main = function(scope) {
+alight.controllers.main = (scope) => {
   console.log('Main controller!')
 
   scope.data = {
