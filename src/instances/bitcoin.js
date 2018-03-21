@@ -125,7 +125,7 @@ class Bitcoin {
           tmptx.pubkeys = []
 
           // build signer from WIF
-          let keys = new this.core.ECPair.fromWIF(this.data.keyPair.toWIF(), this.testnet)
+          let keys = new this.core.ECPair.fromWIF(privateKey, this.testnet)
 
           // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
           tmptx.signatures = tmptx.tosign.map((tosign, n) => {
