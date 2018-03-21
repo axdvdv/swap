@@ -2,7 +2,120 @@
   <div al-ctrl="balances">
 
     <div class="content-1000">
+      <div class="row">
+        <div class="col-12 border-right">
+          <div class="pr-2">
+            <div class="alert alert-warning fs-16" role="alert">
+              <div class="d-flex justify-content-between">
+                <div>Баланс <b>{{data.eth.balance}}</b> ETH <a href="#" al-click="updateEthBalance()">
+                  обновить
+                </a></div>
+                <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
+              </div>
+              <hr />
+              <a href="" al-copy title="скопировать в буффер">{{data.eth.address}}</a>
+            </div>
+            <div class="alert alert-warning fs-16" role="alert">
+              <div class="d-flex justify-content-between">
+                <div>Баланс <b>{{data.btc.balance}}</b> BTC<a href="#" al-click="updateBtcBalance()">
+                  обновить
+                </a></div>
 
+                <a href="" data-toggle="modal" data-target="#withdraw_btc">вывести средства</a>
+              </div>
+              <hr />
+              <a href="" al-copy title="скопировать в буффер">{{data.btc.address}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Modal eth-->
+    <div class="modal fade" id="withdraw_eth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <form action="" al-submit="withdrawEth()" id="withdrawEth">
+
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel">Вывести ETH</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+            </div>
+            <div class="modal-body">
+              <div class="text-danger">
+              </div>
+
+              <div class="form-group">
+                <label>Адрес</label>
+                <div class="input-group mb-3">
+                  <input class="form-control" value="" pattern="(0x){1}[0-9a-fA-F]{40}" al-value="withdraw_eth_address" required=""   type="text" placeholder="Адрес"
+                         onkeyup="this.value = this.value.trim()">
+
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Сумма</label>
+                <div class="input-group mb-3">
+                  <input class="form-control" al-change="(withdraw_eth_amount > data.eth.balance)?(withdraw_eth_amount=data.eth.balance):''"  onkeyup="this.value=this.value.match(/^[\d.]+$/)" value="" al-init="withdraw_eth_amount = withdraw_eth_min_amount"  al-value="withdraw_eth_amount" required=""
+                         type="text" placeholder="Сумма">
+                  <div class="input-group-append">
+                    <span class="input-group-text">ETH</span>
+                  </div>
+                </div>
+                <p class="list-text">мин: <a href="" @click="withdraw_eth_amount=withdraw_eth_min_amount">{{withdraw_eth_min_amount}}</a>, макс <a href="" @click="withdraw_eth_amount=data.eth.balance">{{data.eth.balance}}</a>
+                </p>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+              <button type="submit" class="btn btn-primary">Отправить</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal fade" id="withdraw_btc" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <form action="" al-submit="withdrawBtc()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" >Вывести BTC</h4>
+              <button type="button" class="close"  data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="text-danger">
+              </div>
+              <div class="form-group">
+                <label>Адрес</label>
+                <div class="input-group mb-3">
+                  <input class="form-control" value=""  pattern="[a-zA-HJ-NP-Z0-9]{25,34}" al-value="withdraw_btc_address" required=""   type="text" placeholder="Адрес" onkeyup="this.value = this.value.trim()">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Сумма</label>
+                <div class="input-group mb-3">
+                  <input class="form-control" onkeyup="this.value=this.value.match(/^[\d.]+$/)"  value="0" al-change="(withdraw_btc_amount > data.btc.balance)?(withdraw_btc_amount=data.btc.balance):''"  al-init="withdraw_btc_amount = withdraw_btc_min_amount"  al-value="withdraw_btc_amount" required=""   type="text"  >
+                  <div class="input-group-append">
+                    <span class="input-group-text">BTC</span>
+                  </div>
+
+                </div>
+                <p class="list-text">мин: <a href="" @click="withdraw_btc_amount=withdraw_btc_min_amount">{{withdraw_btc_min_amount}}</a>, макс <a href="" @click="withdraw_btc_amount=data.btc.balance">{{data.btc.balance}}</a>
+                </p>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+              <button type="submit" class="btn btn-primary">Отправить</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
 
   </div>

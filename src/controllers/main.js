@@ -49,37 +49,8 @@ alight.controllers.main = (scope) => {
   }
 
 
-  scope.withdrawEth =  () => {
-    user.saveSettings({withdraw_eth_address: scope.withdraw_eth_address});
-    ethereum.send(user.ethData.address, scope.withdraw_eth_address,  scope.withdraw_eth_amount, user.ethData.privateKey)
-      .then(() => {
-        notifications.append({type: 'notification', text: 'Вывод денег'})
-        $('.modal').modal('hide')
-      }).catch((err) => {
-        console.log(err)
-    })
-  }
 
-  scope.withdrawBtc =  () => {
-    user.saveSettings({withdraw_btc_address: scope.withdraw_btc_address});
-    bitcoin.send(user.btcData.address, scope.withdraw_btc_address, scope.withdraw_btc_amount, user.btcData.privateKey)
-      .then(() => {
-        notifications.append({ type: 'notification', text: 'Вывод денег' })
-        $('.modal').modal('hide')
-      })
-  }
 
-  scope.updateRates = async () => {
-    /**
-     *
-     *   Promise.all([ ethereum.getRate()]).then(values  => {
-       console.log(values)
-     })
-     */
-    scope.eth_exchange_rate = await ethereum.getRate();
-    scope.btc_exchange_rate = await bitcoin.getRate();
-    scope.$scan()
-  }
 
   scope.showError = (msg) => {
     alert(msg)
