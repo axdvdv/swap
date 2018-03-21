@@ -92,12 +92,12 @@ class Bitcoin {
     })
   }
 
-  send(to, amount) {
+  send(from, to, amount, privateKey) {
     return new Promise((resolve, reject) => {
       const newtx = {
         inputs: [
           {
-            addresses: [this.data.address],
+            addresses: [from],
           },
         ],
         outputs: [
@@ -108,11 +108,11 @@ class Bitcoin {
         ],
       }
 
-      if (amount > this.data.balance) {
-        EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
-        reject()
-        return
-      }
+      /*      if (amount > this.data.balance) {
+              EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
+              reject()
+              return
+            }*/
 
       request.post('https://api.blockcypher.com/v1/btc/test3/txs/new', {
         body: JSON.stringify(newtx),
