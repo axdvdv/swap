@@ -22,15 +22,14 @@ class Ethereum {
   }
 
   login(privateKey) {
-    let data
 
+    let data
     if (privateKey) {
       data = this.core.eth.accounts.privateKeyToAccount(privateKey)
     }
     else {
       data = this.core.eth.accounts.create()
       this.core.eth.accounts.wallet.add(data)
-
     }
 
     this.core.eth.accounts.wallet.add(data.privateKey)
@@ -60,6 +59,8 @@ class Ethereum {
 
         request.get(url)
           .then((res) => {
+
+            console.log(res)
             if (res.status) {
               transactions = res.result.map((item) => ({
                 status: item.blockHash != null ? 1 : 0,

@@ -1,18 +1,18 @@
 import alight from 'alight'
-import {  user } from 'instances'
+import {  EA, user } from 'instances'
 
 const balances = {
   scope: {},
 }
 
 alight.controllers.balances = (scope) => {
-  console.log('Balances controller!')
 
+  scope.withdraw_eth_min_amount = 0.01
+  scope.withdraw_btc_min_amount = 0.1
   scope.data = {
     eth: user.ethData,
     btc: user.btcData,
   }
-
 
   scope.withdrawEth =  () => {
     user.saveSettings({withdraw_eth_address: scope.withdraw_eth_address});
