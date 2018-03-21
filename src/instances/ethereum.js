@@ -84,6 +84,7 @@ class Ethereum {
   send(from, to, amount, privateKey) {
 
     EA.dispatchEvent('form:hideError')
+
     return new Promise((resolve, reject) => {
       this.core.eth.getBalance(from).then((r) => {
         try {
@@ -106,15 +107,13 @@ class Ethereum {
             reject()
             return
           }
-
           const t = {
             from: from,
             to: to,
             gas: "21000",
             gasPrice: "20000000000",
-            value: ethereum.core.utils.toWei(amount.trim())
+            value: ethereum.core.utils.toWei(''+amount)
           }
-
           this.core.eth.accounts.signTransaction(t, privateKey)
             .then((result) => {
               return this.core.eth.sendSignedTransaction(result.rawTransaction)
