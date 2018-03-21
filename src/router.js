@@ -16,6 +16,8 @@ const bind = (path) => [ path, (params, query) => {
 
 router
   .on(...bind('/'))
+  .on(...bind('/orders'))
+  .on(...bind('/balances'))
   .on(...bind('/history'))
   .on(...bind('/swap/:slug/:id'))
 

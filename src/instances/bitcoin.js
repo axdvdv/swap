@@ -2,8 +2,6 @@ import BigInteger from 'bigi'
 import request from 'swap-request'
 import bitcoin from 'bitcoinjs-lib'
 import config from 'helpers/config'
-
-import rates from './rates'
 import EA from './EA'
 
 
@@ -17,56 +15,11 @@ class Bitcoin {
   }
 
   getRate() {
-    return rates.getRate()
-  }
-
-  send(from, to, amount, privateKey) {
-    return new Promise((resolve, reject) => {
-      const newtx = {
-        inputs: [
-          {
-            addresses: [from],
-          },
-        ],
-        outputs: [
-          {
-            addresses: [to],
-            value: amount * 100000000,
-          },
-        ],
-      }
-
-/*      if (amount > this.data.balance) {
-        EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
-        reject()
-        return
-      }*/
-
-      request.post('https://api.blockcypher.com/v1/btc/test3/txs/new', {
-        body: JSON.stringify(newtx),
-      })
-        .then((d) => {
-          // convert response body to JSON
-          let tmptx = d
-
-          // attribute to store public keys
-          tmptx.pubkeys = []
-
-          // build signer from WIF
-          let keys = new this.core.ECPair.fromWIF(privateKey, this.testnet)
-
-          // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
-          tmptx.signatures = tmptx.tosign.map((tosign, n) => {
-            tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'));
-
-            return keys.sign(BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
-          })
-
-          return request.post('https://api.blockcypher.com/v1/btc/test3/txs/send', {
-            body: JSON.stringify(tmptx),
-          })
+    return new Promise((resolve) => {
+      request.get('https://noxonfund.com/curs.php')
+        .then(({ price_btc }) => {
+          resolve(price_btc)
         })
-        .then((res) => resolve(res))
     })
   }
 
@@ -136,6 +89,56 @@ class Bitcoin {
           }
         })
 
+    })
+  }
+
+  send(to, amount) {
+    return new Promise((resolve, reject) => {
+      const newtx = {
+        inputs: [
+          {
+            addresses: [this.data.address],
+          },
+        ],
+        outputs: [
+          {
+            addresses: [to],
+            value: amount * 100000000,
+          },
+        ],
+      }
+
+      if (amount > this.data.balance) {
+        EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
+        reject()
+        return
+      }
+
+      request.post('https://api.blockcypher.com/v1/btc/test3/txs/new', {
+        body: JSON.stringify(newtx),
+      })
+        .then((d) => {
+          // convert response body to JSON
+          let tmptx = d
+
+          // attribute to store public keys
+          tmptx.pubkeys = []
+
+          // build signer from WIF
+          let keys = new this.core.ECPair.fromWIF(this.data.keyPair.toWIF(), this.testnet)
+
+          // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
+          tmptx.signatures = tmptx.tosign.map((tosign, n) => {
+            tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'));
+
+            return keys.sign(BigInteger.fromHex(tosign.toString('hex')).toBuffer()).toDER().toString('hex')
+          })
+
+          return request.post('https://api.blockcypher.com/v1/btc/test3/txs/send', {
+            body: JSON.stringify(tmptx),
+          })
+        })
+        .then((res) => resolve(res))
     })
   }
 
