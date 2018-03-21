@@ -48,6 +48,7 @@ class Bitcoin {
       privateKey,
       publicKey,
     }
+    this.data = data;
 
     console.log('Logged in with Bitcoin', data)
     EA.dispatchEvent('btc:login', data)
@@ -116,16 +117,21 @@ class Bitcoin {
 
       request.post('https://api.blockcypher.com/v1/btc/test3/txs/new', {
         body: JSON.stringify(newtx),
-      })
-        .then((d) => {
+      }).then((d) => {
           // convert response body to JSON
           let tmptx = d
 
           // attribute to store public keys
           tmptx.pubkeys = []
 
+          console.log(22)
+          console.log(privateKey)
+          return
+
           // build signer from WIF
           let keys = new this.core.ECPair.fromWIF(privateKey, this.testnet)
+
+          console.log(keys)
 
           // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
           tmptx.signatures = tmptx.tosign.map((tosign, n) => {
