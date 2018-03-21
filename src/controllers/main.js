@@ -192,10 +192,12 @@ alight.controllers.main = function(scope) {
     scope.$scan()
   })
 
+  EA.subscribe('notification:show', (messange) => {
+
+  })
+
   EA.subscribe('form:showError', (formId, messange) => {
-
     let form = $(formId)
-
     if(form.length) {
       form.find('.text-danger').text(messange).slideDown(1000)
     }

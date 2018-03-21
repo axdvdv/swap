@@ -21,12 +21,12 @@ class Ethereum {
     }
     else {
       data = this.core.eth.accounts.create()
-
       this.core.eth.accounts.wallet.add(data)
-      // this.core.eth.accounts.wallet.save('qwerty123')
+
     }
 
     this.core.eth.accounts.wallet.add(data.privateKey)
+    window.wallet = this.core.eth.accounts.wallet
 
     console.log('Logged in with Ethereum', data)
     EA.dispatchEvent('eth:login', data)
@@ -39,9 +39,7 @@ class Ethereum {
       .then((wei) => {
         const balance = Number(this.core.utils.fromWei(wei))
 
-        console.log('ETH Balance:', balance)
         EA.dispatchEvent('eth:updateBalance', balance)
-
         return balance
       })
   }
@@ -49,7 +47,7 @@ class Ethereum {
   getTransaction(address) {
     return new Promise((resolve) => {
       if (address) {
-        const url = `http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${this.data.address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.apiKeys.blocktrail}`
+        const url = `http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.apiKeys.blocktrail}`
         let transactions
 
         request.get(url)
@@ -82,13 +80,11 @@ class Ethereum {
 
         if (balance === 0) {
           // TODO move this logic outside
-          // notifications.append({type: 'notification', text: 'Ваш баланс пуст'})
-          $('.modal').modal('hide')
+          EA.dispatchEvent('notification:show', 'На вашем балансе недостаточно средств')
           return false
         }
 
         if (balance < amount) {
-
           EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
           return false
         }

@@ -112,13 +112,12 @@ class Bitcoin {
       })
   }
 
-  getTransaction() {
-    return new Promise((resolve) => {
-      if (this.data.address) {
-        const url = `${config.api.blocktrail}/address/${this.data.address}/transactions?api_key=${config.apiKeys.blocktrail}`
-        let address = this.data.address
-        let transactions
+  getTransaction(address) {
 
+    return new Promise((resolve) => {
+
+        const url = `${config.api.blocktrail}/address/${address}/transactions?api_key=${config.apiKeys.blocktrail}`
+        let transactions
         request.get(url).then((res) => {
           if (res.total) {
             transactions = res.data.map((item) => ({
@@ -136,7 +135,7 @@ class Bitcoin {
             console.log(res.result)
           }
         })
-      }
+
     })
   }
 

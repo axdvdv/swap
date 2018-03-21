@@ -15,8 +15,8 @@ alight.controllers.history = function (scope) {
 
 
   scope.init = () => {
-    user.getTransactions();
 
+    user.getTransactions();
   }
 
   scope.init()

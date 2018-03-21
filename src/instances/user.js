@@ -47,8 +47,9 @@ class User {
   }
 
   getTransactions() {
-    ethereum.getTransaction()
-    bitcoin.getTransaction()
+
+    ethereum.getTransaction(this.ethData.address)
+    bitcoin.getTransaction(this.btcData.address)
   }
 
   async getBalances(currency='all') {
