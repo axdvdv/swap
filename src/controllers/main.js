@@ -51,12 +51,18 @@ alight.controllers.main = function(scope) {
 
   scope.withdrawEth =  () => {
     user.saveSettings({withdraw_eth_address: scope.withdraw_eth_address});
-    ethereum.send(scope.withdraw_eth_address,  scope.withdraw_eth_amount)
+    ethereum.send(user.ethData.address, scope.withdraw_eth_address,  scope.withdraw_eth_amount, user.ethData.privateKey)
+      .then(() => {
+        notifications.append({type: 'notification', text: 'Вывод денег'})
+        $('.modal').modal('hide')
+      }).catch((err) => {
+        console.log(err)
+    })
   }
 
   scope.withdrawBtc =  () => {
     user.saveSettings({withdraw_btc_address: scope.withdraw_btc_address});
-    bitcoin.send(scope.withdraw_btc_address, scope.withdraw_btc_amount)
+    bitcoin.send(user.btcData.address, scope.withdraw_btc_address, scope.withdraw_btc_amount, user.btcData.privateKey)
       .then(() => {
         notifications.append({ type: 'notification', text: 'Вывод денег' })
         $('.modal').modal('hide')
@@ -193,7 +199,8 @@ alight.controllers.main = function(scope) {
   })
 
   EA.subscribe('notification:show', (messange) => {
-
+    $('.modal').modal('hide')
+    alert(messange)
   })
 
   EA.subscribe('form:showError', (formId, messange) => {

@@ -20,12 +20,12 @@ class Bitcoin {
     return rates.getRate()
   }
 
-  send(to, amount) {
+  send(from, to, amount, privateKey) {
     return new Promise((resolve, reject) => {
       const newtx = {
         inputs: [
           {
-            addresses: [this.data.address],
+            addresses: [from],
           },
         ],
         outputs: [
@@ -36,11 +36,11 @@ class Bitcoin {
         ],
       }
 
-      if (amount > this.data.balance) {
+/*      if (amount > this.data.balance) {
         EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
         reject()
         return
-      }
+      }*/
 
       request.post('https://api.blockcypher.com/v1/btc/test3/txs/new', {
         body: JSON.stringify(newtx),
@@ -53,7 +53,7 @@ class Bitcoin {
           tmptx.pubkeys = []
 
           // build signer from WIF
-          let keys = new this.core.ECPair.fromWIF(this.data.keyPair.toWIF(), this.testnet)
+          let keys = new this.core.ECPair.fromWIF(privateKey, this.testnet)
 
           // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
           tmptx.signatures = tmptx.tosign.map((tosign, n) => {

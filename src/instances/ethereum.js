@@ -45,11 +45,10 @@ class Ethereum {
   }
 
   getTransaction(address) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (address) {
         const url = `http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.apiKeys.blocktrail}`
         let transactions
-
         request.get(url)
           .then((res) => {
             if (res.status) {
@@ -72,56 +71,59 @@ class Ethereum {
     })
   }
 
-  send(to, amount) {
+
+  send(from, to, amount, privateKey) {
+
     EA.dispatchEvent('form:hideError')
-    ethereum.core.eth.getBalance(this.data.address).then((r) => {
-      try {
-        let balance = ethereum.core.utils.fromWei(r)
+    return new Promise((resolve, reject) => {
+      this.core.eth.getBalance(from).then((r) => {
+        try {
+          let balance = this.core.utils.fromWei(r)
+          if (balance == 0) {
 
-        if (balance === 0) {
-          // TODO move this logic outside
-          EA.dispatchEvent('notification:show', 'На вашем балансе недостаточно средств')
-          return false
+            reject( 'На вашем балансе недостаточно средств')
+            return
+          }
+
+          if (balance < amount) {
+            EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
+            reject()
+            return
+          }
+
+          if (!this.core.utils.isAddress(to)) {
+
+            EA.dispatchEvent('form:showError', '#withdrawEth', 'Адрес не верный')
+            reject()
+            return
+          }
+
+          const t = {
+            from: from,
+            to: to,
+            gas: "21000",
+            gasPrice: "20000000000",
+            value: ethereum.core.utils.toWei(amount.trim())
+          }
+
+          this.core.eth.accounts.signTransaction(t, privateKey)
+            .then((result) => {
+              return this.core.eth.sendSignedTransaction(result.rawTransaction)
+            })
+            .then((receipt) => {
+
+              resolve(receipt)
+            })
+            .catch(error => console.error(error))
         }
-
-        if (balance < amount) {
-          EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
-          return false
+        catch (e) {
+          console.error(e)
         }
-
-        if (!ethereum.core.utils.isAddress(to)) {
-
-          EA.dispatchEvent('form:showError', '#withdrawEth', 'Адрес не верный')
-          return false
-        }
-
-        const t = {
-          from: this.ethData.address,
-          to: to,
-          gas: "21000",
-          gasPrice: "20000000000",
-          value: ethereum.core.utils.toWei(amount.trim())
-        }
-
-        // TODO Wtf? pass argument privateKey and take it from user.ethData.privateKey!
-        ethereum.core.eth.accounts.signTransaction(t, localStorage.getItem('privateEthKey'))
-          .then((result) => {
-            return ethereum.core.eth.sendSignedTransaction(result.rawTransaction)
-          })
-          .then((receipt) => {
-            // TODO move this logic outside
-            // notifications.append({type: 'notification', text: 'Вывод денег'})
-            $('.modal').modal('hide')
-          })
-          .catch(error => console.error(error))
-      }
-      catch (e) {
-        console.error(e)
-      }
+      })
     })
   }
 
-  getRate()  {
+  getRate() {
     return rates.getRate()
   }
 
