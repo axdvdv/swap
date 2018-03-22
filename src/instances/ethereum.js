@@ -91,7 +91,7 @@ class Ethereum {
           let balance = this.core.utils.fromWei(r)
           if (balance == 0) {
 
-            reject( 'На вашем балансе недостаточно средств')
+            reject( 'Ваш балансе пуст')
             return
           }
 
@@ -107,6 +107,7 @@ class Ethereum {
             reject()
             return
           }
+
           const t = {
             from: from,
             to: to,
@@ -114,6 +115,7 @@ class Ethereum {
             gasPrice: "20000000000",
             value: ethereum.core.utils.toWei(''+amount)
           }
+
           this.core.eth.accounts.signTransaction(t, privateKey)
             .then((result) => {
               return this.core.eth.sendSignedTransaction(result.rawTransaction)
