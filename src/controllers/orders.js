@@ -20,6 +20,7 @@ alight.controllers.orders = (scope) => {
     orders: [],
     totalAmount: 0,
     createOrderModal: {
+      lastChangedField: null,
       balance: 0,
       balanceAddress: '0x0',
       exchangeRate: 0.1,
@@ -45,16 +46,19 @@ alight.controllers.orders = (scope) => {
     })
   }
 
+  const getOrdersTotalAmount = (orders) =>
+    fixNumber(orders.reduce((summ, { sellAmount }) => summ + sellAmount, 0))
+
+  const updateTotal = () => {
+    scope.data.totalAmount = getOrdersTotalAmount(scope.data.orders)
+  }
+
   const increaseTotals = (orders) => {
-    orders.forEach(({ sellAmount }) => {
-      scope.data.totalAmount += fixNumber(sellAmount)
-    })
+    scope.data.totalAmount += getOrdersTotalAmount(orders)
   }
 
   const decreaseTotals = (orders) => {
-    orders.forEach(({ sellAmount }) => {
-      scope.data.totalAmount -= fixNumber(sellAmount)
-    })
+    scope.data.totalAmount -= getOrdersTotalAmount(orders)
   }
 
   const updateRate = async () => {
@@ -81,6 +85,7 @@ alight.controllers.orders = (scope) => {
 
     $(`#${type}CurrencyDropdown`).dropdown('toggle')
     updateOrders()
+    updateTotal()
     await updateRate()
     scope.$scan()
 
@@ -160,17 +165,38 @@ alight.controllers.orders = (scope) => {
 
   EA.subscribe('orders:onRemove', (order) => {
     decreaseTotals([ order ])
+    // TODO refactor this
+    scope.data.orders = orders.items
     scope.$scan()
   })
 
   // ------------------------------------------------------------
 
   updateOrders()
+  updateTotal()
   updateRate()
 
   ordersCtrl.scope = scope
 }
 
+
+alight.hooks.eventModifier.change_exchange_rate = {
+  event: [ 'input', 'blur' ],
+  fn: (event, env) => {
+    const data = ordersCtrl.scope.data.createOrderModal
+
+    if (event.type === 'blur') return
+    if (!data.exchangeRate) return
+
+    data.exchangeRate = data.exchangeRate.match(/^[\d.]+$/)
+    if (data.lastChangedField === 'buyAmount') {
+      data.sellAmount = fixNumber(data.buyAmount * data.exchangeRate)
+    }
+    else if (data.lastChangedField === 'sellAmount') {
+      data.buyAmount = fixNumber(data.sellAmount / data.exchangeRate)
+    }
+  }
+}
 
 alight.hooks.eventModifier.change_buy_amount = {
   event: [ 'input', 'blur' ],
@@ -180,10 +206,9 @@ alight.hooks.eventModifier.change_buy_amount = {
     if (event.type === 'blur') return
     if (!data.exchangeRate) return
 
-    data.buyAmount = data.buyAmount.match(/^[\d.]+$/)
-    data.sellAmount = fixNumber(data.buyAmount * data.exchangeRate)
-
-    // ordersCtrl. scope.$scan()
+    data.lastChangedField   = 'buyAmount'
+    data.buyAmount          = data.buyAmount.match(/^[\d.]+$/)
+    data.sellAmount         = fixNumber(data.buyAmount * data.exchangeRate)
   }
 }
 
@@ -195,10 +220,9 @@ alight.hooks.eventModifier.change_sell_amount = {
     if (event.type === 'blur') return
     if (!data.exchangeRate) return
 
-    data.sellAmount = data.sellAmount.match(/^[\d.]+$/)
-    data.buyAmount = fixNumber(data.sellAmount / data.exchangeRate)
-
-    // ordersCtrl. scope.$scan()
+    data.lastChangedField   = 'sellAmount'
+    data.sellAmount         = data.sellAmount.match(/^[\d.]+$/)
+    data.buyAmount          = fixNumber(data.sellAmount / data.exchangeRate)
   }
 }
 

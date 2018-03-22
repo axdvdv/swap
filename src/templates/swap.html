@@ -13,12 +13,20 @@
 
     <div al-if="data.status == data.statuses.waitingParticipantToBecomeOnline">
       <h2>Пользователь создавший этот ордер оффлайн, ожидаем его</h2>
-      <div class="loader"></div>
+      <div class="loader">
+        <div class="loader1"></div>
+        <div class="loader2"></div>
+        <div class="loader3"></div>
+      </div>
     </div>
 
     <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
       <h2>Ожидаем другого пользователя, когда он присоединится к сделке</h2>
-      <div class="loader"></div>
+      <div class="loader">
+        <div class="loader1"></div>
+        <div class="loader2"></div>
+        <div class="loader3"></div>
+      </div>
     </div>
 
     <div al-if="data.status == data.statuses.initialized">
@@ -59,22 +67,38 @@
 
         <div class="mt-5" al-if="data.step == 3 && data.checkingBalance">
           <h2 class="mb-4">Проверяем баланс</h2>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 4">
           <h2 class="mb-4">Создаем Bitcoin Swap скрипт. Подождите, это займет некоторое время</h2>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 5">
           <h2 class="mb-4">Пополняем баланс Bitcoin Swap скрипта. Подождите, это займет некоторое время</h2>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 6">
           <h2 class="mb-4">Мы отправили созданный скрипт и secretHash участнику сделки. Ожидаем когда он создаст ETH Swap контракт</h2>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 7">
@@ -82,7 +106,11 @@
           <div al-if="data.ethSwapWithdrawTransactionHash" class="alert alert-warning" role="alert">
             Транзакция: <strong><a href="{{data.ethSwapWithdrawTransactionHash}}" target="_blank">{{data.ethSwapWithdrawTransactionHash}}</a></strong>
           </div>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 8">
@@ -98,7 +126,11 @@
 
         <div al-if="data.step == 1 && !(data.secretHash || data.btcScriptData)">
           <h2 class="mb-4">Ожидаем участника сделки когда он создаст секретную фразу и пополнит BTC Swap скрипт</h2>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.secretHash && data.btcScriptData">
@@ -156,7 +188,11 @@
 
         <div class="mt-5" al-if="data.step == 2 && data.checkingBalance">
           <h2 class="mb-4">Проверяем баланс</h2>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 3">
@@ -164,7 +200,11 @@
           <div al-if="data.ethSwapCreationTransactionHash" class="alert alert-warning" role="alert">
             Транзакция: <strong><a href="{{data.ethSwapCreationTransactionHash}}" target="_blank">{{data.ethSwapCreationTransactionHash}}</a></strong>
           </div>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.ethReceipt">
@@ -176,7 +216,11 @@
 
         <div class="mt-5" al-if="data.step == 4">
           <h2 class="mb-4">Ожидаем участника сделки когда он передаст секретную фразу в созданный ETH Swap контракт</h2>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 5">
@@ -184,7 +228,11 @@
           <div al-if="data.ethSwapCreationTransactionHash" class="alert alert-warning" role="alert">
             Транзакция: <strong><a href="https://www.blocktrail.com/tBTC/tx/{{data.btcSwapWithdrawTransactionHash}}" target="_blank">{{data.btcSwapWithdrawTransactionHash}}</a></strong>
           </div>
-          <div class="loader"></div>
+          <div class="loader">
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+          </div>
         </div>
 
         <div class="mt-5" al-if="data.step == 6">

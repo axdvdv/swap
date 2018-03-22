@@ -19,7 +19,7 @@
     "bigi": "^1.4.2",
     "bitcoinjs-lib": "^3.3.2",
     "font-awesome": "^4.7.0",
-    "ipfs-pubsub-room": "^1.1.5",
+    "ipfs-pubsub-room": "DaoCasino/ipfs-pubsub-room",
     "js-sha256": "^0.9.0",
     "js-sha3": "^0.7.0",
     "lodash": "^4.17.5",

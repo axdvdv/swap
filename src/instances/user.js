@@ -9,6 +9,7 @@ class User {
 
   constructor() {
     this.peer = null
+    this.rating = 0
     this.ethData = {
       address: '0x0',
       balance: 0,
@@ -68,6 +69,7 @@ class User {
       owner: {
         address: this.ethData.address,
         peer: this.peer,
+        rating: this.rating,
       },
     }
   }
