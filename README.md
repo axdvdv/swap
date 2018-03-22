@@ -1,6 +1,6 @@
 # Swap
 
-[**Run demo noxonswap.surge.sh**](https://noxonswap.surge.sh/)
+[**Run demo noxonswap.surge.sh**](https://noxonswap.surge.sh/) (не пашет из за ipfs стар сервера, сохраните на локалку)
 
 
 ## Install
