@@ -19,7 +19,7 @@ class Orders extends Collection {
       .then(({ price_btc }) => {
       // scope.eth_exchange_rate = price_btc
       // scope.btc_exchange_rate = price_btc
-      // scope.$scan()
+      scope.$scan()
     })
   }
 

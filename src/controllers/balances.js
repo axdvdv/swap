@@ -142,7 +142,7 @@ alight.hooks.eventModifier.change_eth_exchange_rate = {
     main.scope.eth_exchange_rate = (main.scope.eth_exchange_rate.match(/^[\d.]+$/))
     main.scope.btc = main.scope.eth *main.scope.eth_exchange_rate
 
-    main.scope.$scan()
+    // main. scope.$scan()
   }
 }
 
@@ -155,7 +155,7 @@ alight.hooks.eventModifier.change_eth = {
     main.scope.eth = (main.scope.eth.match(/^[\d.]+$/))
     main.scope.btc = main.scope.eth *main.scope.eth_exchange_rate
 
-    main.scope.$scan()
+    // main. scope.$scan()
   }
 }
 
@@ -168,7 +168,7 @@ alight.hooks.eventModifier.change_btc = {
     main.scope.btc = (main.scope.btc.match(/^[\d.]+$/))
     main.scope.eth = main.scope.btc / main.scope.eth_exchange_rate
 
-    main.scope.$scan()
+    // main. scope.$scan()
   }
 }
 
@@ -182,7 +182,7 @@ alight.hooks.eventModifier.change_btc_exchange_rate = {
     main.scope.btc_exchange_rate = (main.scope.btc_exchange_rate.match(/^[\d.]+$/))
     main.scope.sell_btc = main.scope.sell_eth *main.scope.btc_exchange_rate
 
-    main.scope.$scan()
+    // main. scope.$scan()
   }
 }
 
@@ -195,7 +195,7 @@ alight.hooks.eventModifier.change_sell_eth = {
     main.scope.sell_eth = (main.scope.sell_eth.match(/^[\d.]+$/))
     main.scope.sell_btc = main.scope.sell_eth *main.scope.btc_exchange_rate
 
-    main.scope.$scan()
+    // main. scope.$scan()
   }
 }
 
@@ -208,7 +208,7 @@ alight.hooks.eventModifier.change_sell_btc = {
     main.scope.sell_btc = (main.scope.sell_btc.match(/^[\d.]+$/))
     main.scope.sell_eth = main.scope.sell_btc / main.scope.btc_exchange_rate
 
-    main.scope.$scan()
+    // main. scope.$scan()
   }
 }
 

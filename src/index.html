@@ -20,7 +20,7 @@
 </head>
 <body al-app="app">
 
-  <div class="loader" al-hide="data.initialized"></div>
+  <div class="loader" al-if="!data.initialized"></div>
 
   <div al-cloak>
     <div al-if="data.initialized">

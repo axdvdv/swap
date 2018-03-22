@@ -63,6 +63,16 @@ module.exports = {
         },
       },
 
+      {
+        test: require.resolve('alight'),
+        use: [
+          {
+            loader: 'expose-loader',
+            options: 'alight',
+          },
+        ],
+      },
+
       // CSS
       {
         test: /\.css$/,

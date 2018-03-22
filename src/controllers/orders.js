@@ -1,7 +1,7 @@
 import alight from 'alight'
 import sha256 from 'js-sha256'
 import { EA, user, orders, myOrders, room, rates } from 'instances'
-import { localStorage } from 'helpers'
+import { localStorage, fixNumber } from 'helpers'
 
 
 const ordersCtrl = {
@@ -17,17 +17,18 @@ alight.controllers.orders = (scope) => {
       buy: 'ETH',
       sell: 'BTC',
     },
-    isFormVisible: true,
-    balance: 0,
-    balanceAddress: '0x0',
     orders: [],
+    totalAmount: 0,
     createOrderModal: {
+      balance: 0,
+      balanceAddress: '0x0',
       exchangeRate: 0.1,
       buyAmount: '',
       sellAmount: '',
     },
   }
 
+  // ------------------------------------------------------------
 
   const checkOrderCurrencies = (item) => {
     const { buyCurrency, sellCurrency } = item
@@ -41,6 +42,18 @@ alight.controllers.orders = (scope) => {
       if (checkOrderCurrencies(order)) {
         return order
       }
+    })
+  }
+
+  const increaseTotals = (orders) => {
+    orders.forEach(({ sellAmount }) => {
+      scope.data.totalAmount += fixNumber(sellAmount)
+    })
+  }
+
+  const decreaseTotals = (orders) => {
+    orders.forEach(({ sellAmount }) => {
+      scope.data.totalAmount -= fixNumber(sellAmount)
     })
   }
 
@@ -58,8 +71,9 @@ alight.controllers.orders = (scope) => {
     return () => sha256(user.ethData.address + String(++id))
   })()
 
+  // ------------------------------------------------------------
 
-  scope.updateSelectedCurrency = (type, currency) => {
+  scope.updateSelectedCurrency = async (type, currency) => {
     scope.data.selectedCurrencies[type] = currency
 
     // ductape until couple of currencies will be added
@@ -67,6 +81,8 @@ alight.controllers.orders = (scope) => {
 
     $(`#${type}CurrencyDropdown`).dropdown('toggle')
     updateOrders()
+    await updateRate()
+    scope.$scan()
 
     localStorage.setItem('selectedCurrencies', scope.data.selectedCurrencies)
   }
@@ -92,6 +108,8 @@ alight.controllers.orders = (scope) => {
       sellAmount: '',
     }
 
+    $('#createOrderModal').modal('hide')
+
     myOrders.append(order, (removedOrder) => {
       const message = []
 
@@ -111,14 +129,41 @@ alight.controllers.orders = (scope) => {
     })
   }
 
+  scope.removeOrder = (order) => {
+    const { id } = order
+    console.log('Remove order with id:', id)
+
+    myOrders.remove(id, () => {
+      room.sendMessage([
+        {
+          event: 'removeOrder',
+          data: order,
+        },
+      ])
+    })
+  }
+
+  // ------------------------------------------------------------
+
+  EA.once('myOrders:onMount', () => {
+    increaseTotals(orders.items)
+    scope.$scan()
+  })
 
   EA.subscribe('orders:onAppend', (order) => {
     if (checkOrderCurrencies(order)) {
       scope.data.orders.unshift(order)
+      increaseTotals([ order ])
       scope.$scan()
     }
   })
 
+  EA.subscribe('orders:onRemove', (order) => {
+    decreaseTotals([ order ])
+    scope.$scan()
+  })
+
+  // ------------------------------------------------------------
 
   updateOrders()
   updateRate()
@@ -136,9 +181,9 @@ alight.hooks.eventModifier.change_buy_amount = {
     if (!data.exchangeRate) return
 
     data.buyAmount = data.buyAmount.match(/^[\d.]+$/)
-    data.sellAmount = String(Number(data.buyAmount * data.exchangeRate).toFixed(12))
+    data.sellAmount = fixNumber(data.buyAmount * data.exchangeRate)
 
-    ordersCtrl.scope.$scan()
+    // ordersCtrl. scope.$scan()
   }
 }
 
@@ -151,9 +196,9 @@ alight.hooks.eventModifier.change_sell_amount = {
     if (!data.exchangeRate) return
 
     data.sellAmount = data.sellAmount.match(/^[\d.]+$/)
-    data.buyAmount = String(Number(data.sellAmount / data.exchangeRate).toFixed(12))
+    data.buyAmount = fixNumber(data.sellAmount / data.exchangeRate)
 
-    ordersCtrl.scope.$scan()
+    // ordersCtrl. scope.$scan()
   }
 }
 
