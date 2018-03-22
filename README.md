@@ -1,6 +1,6 @@
 # Swap
 
-[**Run demo noxonswap.surge.sh**](https://noxonswap.surge.sh/) (не пашет из за ipfs стар сервера, сохраните на локалку)
+[**Run demo noxonswap.surge.sh**](https://noxonswap.surge.sh/) (если не работает то https://bk.wpmix.net/swap/build/)
 
 
 ## Install
