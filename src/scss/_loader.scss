@@ -1,9 +1,9 @@
 $animation-speed: 1.6s;
 
-@-webkit-keyframes loader1 {
+@keyframes loader1 {
   0% {
     opacity: 0;
-    transform: translate3d(25%, -50%, 0) rotateY(-57deg);
+    transform: translate3d(25%, -50%, 0) rotateY(-77deg);
   }
   30% {
     opacity: 1;
@@ -21,10 +21,10 @@ $animation-speed: 1.6s;
   }
 }
 
-@-webkit-keyframes loader2 {
+@keyframes loader2 {
   0% {
     opacity: 0;
-    transform: translate3d(20%, -50%, 0) rotateY(-97deg);
+    transform: translate3d(20%, -50%, 0) rotateY(-107deg);
   }
   30% {
     opacity: 1;
@@ -42,7 +42,7 @@ $animation-speed: 1.6s;
   }
 }
 
-@-webkit-keyframes loader3 {
+@keyframes loader3 {
   0% {
     opacity: 0;
     transform: translate3d(50%, -50%, 0);
@@ -64,10 +64,6 @@ $animation-speed: 1.6s;
 }
 
 .loader {
-  // background-image: url(https://i.imgur.com/8fqDgMU.png);
-  background-size: 128% auto;
-  background-position: -12px -2px;
-  background-repeat: no-repeat;
   width: 100px;
   height: 100px;
   perspective: 60px;
@@ -100,7 +96,7 @@ $animation-speed: 1.6s;
   background: linear-gradient(#6829DF, #5124D5);
   left: 0;
   top: 50%;
-  transform: translate3d(25%, -50%, 0) rotateY(-57deg);
+  transform: translate3d(25%, -50%, 0) rotateY(-77deg);
   animation: loader1 $animation-speed infinite;
 }
 
@@ -110,7 +106,7 @@ $animation-speed: 1.6s;
   background: linear-gradient(#702BE1, #623AD9);
   left: 48%;
   top: 50%;
-  transform: translate3d(20%, -50%, 0) rotateY(-97deg);
+  transform: translate3d(20%, -50%, 0) rotateY(-107deg);
   animation: loader2 $animation-speed infinite;
   animation-delay: 0.2s;
 }
