@@ -5,6 +5,7 @@ import { user, ethereum } from 'instances'
 createBalanceCard('eth-balance-card', (scope) => {
   scope.data.currency = 'ETH'
   scope.data.address = user.ethData.address
+  scope.data.modal_link = '#withdraw_eth'
 
   scope.updateBalance = async () => {
     scope.data.balance = await ethereum.getBalance(user.ethData.address)
