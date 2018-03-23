@@ -7,17 +7,7 @@
           <div class="pr-2">
             <eth-balance-card ></eth-balance-card>
             <btc-balance-card ></btc-balance-card>
-            <div class="alert alert-warning fs-16" role="alert">
-              <div class="d-flex justify-content-between">
-                <div>Баланс <b>{{data.eth.balance}}</b> ETH <a href="#" al-click="updateEthBalance()">
-                  обновить
-                </a></div>
-                <a href="" data-toggle="modal" data-target="#withdraw_eth">вывести средства</a>
-              </div>
-              <hr />
-              <a href="" al-copy title="скопировать в буффер">{{data.eth.address}}</a>
-            </div>
-            <div class="alert alert-warning fs-16" role="alert">
+
               <div class="d-flex justify-content-between">
                 <div>Баланс <b>{{data.btc.balance}}</b> BTC<a href="#" al-click="updateBtcBalance()">
                   обновить
