@@ -1,19 +1,22 @@
 import alight from 'alight'
 import 'alight/ext/component.es'
+import './style.scss'
 
 
 alight.autostart = false
 
+const timer = setInterval(() => {
+  if (Ipfs && jQuery && bootstrap) {
+    require('./directives')
+    require('./controllers')
+    require('./components')
+    require('./models')
+    require('./instances')
 
-import './style.scss'
+    const router = require('./router').default
 
-import './directives'
-import './controllers'
-import './components'
-import './models'
-import './instances'
-import router from './router'
-
-
-alight.bootstrap()
-router.resolve()
+    clearInterval(timer)
+    alight.bootstrap()
+    router.resolve()
+  }
+}, 300)
