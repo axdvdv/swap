@@ -4,6 +4,7 @@ import redirect from './redirect'
 import orderStatuses from './orderStatuses'
 import localStorage from './localStorage'
 import fixNumber from './fixNumber'
+import getLockTime from './getLockTime'
 
 
 export {
@@ -13,4 +14,5 @@ export {
   orderStatuses,
   localStorage,
   fixNumber,
+  getLockTime,
 }

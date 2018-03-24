@@ -11,7 +11,7 @@ class Bitcoin {
     this.core = bitcoin
     this.testnet = bitcoin.networks.testnet
 
-    window.bitcoin = this
+    global.bitcoin = this
   }
 
   getRate() {

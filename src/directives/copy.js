@@ -8,7 +8,7 @@ alight.directives.al.copy = function (scope, element, expression, env) {
 
     try {
       // современный объект Selection
-      window.getSelection().removeAllRanges()
+      global.getSelection().removeAllRanges()
     }
     catch (e) {
       // для IE8-
@@ -21,11 +21,11 @@ alight.directives.al.copy = function (scope, element, expression, env) {
       range.select().createTextRange()
       document.execCommand("Copy")
     }
-    else if (window.getSelection) {
+    else if (global.getSelection) {
       const range = document.createRange()
       range.selectNode(this)
       console.log(range)
-      window.getSelection().addRange(range)
+      global.getSelection().addRange(range)
       document.execCommand("Copy")
       alert("text copied")
     }

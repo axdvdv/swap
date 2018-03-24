@@ -16,7 +16,7 @@ alight.controllers.btcToEth = (scope) => {
   const swapData = localStorage.getItem(`swap:${order.id}`) || {}
   let btcScriptData
 
-  window.swapData = swapData
+  global.swapData = swapData
 
   scope.data = {
     order,
@@ -147,6 +147,7 @@ alight.controllers.btcToEth = (scope) => {
     }
     else if (scope.data.step === 7) {
       ethSwap.withdraw({
+        ethData: user.ethData,
         secret: scope.data.secret,
         ownerAddress: swapData.participant.eth.address,
       }, (transactionHash) => {

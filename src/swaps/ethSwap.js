@@ -1,106 +1,191 @@
-import user from 'instances/user'
 import ethereum from 'instances/ethereum'
 import { config } from 'helpers'
 
-const address = '0x2650528f848472f346c9f72011e74410f4ebf60f'
-const abi = [{"constant":false,"inputs":[{"name":"_secret","type":"bytes32"},{"name":"_ownerAddress","type":"address"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_secretHash","type":"bytes20"},{"name":"_unlockTime","type":"uint256"}],"name":"open","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[],"name":"refund","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getSecret","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+const address   = '0x2056a61257db3450c4ad9377c81326b110b8dbe5'
+const abi       = [{"constant":false,"inputs":[{"name":"_secret","type":"bytes32"},{"name":"_ownerAddress","type":"address"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_participantAddress","type":"address"}],"name":"getSecret","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"Swaps","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"participantAddress","type":"address"}],"name":"checkIfSigned","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_secretHash","type":"bytes20"},{"name":"_participantAddress","type":"address"}],"name":"create","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"participantAddress","type":"address"}],"name":"sign","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_participantAddress","type":"address"}],"name":"refund","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
 
 
-const contract = ethereum.getContract(abi, address)
+class EthSwap {
 
+  constructor(address, abi) {
+    this.contract = ethereum.getContract(abi, address)
+  }
 
-/**
- *
- * @param {object} data
- * @param {string} data.secretHash
- * @param {number} data.lockTime
- * @param {function} handleTransaction
- */
-const create = ({ secretHash, lockTime }, handleTransaction) =>
-  new Promise(async (resolve, reject) => {
-    const hash      = `0x${secretHash.replace(/^0x/, '')}`
-    const lockTime  = Math.floor(Date.now() / 1000) + 3600 * 3 // 3 days
+  /**
+   *
+   * @param {object} data
+   * @param {object} data.ethData
+   * @param {string} data.participantAddress
+   * @param {function} handleTransaction
+   */
+  sign({ ethData, participantAddress }, handleTransaction) {
+    return new Promise(async (resolve, reject) => {
+      const params = {
+        from: ethData.address,
+        gas: config.eth.gasLimit,
+      }
+      
+      console.log('\n\nStart sign ETH Swap', { values: { ownerAddress: ethData.address, participantAddress } })
 
-    // const gasLimit = await contract.methods.open(hash, lockTime).estimateGas({ from: user.ethData.address })
+      const receipt = await this.contract.methods.sign(participantAddress).send(params)
+        .on('transactionHash', (hash) => {
+          console.log('ETH Swap > transactionHash', `https://rinkeby.etherscan.io/tx/${hash}`)
+          handleTransaction && handleTransaction(`https://rinkeby.etherscan.io/tx/${hash}`)
+        })
+        .on('confirmation', (confirmationNumber) => {
+          // console.log('ETH Swap > confirmation', confirmationNumber)
+        })
+        .on('error', (err) => {
+          console.error('ETH Swap > receipt', err)
 
-    const params = {
-      from: user.ethData.address,
-      gas: config.eth.gasLimit,
-      // gasPrice: config.eth.gasPrice,
-      value: ethereum.core.utils.toWei(String(0.005)),
-    }
+          reject()
+        })
 
-    console.log('Start creating ETH Swap', { arguments: { secretHash: hash, lockTime }, params })
-
-    const receipt = await contract.methods.open(hash, lockTime).send(params)
-      .on('transactionHash', (hash) => {
-        console.log('ETH Swap > transactionHash', `https://rinkeby.etherscan.io/tx/${hash}`)
-        handleTransaction && handleTransaction(`https://rinkeby.etherscan.io/tx/${hash}`)
-      })
-      .on('confirmation', (confirmationNumber) => {
-        // console.log('ETH Swap > confirmation', confirmationNumber)
-      })
-      .on('error', (err) => {
-        console.error('ETH Swap > receipt', err)
-
-        reject()
-      })
-
-    console.log('ETH Swap created:', receipt)
-    resolve(receipt)
-  })
-
-/**
- *
- * @param {string} secret
- * @param {string} ownerAddress
- * @param {function} handleTransaction
- */
-const withdraw = ({ secret: _secret, ownerAddress }, handleTransaction) =>
-  new Promise(async (resolve, reject) => {
-    const secret = `0x${_secret.replace(/^0x/, '')}`
-
-    const params = {
-      from: user.ethData.address,
-      gas: config.eth.gasLimit,
-      // gasPrice: config.eth.gasPrice,
-    }
-
-    console.log('Start withdraw from ETH Swap', { arguments: { secret, ownerAddress }, params })
-
-    const receipt = await contract.methods.withdraw(secret, ownerAddress).send(params)
-      .on('transactionHash', (hash) => {
-        console.log('ETH Swap > transactionHash', `https://rinkeby.etherscan.io/tx/${hash}`)
-        handleTransaction && handleTransaction(`https://rinkeby.etherscan.io/tx/${hash}`)
-      })
-      .on('confirmation', (confirmationNumber) => {
-        // console.log('ETH Swap > confirmation', confirmationNumber)
-      })
-      .on('error', (err) => {
-        console.error('ETH Swap > receipt', err)
-
-        reject()
-      })
-
-    console.log('ETH Swap withdraw complete:', receipt)
-    resolve(receipt)
-  })
-
-const getSecret = () =>
-  new Promise(async (resolve, reject) => {
-    console.log('Start getting secret from ETH Swap')
-
-    const secret = await contract.methods.getSecret().call({
-      from: user.ethData.address,
+      console.log('ETH Swap sign complete:', receipt)
+      resolve(receipt)
     })
+  }
 
-    console.log('ETH Swap secret:', secret)
-    resolve(secret)
-  })
+  /**
+   *
+   * @param {object} data
+   * @param {object} data.ethData
+   * @param {string} data.secretHash
+   * @param {string} data.participantAddress
+   * @param {number} data.amount
+   * @param {number} data._lockTime - required just for AVA test
+   * @param {function} handleTransaction
+   */
+  create({ ethData, secretHash, participantAddress, amount, _lockTime }, handleTransaction) {
+    return new Promise(async (resolve, reject) => {
+      const hash      = `0x${secretHash.replace(/^0x/, '')}`
+
+      // const gasLimit = await this.contract.methods.open(hash, lockTime).estimateGas({ from: ethData.address })
+
+      const params = {
+        from: ethData.address,
+        gas: config.eth.gasLimit,
+        // gasPrice: config.eth.gasPrice,
+        value: ethereum.core.utils.toWei(String(amount)),
+      }
+
+      const values = [ hash, participantAddress ]
+
+      // ductape for ava test
+      if (_lockTime) {
+        values.push(_lockTime)
+      }
+
+      console.log('\n\nStart creating ETH Swap', { values, params })
+
+      const receipt = await this.contract.methods.create(...values).send(params)
+        .on('transactionHash', (hash) => {
+          console.log('ETH Swap > transactionHash', `https://rinkeby.etherscan.io/tx/${hash}`)
+          handleTransaction && handleTransaction(`https://rinkeby.etherscan.io/tx/${hash}`)
+        })
+        .on('confirmation', (confirmationNumber) => {
+          // console.log('ETH Swap > confirmation', confirmationNumber)
+        })
+        .on('error', (err) => {
+          console.error('ETH Swap > receipt', err)
+
+          reject()
+        })
+
+      console.log('ETH Swap created:', receipt)
+      resolve(receipt)
+    })
+  }
+
+  /**
+   *
+   * @param {object} data
+   * @param {object} data.ethData
+   * @param {string} data.secret
+   * @param {string} data.ownerAddress
+   * @param {function} handleTransaction
+   */
+  withdraw({ ethData, secret: _secret, ownerAddress }, handleTransaction) {
+    return new Promise(async (resolve, reject) => {
+      const secret = `0x${_secret.replace(/^0x/, '')}`
+
+      const params = {
+        from: ethData.address,
+        gas: config.eth.gasLimit,
+        // gasPrice: config.eth.gasPrice,
+      }
+
+      console.log('\n\nStart withdraw from ETH Swap', { values: { secret, ownerAddress }, params })
+
+      const receipt = await this.contract.methods.withdraw(secret, ownerAddress).send(params)
+        .on('transactionHash', (hash) => {
+          console.log('ETH Swap > transactionHash', `https://rinkeby.etherscan.io/tx/${hash}`)
+          handleTransaction && handleTransaction(`https://rinkeby.etherscan.io/tx/${hash}`)
+        })
+        .on('confirmation', (confirmationNumber) => {
+          // console.log('ETH Swap > confirmation', confirmationNumber)
+        })
+        .on('error', (err) => {
+          console.error('ETH Swap > receipt', err)
+
+          reject()
+        })
+
+      console.log('ETH Swap withdraw complete:', receipt)
+      resolve(receipt)
+    })
+  }
+
+  refund() {
+
+  }
+
+  getSecret({ ethData, participantAddress }) {
+    return new Promise(async (resolve, reject) => {
+      console.log('\n\nStart getting secret from ETH Swap')
+
+      const secret = await this.contract.methods.getSecret(participantAddress).call({
+        from: ethData.address,
+      })
+
+      console.log('ETH Swap secret:', secret)
+      resolve(secret)
+    })
+  }
+
+  close({ ethData, participantAddress }, handleTransaction) {
+    return new Promise(async (resolve, reject) => {
+      console.log('\n\nStart closing ETH Swap')
+
+      const params = {
+        from: ethData.address,
+        gas: config.eth.gasLimit,
+        // gasPrice: config.eth.gasPrice,
+      }
+
+      const receipt = await this.contract.methods.getSecret(participantAddress).send(params)
+        .on('transactionHash', (hash) => {
+          console.log('ETH Swap > transactionHash', `https://rinkeby.etherscan.io/tx/${hash}`)
+          handleTransaction && handleTransaction(`https://rinkeby.etherscan.io/tx/${hash}`)
+        })
+        .on('confirmation', (confirmationNumber) => {
+          // console.log('ETH Swap > confirmation', confirmationNumber)
+        })
+        .on('error', (err) => {
+          console.error('ETH Swap > receipt', err)
+
+          reject()
+        })
+
+      console.log('ETH Swap closed')
+      resolve(receipt)
+    })
+  }
+}
 
 
-export default {
-  create,
-  withdraw,
-  getSecret,
+export default new EthSwap(address, abi)
+
+export {
+  EthSwap,
 }

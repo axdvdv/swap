@@ -9,7 +9,7 @@ class Orders extends Collection {
   constructor() {
     super()
 
-    window.orders = this
+    global.orders = this
 
     this.onMount()
   }

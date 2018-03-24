@@ -70,7 +70,7 @@
   },
   "ava": {
     "files": [
-      "src/**/*.spec.js"
+      "src/**/ethSwap.spec.js"
     ],
     "require": [
       "./bin/bootstrap.js"

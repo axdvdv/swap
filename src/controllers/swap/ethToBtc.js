@@ -14,7 +14,7 @@ alight.controllers.ethToBtc = (scope) => {
   const order = scope.$parent.data.order
   const swapData = localStorage.getItem(`swap:${order.id}`) || {}
 
-  window.swapData = swapData
+  global.swapData = swapData
 
   scope.data = {
     order,
@@ -108,7 +108,9 @@ alight.controllers.ethToBtc = (scope) => {
     }
     else if (scope.data.step === 3) {
       const receipt = await ethSwap.create({
+        ethData: user.ethData,
         secretHash: scope.data.secretHash,
+        amount: 0.005, // TODO add real value
       }, (transactionHash) => {
         scope.data.ethSwapCreationTransactionHash = transactionHash
         scope.$scan()
@@ -138,7 +140,9 @@ alight.controllers.ethToBtc = (scope) => {
       })
     }
     else if (scope.data.step === 5) {
-      ethSwap.getSecret()
+      ethSwap.close({
+        ethData: user.ethData,
+      })
         .then((secret) => {
           const { script } = btcSwap.createScript(scope.data.btcScriptData)
 

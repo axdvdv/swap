@@ -20,7 +20,7 @@ class User {
     }
     this.localStorageName = 'user:settings'
 
-    window.user = this
+    global.user = this
 
     this.onMount()
   }

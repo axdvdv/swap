@@ -9,7 +9,7 @@ class Notifications extends Collection {
   constructor() {
     super()
 
-    window.notifications = this
+    global.notifications = this
 
     this.onMount()
   }

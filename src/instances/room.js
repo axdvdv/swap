@@ -11,7 +11,7 @@ class Room {
     this.connection = null
     // this.waitList = []
 
-    window.room = this
+    global.room = this
 
     this.onMount()
   }

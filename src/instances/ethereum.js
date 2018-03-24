@@ -4,12 +4,16 @@ import config from 'helpers/config'
 import EA from './EA'
 
 
+const web3 = new Web3(new Web3.providers.HttpProvider('https://rinkeby.infura.io/JCnK5ifEPH9qcQkX0Ahl'))
+
+
 class Ethereum {
 
   constructor() {
-    this.core = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/JCnK5ifEPH9qcQkX0Ahl"))
+    this.core = web3
 
-    window.ethereum = this
+    global.ethereum = this
+    global.wallet = this.core.eth.accounts.wallet
   }
 
   getRate()  {
@@ -33,7 +37,6 @@ class Ethereum {
     }
 
     this.core.eth.accounts.wallet.add(data.privateKey)
-    window.wallet = this.core.eth.accounts.wallet
 
     console.log('Logged in with Ethereum', data)
     EA.dispatchEvent('eth:login', data)
@@ -132,7 +135,6 @@ class Ethereum {
       })
     })
   }
-
 
   getContract(abi, address) {
     return new this.core.eth.Contract(abi, address)

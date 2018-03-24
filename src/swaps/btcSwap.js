@@ -1,11 +1,11 @@
 import bitcoin from 'instances/bitcoin'
+import { getLockTime } from 'helpers'
 
 
 const createScript = ({ secretHash, btcOwnerPublicKey, ethOwnerPublicKey, lockTime: _lockTime }) => {
   console.log('\n\nCreate BTC Swap Script', { secretHash, btcOwnerPublicKey, ethOwnerPublicKey, lockTime: _lockTime })
 
-  const utcNow = () => Math.floor(Date.now() / 1000)
-  const lockTime = _lockTime || utcNow() + 3600 * 3 // 3 days from now
+  const lockTime = _lockTime || getLockTime()
 
   // const script = bitcoin.core.script.compile([
   //   bitcoin.core.opcodes.OP_RIPEMD160,
