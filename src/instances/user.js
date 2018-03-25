@@ -88,11 +88,16 @@ class User {
   getSettings(name) {
     let settings = localStorage.getItem(this.localStorageName)
 
+    if(!settings) {
+
+      return
+    }
+
     if (name === 'all') {
       return settings
     }
 
-    if(settings[name]) {
+    if(typeof settings[name] !== 'undefined') {
       return settings[name]
     }
 

@@ -48,8 +48,6 @@ class Bitcoin {
       privateKey,
       publicKey,
     }
-    this.data = data;
-
     console.log('Logged in with Bitcoin', data)
     EA.dispatchEvent('btc:login', data)
 
@@ -93,7 +91,7 @@ class Bitcoin {
     })
   }
 
-  send(from, to, amount, privateKey) {
+  send(from, to, amount, keyPair) {
     return new Promise((resolve, reject) => {
       const newtx = {
         inputs: [
@@ -124,16 +122,11 @@ class Bitcoin {
           // attribute to store public keys
           tmptx.pubkeys = []
 
-          console.log(22)
-          console.log(privateKey)
-          return
 
           // build signer from WIF
-          let keys = new this.core.ECPair.fromWIF(privateKey, this.testnet)
+          let keys = new this.core.ECPair.fromWIF(keyPair.toWIF(), this.testnet)
 
-          console.log(keys)
-
-          // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
+        // iterate and sign each transaction and add it in signatures while store corresponding public key in pubkeys
           tmptx.signatures = tmptx.tosign.map((tosign, n) => {
             tmptx.pubkeys.push(keys.getPublicKeyBuffer().toString('hex'));
 

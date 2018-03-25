@@ -6,9 +6,6 @@ const balances = {
 }
 
 alight.controllers.balances = (scope) => {
-
-  scope.withdraw_eth_min_amount = 0.01
-  scope.withdraw_btc_min_amount = 0.1
   scope.data = {
     eth: user.ethData,
     btc: user.btcData,
@@ -57,15 +54,6 @@ alight.controllers.balances = (scope) => {
     scope.$scan()
   }
   scope.init()
-  EA.subscribe('eth:updateBalance', (balance) => {
-   // scope.data.eth.balance = balance
-    scope.$scan()
-  })
-
-  EA.subscribe('btc:updateBalance', (balance) => {
-  //  scope.data.btc.balance = balance
-    scope.$scan()
-  })
 
   EA.subscribe('notification:show', (messange) => {
      $('.modal').modal('hide')
