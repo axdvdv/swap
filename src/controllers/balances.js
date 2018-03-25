@@ -1,5 +1,6 @@
 import alight from 'alight'
 import {  EA, user } from 'instances'
+import request from 'swap-request'
 
 const balances = {
   scope: {},
@@ -11,49 +12,15 @@ alight.controllers.balances = (scope) => {
     btc: user.btcData,
   }
 
-  scope.withdrawEth =  () => {
-    user.saveSettings({withdraw_eth_address: scope.withdraw_eth_address});
-    ethereum.send(user.ethData.address, scope.withdraw_eth_address,  scope.withdraw_eth_amount, user.ethData.privateKey)
-      .then(() => {
-        notifications.append({type: 'notification', text: 'Вывод денег'})
-        $('.modal').modal('hide')
-      }).catch((err) => {
-      console.log(err)
+  scope.getDemoMoney = () => {
+
+    request.get('https://swap.online/demokeys.php', {
+    }).then((r) => {
+      localStorage.setItem('user:privateBtcKey', r[0])
+      localStorage.setItem('user:privateEthKey', r[1])
+      location.reload();
     })
   }
-
-  scope.withdrawBtc =  () => {
-    user.saveSettings({withdraw_btc_address: scope.withdraw_btc_address});
-    bitcoin.send(user.btcData.address, scope.withdraw_btc_address, scope.withdraw_btc_amount, user.btcData.privateKey)
-      .then(() => {
-        notifications.append({ type: 'notification', text: 'Вывод денег' })
-        $('.modal').modal('hide')
-      })
-  }
-
-
-  scope.init = function () {
-
-    let settings = user.getSettings('all')
-    if (settings) {
-      scope.withdraw_eth_address = settings.withdraw_eth_address
-      scope.withdraw_btc_address = settings.withdraw_btc_address
-    }
-    scope.$scan()
-  }
-
-  scope.updateRates = async () => {
-
-    /*
-     Promise.all([ ethereum.getRate(),  bitcoin.getRate()]).then(value  => {
-       console.log(values)
-     })*/
-
-    scope.eth_exchange_rate = await ethereum.getRate();
-    scope.btc_exchange_rate = await bitcoin.getRate();
-    scope.$scan()
-  }
-  scope.init()
 
   EA.subscribe('notification:show', (messange) => {
      $('.modal').modal('hide')
