@@ -86,8 +86,8 @@ class User {
   }
 
   getSettings(name) {
-    let settings = localStorage.getItem(this.localStorageName)
 
+    let settings = localStorage.getItem(this.localStorageName)
     if(!settings) {
 
       return
@@ -101,9 +101,7 @@ class User {
       return settings[name]
     }
 
-    console.log(`setting {$name} is missing`)
-
-    return false
+    return
   }
 }
 
