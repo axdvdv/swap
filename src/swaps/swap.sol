@@ -7,12 +7,7 @@ contract Rating {
   address owner;
   mapping(address => int) ratings;
 
-  function Rating() {
-    owner = msg.sender;
-  }
-
-  function setOwner(address _ownerAddress) {
-    require(owner == msg.sender);
+  function Rating(address _ownerAddress) {
     owner = _ownerAddress;
   }
 
