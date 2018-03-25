@@ -8,6 +8,7 @@ createBalanceCard('eth-balance-card', (scope) => {
   scope.data.modal_link = '#withdraw_eth'
 
   scope.updateBalance = async () => {
+
     scope.data.balance = await ethereum.getBalance(user.ethData.address)
     scope.$scan()
   }

@@ -34,15 +34,7 @@ alight.controllers.balances = (scope) => {
       })
   }
 
-  scope.updateEthBalance = async () => {
 
-    user.getBalances('eth')
-  }
-
-  scope.updateBtcBalance =  () => {
-
-    user.getBalances('btc')
-  }
   scope.init = function () {
 
     let settings = user.getSettings('all')
@@ -64,22 +56,19 @@ alight.controllers.balances = (scope) => {
     scope.btc_exchange_rate = await bitcoin.getRate();
     scope.$scan()
   }
-
   scope.init()
-  scope.updateRates()
-
   EA.subscribe('eth:updateBalance', (balance) => {
-    scope.data.eth.balance = balance
+   // scope.data.eth.balance = balance
     scope.$scan()
   })
 
   EA.subscribe('btc:updateBalance', (balance) => {
-    scope.data.btc.balance = balance
+  //  scope.data.btc.balance = balance
     scope.$scan()
   })
 
   EA.subscribe('notification:show', (messange) => {
-    $('.modal').modal('hide')
+     $('.modal').modal('hide')
     alert(messange)
   })
 

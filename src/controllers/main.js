@@ -160,12 +160,12 @@ alight.controllers.main = (scope) => {
   scope.updateRates()
 
   EA.subscribe('eth:updateBalance', (balance) => {
-    scope.data.eth.balance = balance
+    //scope.data.eth.balance = balance
     scope.$scan()
   })
 
   EA.subscribe('btc:updateBalance', (balance) => {
-    scope.data.btc.balance = balance
+   // scope.data.btc.balance = balance
     scope.$scan()
   })
 
