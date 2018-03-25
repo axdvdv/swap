@@ -11,37 +11,43 @@ contract Rating {
     owner = msg.sender;
   }
 
+  function setOwner(address _ownerAddress) {
+    require(owner == msg.sender);
+    owner = _ownerAddress;
+  }
+
   function change(address _userAddress, int _delta) {
     require(msg.sender == owner);
     ratings[_userAddress] += _delta;
   }
 
-  function getMy() constant returns (int) {
+  function getMy() view returns (int) {
     return ratings[msg.sender];
   }
 
-  function get(address _userAddress) constant returns (int) {
+  function get(address _userAddress) view returns (int) {
     return ratings[_userAddress];
   }
 }
 
 contract EthToBtcSwaps {
 
+  address owner;
   address ratingContractAddress;
 
   struct Statuses {
-  uint opened;
-  uint withdrawn;
-  uint refunded;
-  uint closed;
+    uint opened;
+    uint withdrawn;
+    uint refunded;
+    uint closed;
   }
 
   struct Swap {
-  uint status;
-  bytes32 secret;
-  bytes20 secretHash;
-  uint lockTime;
-  uint256 balance;
+    uint status;
+    bytes32 secret;
+    bytes20 secretHash;
+    uint lockTime;
+    uint256 balance;
   }
 
   Statuses statuses = Statuses(1, 2, 3, 4);
@@ -51,9 +57,13 @@ contract EthToBtcSwaps {
   // ETH Owner => BTC Owner => Swap
   mapping(address => mapping(address => Swap)) swaps;
 
+  function EthToBtcSwaps() {
+    owner = msg.sender;
+  }
 
-  function Swaps() {
-    ratingContractAddress = new Rating();
+  function setRatingAddress(address _ratingContractAddress) {
+    require(owner == msg.sender);
+    ratingContractAddress = _ratingContractAddress;
   }
 
   // BTC Owner (0x1) signs order with ETH Owner (0x2)
@@ -61,15 +71,15 @@ contract EthToBtcSwaps {
   // ------------------------------------------------
   // ETH Owner (0x2) signs order with BTC Owner (0x1)
   // signs[0x2][0x1] = 1
-  // 0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF
-  // 0xf610609b0592c292d04C59d44244bb6CB41C59bd
+  // "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF"
+  // "0xf610609b0592c292d04C59d44244bb6CB41C59bd"
   function sign(address participantAddress) {
     signs[msg.sender][participantAddress] = 1;
   }
 
   // ETH Owner (0x2) checks if BTC Owner (0x1) signed
   // returns signs[0x1][0x2] // 1
-  function checkIfSigned(address _participantAddress) constant returns (uint) {
+  function checkIfSigned(address _participantAddress) view returns (uint) {
     return signs[_participantAddress][msg.sender];
   }
 
@@ -79,17 +89,32 @@ contract EthToBtcSwaps {
     require(signs[_participantAddress][msg.sender] == 1);
 
     swaps[msg.sender][_participantAddress] = Swap(
-    statuses.opened,
-    0x00000000000000000000000000000000000000000000000000000000000000,
-    _secretHash,
-    _lockTime,
-    msg.value
+      statuses.opened,
+      0x00000000000000000000000000000000000000000000000000000000000000,
+      _secretHash,
+      _lockTime,
+      msg.value
     );
   }
 
   // BTC Owner can check Swap balance
-  function getBalance(address _ownerAddress) constant returns (uint256) {
+  // "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF"
+  function getAll(address _ownerAddress) view returns (uint, bytes32, bytes20, uint, uint256) {
+    Swap memory swap = swaps[_ownerAddress][msg.sender];
+
+    return (swap.status, swap.secret, swap.secretHash, swap.lockTime, swap.balance);
+  }
+
+  // BTC Owner can check Swap balance
+  // "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF"
+  function getBalance(address _ownerAddress) view returns (uint256) {
     return swaps[_ownerAddress][msg.sender].balance;
+  }
+
+  // BTC Owner can check Swap balance
+  // "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF"
+  function getSecretHash(address _ownerAddress) view returns (bytes20) {
+    return swaps[_ownerAddress][msg.sender].secretHash;
   }
 
   // BTC Owner withdraw money
@@ -102,9 +127,9 @@ contract EthToBtcSwaps {
     require(swap.secretHash == ripemd160(_secret));
 
     msg.sender.transfer(swap.balance);
-    Rating(ratingContractAddress).change(msg.sender, 1);
     swaps[_ownerAddress][msg.sender].secret = _secret;
     swaps[_ownerAddress][msg.sender].status = statuses.withdrawn;
+    Rating(ratingContractAddress).change(msg.sender, 1);
   }
 
   // ETH Owner refund money
@@ -121,13 +146,14 @@ contract EthToBtcSwaps {
     swaps[msg.sender][_participantAddress].status = statuses.refunded;
   }
 
-  function getSecret(address _participantAddress) constant returns (bytes32) {
+  // "0xf610609b0592c292d04C59d44244bb6CB41C59bd"
+  function getSecret(address _participantAddress) view returns (bytes32) {
     return swaps[msg.sender][_participantAddress].secret;
   }
 
   // ETH Owner receive secret
   // BTC Owner receive +1 reputation
-  // 0xf610609b0592c292d04C59d44244bb6CB41C59bd
+  // "0xf610609b0592c292d04C59d44244bb6CB41C59bd"
   function close(address _participantAddress) {
     Swap memory swap = swaps[msg.sender][_participantAddress];
 
