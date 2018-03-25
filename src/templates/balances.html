@@ -2,14 +2,16 @@
   <div al-ctrl="balances">
 
     <div class="content-1000">
-      <a href="#" al-click="getDemoMoney()">get demo money</a>
+      <div class="row ">
+        <div class="col-12 border-right">
+        <button type="button" al-click="getDemoMoney()" class="btn btn-warning alert">get demo money</button>
+        </div>
+      </div>
       <div class="row">
         <div class="col-12 border-right">
           <div class="pr-2">
             <eth-balance-card ></eth-balance-card>
             <btc-balance-card ></btc-balance-card>
-
-
             </div>
           </div>
         </div>
