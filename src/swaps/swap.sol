@@ -78,6 +78,10 @@ contract EthToBtcSwaps {
     return signs[_participantAddress][msg.sender];
   }
 
+  function changeRating(address _user) {
+    Rating(ratingContractAddress).change(_user, 1);
+  }
+
   // ETH Owner creates Swap with secretHash
   // 0xc0933f9be51a284acb6b1a6617a48d795bdeaa80, "0xf610609b0592c292d04C59d44244bb6CB41C59bd", 1841171580000
   function create(bytes20 _secretHash, address _participantAddress, uint _lockTime) payable {
@@ -90,14 +94,6 @@ contract EthToBtcSwaps {
       _lockTime,
       msg.value
     );
-  }
-
-  // BTC Owner can check Swap balance
-  // "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF"
-  function getAll(address _ownerAddress) view returns (uint, bytes32, bytes20, uint, uint256) {
-    Swap memory swap = swaps[_ownerAddress][msg.sender];
-
-    return (swap.status, swap.secret, swap.secretHash, swap.lockTime, swap.balance);
   }
 
   // BTC Owner can check Swap balance
@@ -118,7 +114,7 @@ contract EthToBtcSwaps {
   function withdraw(bytes32 _secret, address _ownerAddress) {
     Swap memory swap = swaps[_ownerAddress][msg.sender];
 
-    require(swap.status == statuses.opened);
+    require(swap.balance);
     require(swap.secretHash == ripemd160(_secret));
 
     msg.sender.transfer(swap.balance);
@@ -136,9 +132,8 @@ contract EthToBtcSwaps {
     require(now >= swap.lockTime);
 
     msg.sender.transfer(swap.balance);
-    clean(msg.sender, _participantAddress);
     Rating(ratingContractAddress).change(_participantAddress, -1);
-    swaps[msg.sender][_participantAddress].status = statuses.refunded;
+    clean(msg.sender, _participantAddress);
   }
 
   // "0xf610609b0592c292d04C59d44244bb6CB41C59bd"
@@ -152,9 +147,8 @@ contract EthToBtcSwaps {
   function close(address _participantAddress) {
     Swap memory swap = swaps[msg.sender][_participantAddress];
 
-    clean(msg.sender, _participantAddress);
     Rating(ratingContractAddress).change(msg.sender, 1);
-    swaps[msg.sender][_participantAddress].status = statuses.closed;
+    clean(msg.sender, _participantAddress);
   }
 
   function clean(address _ownerAddress, address _participantAddress) internal {

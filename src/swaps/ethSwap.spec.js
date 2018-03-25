@@ -1,78 +1,87 @@
 import test from 'ava'
-import { Ethereum } from 'instances/ethereum'
+import ethereum, { Ethereum } from 'instances/ethereum'
 import { EthSwap } from 'swaps/ethSwap'
 
 
-const contractAddress = '0xff04ec33a924c79e25b9dfc3dc675d8ba5874fd6'
-const contractABI     = [
+const ratingAddress = '0xb284b19aa826f29472300e997b142927ad0130ae'
+const ratingABI = [
   {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_participantAddress",
-        "type": "address"
-      }
-    ],
-    "name": "close",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_secretHash",
-        "type": "bytes20"
-      },
-      {
-        "name": "_participantAddress",
-        "type": "address"
-      },
-      {
-        "name": "_lockTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "create",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_participantAddress",
-        "type": "address"
-      }
-    ],
-    "name": "refund",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "participantAddress",
-        "type": "address"
-      }
-    ],
-    "name": "sign",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
+    "constant": true,
     "inputs": [],
-    "name": "Swaps",
+    "name": "getMy",
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_userAddress",
+        "type": "address"
+      }
+    ],
+    "name": "get",
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_userAddress",
+        "type": "address"
+      },
+      {
+        "name": "_delta",
+        "type": "int256"
+      }
+    ],
+    "name": "change",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "name": "_ownerAddress",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  }
+]
+
+const ratingContract = ethereum.getContract(ratingABI, ratingAddress)
+
+const swapsAddress = '0x4ac703191e76236af69884d34bf3befc9ba219f2'
+const swapsABI     = [
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_ratingContractAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setRatingAddress",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -104,6 +113,47 @@ const contractABI     = [
         "type": "address"
       }
     ],
+    "name": "getSecret",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_secretHash",
+        "type": "bytes20"
+      },
+      {
+        "name": "_participantAddress",
+        "type": "address"
+      },
+      {
+        "name": "_lockTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "create",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_participantAddress",
+        "type": "address"
+      }
+    ],
     "name": "checkIfSigned",
     "outputs": [
       {
@@ -113,6 +163,67 @@ const contractABI     = [
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_participantAddress",
+        "type": "address"
+      }
+    ],
+    "name": "close",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_ownerAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getSecretHash",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes20"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "changeRating",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "participantAddress",
+        "type": "address"
+      }
+    ],
+    "name": "sign",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -135,27 +246,28 @@ const contractABI     = [
     "type": "function"
   },
   {
-    "constant": true,
+    "constant": false,
     "inputs": [
       {
         "name": "_participantAddress",
         "type": "address"
       }
     ],
-    "name": "getSecret",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "name": "refund",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   }
 ]
 
-const ethSwap = new EthSwap(contractAddress, contractABI)
+const ethSwap = new EthSwap(swapsAddress, swapsABI)
 
 const secret      = 'c0809ce9f484fdcdfb2d5aabd609768ce0374ee97a1a5618ce4cd3f16c00a078'
 const secretHash  = 'c0933f9be51a284acb6b1a6617a48d795bdeaa80'
