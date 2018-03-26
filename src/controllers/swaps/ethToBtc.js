@@ -9,10 +9,11 @@ const ethToBtc = {
 }
 
 alight.controllers.ethToBtc = (scope) => {
-  console.log('ETH to BTC controller!')
+  console.info('ETH to BTC controller!')
 
-  const order = scope.$parent.data.order
-  const swapData = localStorage.getItem(`swap:${order.id}`) || {}
+  const order           = scope.$parent.data.order
+  const swapData        = localStorage.getItem(`swap:${order.id}`) || {}
+  const requiredAmount  = order.isMy ? order.sellAmount : order.buyAmount
 
   global.swapData = swapData
 
@@ -25,16 +26,18 @@ alight.controllers.ethToBtc = (scope) => {
     btcScriptData: null,
 
     // step 2
+    btcScriptVerified: false,
     address: user.ethData.address,
     balance: user.ethData.balance,
     notEnoughMoney: false,
     checkingBalance: false,
 
     // step 3
-    ethReceipt: null,
     ethSwapCreationTransactionHash: null,
+    isEthSwapCreated: false,
 
     // step 4
+    isEthWithdrawn: false,
 
     // step 5
     btcSwapWithdrawTransactionHash: null,
@@ -42,8 +45,10 @@ alight.controllers.ethToBtc = (scope) => {
 
   function checkBalance() {
     console.log('Checking if there is enough money on balance')
+    console.log('Available balance', user.ethData.balance)
+    console.log('Required amount', requiredAmount)
 
-    scope.data.notEnoughMoney = user.ethData.balance < order.currency2Amount
+    scope.data.notEnoughMoney = user.ethData.balance < requiredAmount
     scope.$scan()
 
     if (scope.data.notEnoughMoney) {
@@ -100,6 +105,9 @@ alight.controllers.ethToBtc = (scope) => {
       })
     }
     else if (scope.data.step === 2) {
+      scope.data.btcScriptVerified = true
+      scope.$scan()
+
       const isEnough = checkBalance()
 
       if (isEnough) {
@@ -107,16 +115,17 @@ alight.controllers.ethToBtc = (scope) => {
       }
     }
     else if (scope.data.step === 3) {
-      const receipt = await ethSwap.create({
-        ethData: user.ethData,
+      await ethSwap.create({
+        myAddress: user.ethData.address,
         secretHash: scope.data.secretHash,
-        amount: 0.005, // TODO add real value
+        participantAddress: swapData.participant.address,
+        amount: requiredAmount,
       }, (transactionHash) => {
         scope.data.ethSwapCreationTransactionHash = transactionHash
         scope.$scan()
       })
 
-      scope.ethReceipt = receipt
+      scope.data.isEthSwapCreated = true
       scope.$scan()
 
       room.sendMessageToPeer(swapData.participant.peer, [
@@ -135,27 +144,40 @@ alight.controllers.ethToBtc = (scope) => {
         if (order.id === orderId) {
           this.unsubscribe()
 
+          scope.data.isEthWithdrawn = true
+          scope.$scan()
           scope.goNextStep()
         }
       })
     }
     else if (scope.data.step === 5) {
-      ethSwap.close({
-        ethData: user.ethData,
+      let secret
+
+      ethSwap.getSecret({
+        myAddress: user.ethData.address,
+        participantAddress: swapData.participant.address,
       })
-        .then((secret) => {
+        .then((_secret) => {
+          secret = _secret
+
+          return ethSwap.close({
+            myAddress: user.ethData.address,
+            participantAddress: swapData.participant.address,
+          })
+        })
+        .then(() => {
           const { script } = btcSwap.createScript(scope.data.btcScriptData)
 
-          btcSwap.withdraw({
+          return btcSwap.withdraw({
             btcData: user.btcData,
             script,
             secret,
           }, (transactionHash) => {
             scope.data.btcSwapWithdrawTransactionHash = transactionHash
           })
-            .then(() => {
-              scope.goNextStep()
-            })
+        })
+        .then(() => {
+          scope.goNextStep()
         })
     }
     else if (scope.data.step === 6) {

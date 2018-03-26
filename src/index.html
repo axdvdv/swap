@@ -168,6 +168,12 @@
       -webkit-perspective-origin: 7% 57%;
       perspective-origin: 7% 57%;
     }
+    .loader.small {
+      width: 50px;
+      height: 50px;
+      -webkit-perspective: 30px;
+      perspective: 30px;
+    }
     .loader.center {
       position: absolute;
       top: 0;
@@ -254,13 +260,24 @@
 
   <div al-cloak>
     <div al-if="data.initialized">
+
       <%= require('html-loader!./templates/header.html') %>
 
       <%= require('html-loader!./templates/main.html') %>
       <%= require('html-loader!./templates/orders.html') %>
       <%= require('html-loader!./templates/balances.html') %>
       <%= require('html-loader!./templates/history.html') %>
-      <%= require('html-loader!./templates/swap.html') %>
+
+      <div al-if="data.activeRoute.path == '/swap/:slug/:id'">
+        <div class="content-800" al-ctrl="swap">
+          <%= require('html-loader!./templates/swap.html') %>
+          <div al-if="data.status == data.statuses.initialized">
+            <%= require('html-loader!./templates/swaps/btc-to-eth.html') %>
+            <%= require('html-loader!./templates/swaps/eth-to-btc.html') %>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 

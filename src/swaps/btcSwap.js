@@ -68,7 +68,7 @@ const fundScript = ({ btcData, script, amount }) => {
       const tx            = new bitcoin.core.TransactionBuilder(bitcoin.testnet)
       const unspents      = await bitcoin.fetchUnspents(btcData.address)
 
-      const fundValue     = Number(amount) * 1e8
+      const fundValue     = Math.floor(Number(amount) * 1e8)
       const feeValue      = 4e5
       const totalUnspent  = unspents.reduce((summ, { satoshis }) => summ + satoshis, 0)
       const skipValue     = totalUnspent - fundValue - feeValue

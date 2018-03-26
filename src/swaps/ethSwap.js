@@ -14,18 +14,18 @@ class EthSwap {
   /**
    *
    * @param {object} data
-   * @param {object} data.ethData
+   * @param {object} data.myAddress
    * @param {string} data.participantAddress
    * @param {function} handleTransaction
    */
-  sign({ ethData, participantAddress }, handleTransaction) {
+  sign({ myAddress, participantAddress }, handleTransaction) {
     return new Promise(async (resolve, reject) => {
       const params = {
-        from: ethData.address,
+        from: myAddress,
         gas: config.eth.gasLimit,
       }
       
-      console.log('\n\nStart sign ETH Swap', { values: { ownerAddress: ethData.address, participantAddress } })
+      console.log('\n\nStart sign ETH Swap', { values: { ownerAddress: myAddress, participantAddress } })
 
       const receipt = await this.contract.methods.sign(participantAddress).send(params)
         .on('transactionHash', (hash) => {
@@ -49,24 +49,22 @@ class EthSwap {
   /**
    *
    * @param {object} data
-   * @param {object} data.ethData
+   * @param {object} data.myAddress
    * @param {string} data.secretHash
    * @param {string} data.participantAddress
    * @param {number} data.amount
    * @param {number} data._lockTime - required just for AVA test
    * @param {function} handleTransaction
    */
-  create({ ethData, secretHash, participantAddress, amount, _lockTime }, handleTransaction) {
+  create({ myAddress, secretHash, participantAddress, amount, _lockTime }, handleTransaction) {
     return new Promise(async (resolve, reject) => {
       const hash      = `0x${secretHash.replace(/^0x/, '')}`
 
-      // const gasLimit = await this.contract.methods.open(hash, lockTime).estimateGas({ from: ethData.address })
-
       const params = {
-        from: ethData.address,
+        from: myAddress,
         gas: config.eth.gasLimit,
         // gasPrice: config.eth.gasPrice,
-        value: ethereum.core.utils.toWei(String(amount)),
+        value: Math.floor(ethereum.core.utils.toWei(String(amount))),
       }
 
       const values = [ hash, participantAddress ]
@@ -100,17 +98,17 @@ class EthSwap {
   /**
    *
    * @param {object} data
-   * @param {object} data.ethData
+   * @param {object} data.myAddress
    * @param {string} data.secret
    * @param {string} data.ownerAddress
    * @param {function} handleTransaction
    */
-  withdraw({ ethData, secret: _secret, ownerAddress }, handleTransaction) {
+  withdraw({ myAddress, ownerAddress, secret: _secret }, handleTransaction) {
     return new Promise(async (resolve, reject) => {
       const secret = `0x${_secret.replace(/^0x/, '')}`
 
       const params = {
-        from: ethData.address,
+        from: myAddress,
         gas: config.eth.gasLimit,
         // gasPrice: config.eth.gasPrice,
       }
@@ -140,12 +138,13 @@ class EthSwap {
 
   }
 
-  getSecret({ ethData, participantAddress }) {
+  // ETH Owner receive a secret
+  getSecret({ myAddress, participantAddress }) {
     return new Promise(async (resolve, reject) => {
       console.log('\n\nStart getting secret from ETH Swap')
 
       const secret = await this.contract.methods.getSecret(participantAddress).call({
-        from: ethData.address,
+        from: myAddress,
       })
 
       console.log('ETH Swap secret:', secret)
@@ -153,12 +152,13 @@ class EthSwap {
     })
   }
 
-  close({ ethData, participantAddress }, handleTransaction) {
+  // ETH Owner closes Swap to receive reputation
+  close({ myAddress, participantAddress }, handleTransaction) {
     return new Promise(async (resolve, reject) => {
       console.log('\n\nStart closing ETH Swap')
 
       const params = {
-        from: ethData.address,
+        from: myAddress,
         gas: config.eth.gasLimit,
         // gasPrice: config.eth.gasPrice,
       }

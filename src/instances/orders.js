@@ -37,16 +37,6 @@ class Orders extends Collection {
     })
   }
 
-  /**
-   * id
-   * ownerAddress
-   * currency1
-   * currency2
-   * currency1Amount
-   * currency2Amount
-   * exchangeRate
-   * type
-   */
   append(data) {
     const order = new Order(data)
 

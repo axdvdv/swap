@@ -15,17 +15,24 @@ class Notifications extends Collection {
   }
 
   onMount() {
-    EA.subscribe('room:swap:participantJoined', ({ order, participant }) => {
+    EA.subscribe('room:swap:userConnected', ({ order, participant }) => {
+      // notify only order creator
       if (order.owner.peer === user.peer) {
-        // TODO move this from here
-        localStorage.updateItem(`swap:${order.id}`, {
-          participant,
-        })
+        try {
+          // TODO move this from here
+          localStorage.updateItem(`swap:${order.id}`, {
+            participant,
+          })
 
-        this.append({
-          ...order,
-          type: 'newOrder',
-        })
+          this.append({
+            ...order,
+            link: `/swap/${order.sellCurrency}-${order.buyCurrency}/`.toLowerCase() + order.id,
+            type: 'newOrder',
+          })
+        }
+        catch (err) {
+          console.log(33333333, err)
+        }
       }
     })
   }

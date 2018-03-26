@@ -115,7 +115,7 @@
             </thead>
             <tbody>
             <tr
-              al-repeat="item in data.orders track by item.id"
+              al-repeat="item in data.orders | addOrderLinks track by item.id"
               data-id="{{item.id}}"
               :style.background-color="item.owner.address == data.myAddress ? '#fffdbd' : '#fff'"
             >
@@ -125,7 +125,7 @@
               <td class="text-right trim-order-value">{{item.sellAmount}}</td>
               <td class="text-right">
                 <div al-if="item.owner.address != data.myAddress">
-                  <a href="#" al-link data-link="{{'/swap/btc-to-eth/' + item.id}}">купить</a>
+                  <a href="#" al-link data-link="{{item.link}}">купить</a>
                 </div>
               </td>
               <td class="text-right">

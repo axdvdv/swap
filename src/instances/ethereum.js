@@ -38,7 +38,7 @@ class Ethereum {
 
     this.core.eth.accounts.wallet.add(data.privateKey)
 
-    console.log('Logged in with Ethereum', data)
+    console.info('Logged in with Ethereum', data)
     EA.dispatchEvent('eth:login', data)
 
     return data

@@ -295,21 +295,21 @@ test('sign + create + withdraw + getSecret', async (t) => {
   // BTC Owner signs
   // 0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF
   await ethSwap.sign({
-    ethData: btcOwnerData,
+    myAddress: btcOwnerData.address,
     participantAddress: ethOwnerData.address,
   })
 
   // ETH Owner signs
   // 0xf610609b0592c292d04C59d44244bb6CB41C59bd
   await ethSwap.sign({
-    ethData: ethOwnerData,
+    myAddress: ethOwnerData.address,
     participantAddress: btcOwnerData.address,
   })
 
   // ETH Owner creates a swap
   // 0xc0933f9be51a284acb6b1a6617a48d795bdeaa80, "0xf610609b0592c292d04C59d44244bb6CB41C59bd", 1841171580000
   await ethSwap.create({
-    ethData: ethOwnerData,
+    myAddress: ethOwnerData.address,
     participantAddress: btcOwnerData.address,
     secretHash,
     amount: 0.02,
@@ -319,22 +319,22 @@ test('sign + create + withdraw + getSecret', async (t) => {
   // BTC Owner withdraw
   // 0xc0809ce9f484fdcdfb2d5aabd609768ce0374ee97a1a5618ce4cd3f16c00a078, "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF"
   await ethSwap.withdraw({
-    ethData: btcOwnerData,
-    secret,
+    myAddress: btcOwnerData.address,
     ownerAddress: ethOwnerData.address,
+    secret,
   })
 
   // ETH Owner receive the secret
   // 0xf610609b0592c292d04C59d44244bb6CB41C59bd
   const result = await ethSwap.getSecret({
-    ethData: ethOwnerData,
+    myAddress: ethOwnerData.address,
     participantAddress: btcOwnerData.address,
   })
 
   // ETH Owner close Swap to receive reputation
   // 0xf610609b0592c292d04C59d44244bb6CB41C59bd
   await ethSwap.close({
-    ethData: ethOwnerData,
+    myAddress: ethOwnerData.address,
     participantAddress: btcOwnerData.address,
   })
 

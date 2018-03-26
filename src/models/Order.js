@@ -8,14 +8,13 @@ class Order {
   /**
    *
    * @param {object}          data
-   * @param {object}          data.user
-   * @param {string}          data.currency1
-   * @param {string}          data.currency2
-   * @param {string|number}   data.currency1Amount
-   * @param {string|number}   data.currency2Amount
+   * @param {object}          data.owner
+   * @param {string}          data.buyCurrency
+   * @param {string}          data.sellCurrency
+   * @param {string|number}   data.buyAmount
+   * @param {string|number}   data.sellAmount
    * @param {string|number}   data.exchangeRate
    * @param {string}          data.status
-   * @param {string}          data.type
    */
   constructor(data) {
     this.status = orderStatuses.active // active, processing, closed

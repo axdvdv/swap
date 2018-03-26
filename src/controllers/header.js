@@ -7,7 +7,7 @@ const header = {
 }
 
 alight.controllers.header = function (scope) {
-  console.log('Header controller!')
+  console.info('Header controller!')
 
   scope.data = {
     notifications,

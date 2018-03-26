@@ -54,12 +54,15 @@ class Event {
 
       if (~handlerIndex) {
         return this.handlers[priority].splice(handlerIndex, 1);
-      } else {
+      }
+      else {
         console.warn('There is no such handler in Event handlers')
       }
-    } else {
+    }
+    else {
       console.warn(`There is no priority ${priority} in Event handlers`)
     }
+
     return this.handlers
   }
 

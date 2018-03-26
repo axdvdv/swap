@@ -9,7 +9,7 @@ const ordersCtrl = {
 }
 
 alight.controllers.orders = (scope) => {
-  console.log('Orders controller!')
+  console.info('Orders controller!')
 
   scope.data = {
     myAddress: user.ethData.address,
@@ -139,6 +139,9 @@ alight.controllers.orders = (scope) => {
     console.log('Remove order with id:', id)
 
     myOrders.remove(id, () => {
+      scope.data.orders = orders.items
+      scope.$scan()
+
       room.sendMessage([
         {
           event: 'removeOrder',
@@ -179,6 +182,18 @@ alight.controllers.orders = (scope) => {
   ordersCtrl.scope = scope
 }
 
+
+// Filters
+
+alight.filters.addOrderLinks = (orders) =>
+  orders.map((order) => {
+    const { id, sellCurrency, buyCurrency } = order
+    order.link = `/swap/${buyCurrency}-${sellCurrency}/`.toLowerCase() + id
+    return order
+  })
+
+
+// Hooks
 
 alight.hooks.eventModifier.change_exchange_rate = {
   event: [ 'input', 'blur' ],

@@ -48,7 +48,7 @@ class Bitcoin {
       privateKey,
       publicKey,
     }
-    console.log('Logged in with Bitcoin', data)
+    console.info('Logged in with Bitcoin', data)
     EA.dispatchEvent('btc:login', data)
 
     return data

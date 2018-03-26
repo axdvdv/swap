@@ -1,5 +1,4 @@
 import IpfsRoom from 'ipfs-pubsub-room'
-import log from 'log-with-style'
 import EA from './EA'
 import user from './user'
 
@@ -51,8 +50,7 @@ class Room {
     if (data && data.length) {
       data.forEach(({ event, data }) => {
         if (data) {
-          log(`[c="color: #ff3b84"]room:${event}[c]`, { ...message, event: `room:${event}`, data })
-
+          console.room(event, { ...message, data })
           EA.dispatchEvent(`room:${event}`, { ...data, peerFrom: message.from })
         }
       })
@@ -61,7 +59,7 @@ class Room {
 
   handleNewUserConnected = (peer) => {
     if (!this.peers.includes(peer)) {
-      console.info('New peer:', peer)
+      console.room('newPeer', peer)
 
       this.peers.push(peer)
       EA.dispatchEvent('room:newPeer', { peer })
@@ -70,7 +68,7 @@ class Room {
 
   handleUserLeft = (peer) => {
     if (this.peers.includes(peer)) {
-      console.info(`Peer ${peer} disconnected`)
+      console.room('peerLeft', peer)
 
       this.peers.splice(this.peers.indexOf(peer), 1)
       EA.dispatchEvent('room:peerLeft', { peer })

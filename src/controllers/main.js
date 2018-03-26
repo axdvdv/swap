@@ -9,7 +9,7 @@ const main = {
 }
 
 alight.controllers.main = (scope) => {
-  console.log('Main controller!')
+  console.info('Main controller!')
 
   scope.data = {
     eth: user.ethData,

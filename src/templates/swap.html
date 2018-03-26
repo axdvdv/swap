@@ -1,248 +1,70 @@
-<div al-if="data.activeRoute.path == '/swap/:slug/:id'">
-  <div class="content-800" al-ctrl="swap">
+<div al-if="data.order" class="mb-4">
+  <div al-if="data.order" class="alert alert-primary fs-18">
+    <strong al-if="!data.order.isMy">{{data.order.buyAmount}} {{data.order.buyCurrency}} &#10230; {{data.order.sellAmount}} {{data.order.sellCurrency}}</strong>
+    <strong al-if="data.order.isMy">{{data.order.sellAmount}} {{data.order.sellCurrency}} &#10230; {{data.order.buyAmount}} {{data.order.buyCurrency}}</strong>
+  </div>
 
-    <div class="alert alert-primary mb-4 fs-18" al-if="data.order">
-      <strong al-if="data.slug == 'btc-to-eth'">{{data.order.currency1Amount}} {{data.order.currency1}} &#10230; {{data.order.currency2Amount}} {{data.order.currency2}}</strong>
-      <strong al-if="data.slug == 'eth-to-btc'">{{data.order.currency2Amount}} {{data.order.currency2}} &#10230; {{data.order.currency1Amount}} {{data.order.currency1}}</strong>
+  <div al-if="data.status == data.statuses.initialized" class="alert alert-danger mt-2" role="alert">
+    Настоятельно рекомендуем не закрывать эту страницу до завершения сделки. Это может привести к нежелательным результатам
+  </div>
+</div>
+
+<div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
+  <h2>У этой сделки еще нет покупателя</h2>
+  <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
+</div>
+
+<div al-if="data.status == data.statuses.waitingSwapCreatorToBecomeOnline">
+  <h2>Создатель сделки оффлайн. Ожидаем его</h2>
+  <div class="loader small">
+    <div class="loader1"></div>
+    <div class="loader2"></div>
+    <div class="loader3"></div>
+  </div>
+</div>
+
+<div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
+  <h2>Ожидаем хомяка, когда он присоединится</h2>
+  <div class="loader small">
+    <div class="loader1"></div>
+    <div class="loader2"></div>
+    <div class="loader3"></div>
+  </div>
+</div>
+
+<h2 al-if="data.status == data.statuses.swapSigning || data.isMeSigned" class="mb-1">
+  <div al-if="data.isMeSigned && data.isParticipantSigned" class="stepPassed"></div>
+  1. Подтвердите свое согласие на начало сделки
+</h2>
+<div al-if="data.status == data.statuses.swapSigning">
+  <div class="mb-4 text-muted">
+    Подтверждение сделки необходимо для начисления репутации.
+    Если хомяк не доводит сделку до конца он получает отрицательную репутацию.
+  </div>
+  <div al-if="data.isParticipantSigned" class="alert alert-success" role="alert">
+    Хомяк подтвердил участие в сделке
+  </div>
+  <button al-if="!data.signFetching && !data.isMeSigned" type="button" class="btn btn-primary" @click="signSwap()">Подтверждаю</button>
+  <div al-if="data.signFetching">
+    <h5 class="mb-2">Ожидайте. Производится подпись сделки</h5>
+    <div al-if="data.signTransactionHash" class="alert alert-warning" role="alert">
+      Транзакция: <strong><a href="{{data.signTransactionHash}}" target="_blank">{{data.signTransactionHash}}</a></strong>
     </div>
-
-    <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
-      <h2>У этой сделки еще нет покупателя</h2>
-      <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
+    <div  class="loader small">
+      <div class="loader1"></div>
+      <div class="loader2"></div>
+      <div class="loader3"></div>
     </div>
-
-    <div al-if="data.status == data.statuses.waitingParticipantToBecomeOnline">
-      <h2>Пользователь создавший этот ордер оффлайн, ожидаем его</h2>
-      <div class="loader">
-        <div class="loader1"></div>
-        <div class="loader2"></div>
-        <div class="loader3"></div>
-      </div>
+  </div>
+  <div al-if="data.isMeSigned" class="alert alert-success" role="alert">
+    Вы подтвердили участие в сделке
+  </div>
+  <div al-if="data.isMeSigned && !data.isParticipantSigned">
+    <h5 class="mb-2">Ожидаем когда хомяк подтвердит сделку</h5>
+    <div  class="loader small">
+      <div class="loader1"></div>
+      <div class="loader2"></div>
+      <div class="loader3"></div>
     </div>
-
-    <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
-      <h2>Ожидаем другого пользователя, когда он присоединится к сделке</h2>
-      <div class="loader">
-        <div class="loader1"></div>
-        <div class="loader2"></div>
-        <div class="loader3"></div>
-      </div>
-    </div>
-
-    <div al-if="data.status == data.statuses.initialized">
-
-
-      <!-- BTC to ETH -->
-
-      <div al-if="data.slug == 'btc-to-eth'" al-ctrl="btcToEth">
-
-        <div al-if="data.step == 1">
-          <h2 class="mb-4">Придумайте секретную фразу</h2>
-          <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
-          <br />
-          <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
-        </div>
-
-        <div al-if="data.secretHash">
-          <h2 class="mb-4">Сохраните секретную фразу, иначе вы не сможете получить деньги!</h2>
-          <div class="alert alert-warning" role="alert">
-            Secret: <strong><a href="" al-copy>{{data.secret}}</a></strong>
-          </div>
-          <div class="alert alert-warning" role="alert">
-            Secret Hash: <strong><a href="" al-copy>{{data.secretHash}}</a></strong>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 3 && data.notEnoughMoney && !data.checkingBalance">
-          <h2 class="mb-4">На вашем балансе недостаточно средств для этой сделки. Пополните кошелек</h2>
-          <div class="alert alert-warning fs-16" role="alert">
-            <div>Баланс <strong>{{data.balance}}</strong> ETH</div>
-            <div>Необходимый баланс <strong>{{data.order.currency1Amount}}</strong> ETH</div>
-            <hr />
-            <a href="" al-copy title="скопировать в буффер">{{data.address}}</a>&nbsp;&nbsp;&nbsp;<a href="https://www.blocktrail.com/tBTC/address/{{data.address}}/transactions" target="_blank">Посмотреть</a>
-          </div>
-          <br />
-          <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 3 && data.checkingBalance">
-          <h2 class="mb-4">Проверяем баланс</h2>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 4">
-          <h2 class="mb-4">Создаем Bitcoin Swap скрипт. Подождите, это займет некоторое время</h2>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 5">
-          <h2 class="mb-4">Пополняем баланс Bitcoin Swap скрипта. Подождите, это займет некоторое время</h2>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 6">
-          <h2 class="mb-4">Мы отправили созданный скрипт и secretHash участнику сделки. Ожидаем когда он создаст ETH Swap контракт</h2>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 7">
-          <h2 class="mb-4">ETH Swap контракт создан и пополнен. Запрашиваем деньги с ETH Swap контракта. Ожидайте</h2>
-          <div al-if="data.ethSwapWithdrawTransactionHash" class="alert alert-warning" role="alert">
-            Транзакция: <strong><a href="{{data.ethSwapWithdrawTransactionHash}}" target="_blank">{{data.ethSwapWithdrawTransactionHash}}</a></strong>
-          </div>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 8">
-          <h2 class="mb-4">Деньги переведены на Ваш счет. Спасибо за использование сервиса Swap.Online!</h2>
-        </div>
-
-      </div>
-
-
-      <!-- ETH to BTC -->
-
-      <div al-if="data.slug == 'eth-to-btc'" al-ctrl="ethToBtc">
-
-        <div al-if="data.step == 1 && !(data.secretHash || data.btcScriptData)">
-          <h2 class="mb-4">Ожидаем участника сделки когда он создаст секретную фразу и пополнит BTC Swap скрипт</h2>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.secretHash && data.btcScriptData">
-          <h2 class="mb-4">Bitcoin Swap скрипт успешно создан и пополнен. Проверьте информацию ниже, если требуется</h2>
-          <div class="alert alert-warning" role="alert">
-            Secret Hash: <strong><a href="" al-copy>{{data.secretHash}}</a></strong>
-          </div>
-          <div class="alert alert-warning" role="alert">
-            <!--div>Баланс <strong>{{data.btcScriptData.balance}}</strong> BTC</div>
-            <hr /-->
-            Адрес скрипта: <strong><a href="https://www.blocktrail.com/tBTC/address/{{data.btcScriptData.address}}" target="_blank">{{data.btcScriptData.address}}</a></strong>
-          </div>
-          <pre>
-            <code class="code">
-  bitcoinjs.script.compile([
-    bitcoin.core.opcodes.OP_RIPEMD160,
-    Buffer.from('{{data.btcScriptData.secretHash}}', 'hex'),
-    bitcoin.core.opcodes.OP_EQUALVERIFY,
-
-    Buffer.from('{{data.btcScriptData.ethOwnerPublicKey}}', 'hex'),
-    bitcoin.core.opcodes.OP_EQUAL,
-    bitcoin.core.opcodes.OP_IF,
-
-    Buffer.from('{{data.btcScriptData.ethOwnerPublicKey}}', 'hex'),
-    bitcoin.core.opcodes.OP_CHECKSIG,
-
-    bitcoin.core.opcodes.OP_ELSE,
-
-    bitcoin.core.script.number.encode({{data.btcScriptData.lockTime}}),
-    bitcoin.core.opcodes.OP_CHECKLOCKTIMEVERIFY,
-    bitcoin.core.opcodes.OP_DROP,
-    Buffer.from('{{data.btcScriptData.btcOwnerPublicKey}}', 'hex'),
-    bitcoin.core.opcodes.OP_CHECKSIG,
-
-    bitcoin.core.opcodes.OP_ENDIF,
-  ])
-            </code>
-          </pre>
-          <div class="mt-3" al-if="data.step == 1">
-            <button type="button" class="btn btn-primary" @click="goNextStep()">Я проверил</button>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 2 && data.notEnoughMoney && !data.checkingBalance">
-          <h2 class="mb-4">На вашем балансе недостаточно средств для этой сделки. Пополните кошелек</h2>
-          <div class="alert alert-warning fs-16" role="alert">
-            <div>Баланс <strong>{{data.balance}}</strong> ETH</div>
-            <div>Необходимый баланс <strong>{{data.order.currency2Amount}}</strong> ETH</div>
-            <hr />
-            <a href="" al-copy title="скопировать в буффер">{{data.address}}</a>
-          </div>
-          <br />
-          <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 2 && data.checkingBalance">
-          <h2 class="mb-4">Проверяем баланс</h2>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 3">
-          <h2 class="mb-4">Создаем Ethereum Swap. Подождите, это займет некоторое время</h2>
-          <div al-if="data.ethSwapCreationTransactionHash" class="alert alert-warning" role="alert">
-            Транзакция: <strong><a href="{{data.ethSwapCreationTransactionHash}}" target="_blank">{{data.ethSwapCreationTransactionHash}}</a></strong>
-          </div>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.ethReceipt">
-          <h2 class="mb-4">Контракт успешно создан</h2>
-          <div class="alert alert-primary" role="alert">
-            <a href="https://rinkeby.etherscan.io/tx/{{data.ethReceipt.transactionHash}}">{{data.ethReceipt.transactionHash}}</a>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 4">
-          <h2 class="mb-4">Ожидаем участника сделки когда он передаст секретную фразу в созданный ETH Swap контракт</h2>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 5">
-          <h2 class="mb-4">Участник сделки забрал деньги с ETH Swap контракта и передал секретный ключ. Забираем деньги с BTC Swap скрипта. Ожидайте</h2>
-          <div al-if="data.ethSwapCreationTransactionHash" class="alert alert-warning" role="alert">
-            Транзакция: <strong><a href="https://www.blocktrail.com/tBTC/tx/{{data.btcSwapWithdrawTransactionHash}}" target="_blank">{{data.btcSwapWithdrawTransactionHash}}</a></strong>
-          </div>
-          <div class="loader">
-            <div class="loader1"></div>
-            <div class="loader2"></div>
-            <div class="loader3"></div>
-          </div>
-        </div>
-
-        <div class="mt-5" al-if="data.step == 6">
-          <h2 class="mb-4">Деньги переведены на Ваш счет. Спасибо за использование сервиса Swap.Online!</h2>
-        </div>
-
-      </div>
-
-
-    </div>
-
   </div>
 </div>

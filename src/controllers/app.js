@@ -7,7 +7,7 @@ const app = {
 }
 
 alight.controllers.app = function (scope) {
-  console.log('App controller!')
+  console.info('App controller!')
 
   scope.data = {
     initialized: false,
@@ -23,7 +23,7 @@ alight.controllers.app = function (scope) {
     if (loggedWith.eth && loggedWith.btc) {
       // put call to the end of call stack
       setTimeout(() => {
-        console.log('App initialized!')
+        console.info('App initialized!')
 
         scope.data.initialized = true
         scope.$scan()
