@@ -153,6 +153,8 @@ alight.controllers.ethToBtc = (scope) => {
     else if (scope.data.step === 5) {
       let secret
 
+      debugger
+
       ethSwap.getSecret({
         myAddress: user.ethData.address,
         participantAddress: swapData.participant.address,

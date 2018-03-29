@@ -159,6 +159,8 @@ alight.controllers.btcToEth = (scope) => {
       })
     }
     else if (scope.data.step === 7) {
+      debugger
+
       ethSwap.withdraw({
         myAddress: user.ethData.address,
         ownerAddress: swapData.participant.eth.address,

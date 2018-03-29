@@ -84,14 +84,16 @@ contract EthToBtcSwaps {
 
   // ETH Owner creates Swap with secretHash
   // 0xc0933f9be51a284acb6b1a6617a48d795bdeaa80, "0xf610609b0592c292d04C59d44244bb6CB41C59bd", 1841171580000
-  function create(bytes20 _secretHash, address _participantAddress, uint _lockTime) payable {
+  function create(bytes20 _secretHash, address _participantAddress) payable {
     require(signs[_participantAddress][msg.sender] == 1);
+
+    uint lockTime = now + 3 * 24 * 60 * 60;
 
     swaps[msg.sender][_participantAddress] = Swap(
       statuses.opened,
       0x00000000000000000000000000000000000000000000000000000000000000,
       _secretHash,
-      _lockTime,
+      lockTime,
       msg.value
     );
   }
@@ -114,7 +116,7 @@ contract EthToBtcSwaps {
   function withdraw(bytes32 _secret, address _ownerAddress) {
     Swap memory swap = swaps[_ownerAddress][msg.sender];
 
-    require(swap.balance);
+    require(swap.balance > 0);
     require(swap.secretHash == ripemd160(_secret));
 
     msg.sender.transfer(swap.balance);
@@ -139,6 +141,10 @@ contract EthToBtcSwaps {
   // "0xf610609b0592c292d04C59d44244bb6CB41C59bd"
   function getSecret(address _participantAddress) view returns (bytes32) {
     return swaps[msg.sender][_participantAddress].secret;
+  }
+
+  function unsafeGetSecret(address _ownerAddress, address _participantAddress) view returns (bytes32) {
+    return swaps[_ownerAddress][_participantAddress].secret;
   }
 
   // ETH Owner receive secret

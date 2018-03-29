@@ -167,8 +167,8 @@ module.exports = {
         filename: '[name].css',
         allChunks: true,
       }),
-      new UglifyJsPlugin(),
-      new CompressionPlugin(),
+      // new UglifyJsPlugin(),
+      // new CompressionPlugin(),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         // this assumes your vendor imports exist in the node_modules directory
