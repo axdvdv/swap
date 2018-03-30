@@ -20,8 +20,7 @@ alight.controllers.balances = (scope) => {
       .then((r) => {
         localStorage.setItem('user:privateBtcKey', r[0])
         localStorage.setItem('user:privateEthKey', r[1])
-        // TODO WHYY????
-        // location.reload()
+        location.reload()
       })
   }
 

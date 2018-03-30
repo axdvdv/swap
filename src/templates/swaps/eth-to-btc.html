@@ -80,8 +80,8 @@
     5. Ожидаем хомяка когда он передаст секретную фразу в созданный ETH Swap контракт
   </h2>
 
-  <h2 al-if="data.step == 5" class="mt-5">
-    <div al-if="data.btcScriptData" class="stepPassed"></div>
+  <h2 al-if="data.step == 5 || data.isWithdrawn" class="mt-5">
+    <div al-if="data.isWithdrawn" class="stepPassed"></div>
     6. Участник сделки забрал деньги с ETH Swap контракта и передал секретный ключ. Забираем деньги с BTC Swap скрипта. Ожидайте
   </h2>
   <div al-if="data.step == 5 && data.btcSwapWithdrawTransactionHash" class="alert alert-warning mt-4" role="alert">

@@ -37,7 +37,11 @@ class User {
   }
 
   sign() {
+    // chrome 0x5618fc7da976842efc5cb11af77050755c8e1ca8d32de35afd9923f11f327a9e
+    // yandex 0x3111c5cb43fc75e26595278ad9dc5dbb9e57c09a880633a7675ea756c958623e
     const ethPrivateKey = localStorage.getItem('user:privateEthKey')
+    // chrome cRkKzpir8GneA48iQVjSpUGT5mopFRTGDES7Kb43JduzrbhuVncn
+    // yandex cT5n9yx1xw3TcbvpEAuXvzhrTb5du4RAYbAbTqHfZ9nbq6gJQMGn
     const btcPrivateKey = localStorage.getItem('user:privateBtcKey')
 
     this.ethData = ethereum.login(ethPrivateKey)
@@ -54,11 +58,10 @@ class User {
   }
 
   async getBalances(currency='all') {
-
-    if(currency == 'eth' || currency=='all') {
+    if (currency === 'eth' || currency ==='all') {
       this.ethData.balance = await ethereum.getBalance(this.ethData.address)
     }
-    if(currency == 'btc' || currency == 'all') {
+    if (currency === 'btc' || currency === 'all') {
       this.btcData.balance = await bitcoin.getBalance(this.btcData.address)
     }
   }

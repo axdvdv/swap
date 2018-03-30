@@ -98,16 +98,11 @@ contract EthToBtcSwaps {
     );
   }
 
-  // BTC Owner can check Swap balance
-  // "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF"
-  function getBalance(address _ownerAddress) view returns (uint256) {
-    return swaps[_ownerAddress][msg.sender].balance;
-  }
+  // "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF", "0xf610609b0592c292d04C59d44244bb6CB41C59bd"
+  function getInfo(address _ownerAddress, address _participantAddress) view returns (uint, bytes32,  bytes20,  uint,  uint256) {
+    Swap memory swap = swaps[_ownerAddress][_participantAddress];
 
-  // BTC Owner can check Swap balance
-  // "0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF"
-  function getSecretHash(address _ownerAddress) view returns (bytes20) {
-    return swaps[_ownerAddress][msg.sender].secretHash;
+    return (swap.status, swap.secret, swap.secretHash, swap.lockTime, swap.balance);
   }
 
   // BTC Owner withdraw money

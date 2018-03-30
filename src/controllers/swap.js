@@ -157,14 +157,14 @@ alight.controllers.swap = (scope) => {
     scope.data.signFetching = true
     scope.$scan()
 
-    // ethSwap.sign({
-    //   myAddress: user.ethData.address,
-    //   participantAddress: swapData.participant.eth.address,
-    // }, (signTransactionHash) => {
-    //   scope.data.signTransactionHash = signTransactionHash
-    //   scope.$scan()
-    // })
-    //   .then(() => {
+    ethSwap.sign({
+      myAddress: user.ethData.address,
+      participantAddress: swapData.participant.eth.address,
+    }, (signTransactionHash) => {
+      scope.data.signTransactionHash = signTransactionHash
+      scope.$scan()
+    })
+      .then(() => {
         scope.data.signFetching = false
         scope.data.isMeSigned = true
         scope.$scan()
@@ -178,7 +178,7 @@ alight.controllers.swap = (scope) => {
             },
           },
         ])
-      // })
+      })
   }
 
   function checkIfCanInit() {

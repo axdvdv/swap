@@ -118,7 +118,7 @@ alight.controllers.ethToBtc = (scope) => {
       await ethSwap.create({
         myAddress: user.ethData.address,
         secretHash: scope.data.secretHash,
-        participantAddress: swapData.participant.address,
+        participantAddress: swapData.participant.eth.address,
         amount: requiredAmount,
       }, (transactionHash) => {
         scope.data.ethSwapCreationTransactionHash = transactionHash
@@ -153,18 +153,16 @@ alight.controllers.ethToBtc = (scope) => {
     else if (scope.data.step === 5) {
       let secret
 
-      debugger
-
       ethSwap.getSecret({
         myAddress: user.ethData.address,
-        participantAddress: swapData.participant.address,
+        participantAddress: swapData.participant.eth.address,
       })
         .then((_secret) => {
           secret = _secret
 
           return ethSwap.close({
             myAddress: user.ethData.address,
-            participantAddress: swapData.participant.address,
+            participantAddress: swapData.participant.eth.address,
           })
         })
         .then(() => {
@@ -179,6 +177,8 @@ alight.controllers.ethToBtc = (scope) => {
           })
         })
         .then(() => {
+          scope.data.isWithdrawn = true
+          scope.$scan()
           scope.goNextStep()
         })
     }
