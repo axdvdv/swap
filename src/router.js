@@ -7,7 +7,7 @@ const router = new Navigo(null, true, '#')
 const bind = (path) => [ path, (params, query) => {
   console.log(`Route changed to ${path}`)
 
-  EA.dispatchEvent('route:change', {
+  EA.dispatch('route:change', {
     path,
     params,
     query,

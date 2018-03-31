@@ -1,7 +1,6 @@
 import request from 'swap-request'
 import { Collection, Order } from 'models'
-import EA from './EA'
-import user from './user'
+import { EA, room, user } from 'instances'
 
 
 class Orders extends Collection {
@@ -24,15 +23,15 @@ class Orders extends Collection {
   }
 
   onMount() {
-    EA.subscribe('room:newOrder', (order) => {
+    room.subscribe('newOrder', (order) => {
       this.append(order)
     })
 
-    EA.subscribe('room:removeOrder', (order) => {
+    room.subscribe('removeOrder', (order) => {
       this.remove(order)
     })
 
-    EA.subscribe('room:updateOrderStatus', ({ orderId, status }) => {
+    room.subscribe('updateOrderStatus', ({ orderId, status }) => {
       orders.getByKey(orderId).updateStatus(status)
     })
   }
@@ -42,13 +41,13 @@ class Orders extends Collection {
 
     super.append(order, order.id)
 
-    EA.dispatchEvent('orders:onAppend', data)
+    EA.dispatch('orders:onAppend', data)
   }
 
   remove(data) {
     super.removeByKey(data.id)
 
-    EA.dispatchEvent('orders:onRemove', data)
+    EA.dispatch('orders:onRemove', data)
   }
 
   checkIfOwnedByMe(id) {

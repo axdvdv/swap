@@ -22,15 +22,15 @@ class MyOrders {
       orders.append(order)
     })
 
-    EA.dispatchEvent('myOrders:onMount')
+    EA.dispatch('myOrders:onMount')
 
-    EA.subscribe('room:newPeer', ({ peer }) => {
+    room.subscribe('newPeer', ({ peer }) => {
       const myOrders = orders.getOwnedByMe()
 
       console.log(`Send my orders to ${peer}`, myOrders)
 
       if (myOrders.length) {
-        room.sendMessageToPeer(peer, myOrders.map((order) => ({
+        room.sendMessage(peer, myOrders.map((order) => ({
           event: 'newOrder',
           data: order,
         })))

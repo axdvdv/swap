@@ -23,7 +23,7 @@ ipfs.once('ready', () => ipfs.id((err, info) => {
     throw err
   }
 
-  EA.dispatchEvent('ipfs:ready', {
+  EA.dispatch('ipfs:ready', {
     peer: info.id,
     connection: ipfs,
   })

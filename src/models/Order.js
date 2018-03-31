@@ -29,14 +29,14 @@ class Order {
       this[key] = merge(this[key], data[key])
     })
 
-    EA.dispatchEvent('order:onUpdate', this)
+    EA.dispatch('order:onUpdate', this)
   }
 
   updateStatus(status) {
     if (status in orderStatuses) {
       this.status = status
 
-      EA.dispatchEvent('order:onUpdate', this)
+      EA.dispatch('order:onUpdate', this)
     }
   }
 }

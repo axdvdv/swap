@@ -14,7 +14,7 @@ I am participant  - buyCurrency: 'ETH', sellCurrency: 'BTC'
 
 
 import alight from 'alight'
-import { EA, orders, user } from 'instances'
+import { EA, orders, user, room } from 'instances'
 import { ethSwap } from 'swaps'
 import { localStorage } from 'helpers'
 
@@ -89,7 +89,7 @@ alight.controllers.swap = (scope) => {
 
     console.log('Notify participant that I connected to this order')
 
-    room.sendMessageToPeer(swapData.participant.peer, [
+    room.sendMessage(swapData.participant.peer, [
       {
         event: 'swap:userConnected',
         data: {
@@ -118,7 +118,7 @@ alight.controllers.swap = (scope) => {
       scope.data.status = statuses.waitingParticipantConnectToDeal
       scope.$scan()
 
-      EA.subscribe('room:swap:userConnected', function ({ order: { id: orderId }, participant }) {
+      room.subscribe('swap:userConnected', function ({ order: { id: orderId }, participant }) {
         if (order.id === orderId) {
           this.unsubscribe()
           console.log('Creator connected to this order')
@@ -138,7 +138,7 @@ alight.controllers.swap = (scope) => {
     scope.data.status = statuses.swapSigning
     scope.$scan()
 
-    EA.subscribe('room:swap:signed', function ({ orderId }) {
+    room.subscribe('swap:signed', function ({ orderId }) {
       if (order.id === orderId) {
         this.unsubscribe()
         console.log('Participant signed this swap')
@@ -170,7 +170,7 @@ alight.controllers.swap = (scope) => {
         scope.$scan()
         checkIfCanInit()
 
-        room.sendMessageToPeer(swapData.participant.peer, [
+        room.sendMessage(swapData.participant.peer, [
           {
             event: 'swap:signed',
             data: {

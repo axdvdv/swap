@@ -39,7 +39,7 @@ class Ethereum {
     this.core.eth.accounts.wallet.add(data.privateKey)
 
     console.info('Logged in with Ethereum', data)
-    EA.dispatchEvent('eth:login', data)
+    EA.dispatch('eth:login', data)
 
     return data
   }
@@ -49,7 +49,7 @@ class Ethereum {
       .then((wei) => {
         const balance = Number(this.core.utils.fromWei(wei))
 
-        EA.dispatchEvent('eth:updateBalance', balance)
+        EA.dispatch('eth:updateBalance', balance)
         return balance
       })
   }
@@ -73,7 +73,7 @@ class Ethereum {
                 type: address.toLowerCase() === item.to.toLowerCase() ? 'in' : 'out'
               }))
 
-              EA.dispatchEvent('eth:updateTransactions', transactions.reverse())
+              EA.dispatch('eth:updateTransactions', transactions.reverse())
               resolve(transactions)
             }
             else {
@@ -86,7 +86,7 @@ class Ethereum {
 
   send(from, to, amount, privateKey) {
 
-    EA.dispatchEvent('form:hideError')
+    EA.dispatch('form:hideError')
 
     return new Promise((resolve, reject) => {
       this.core.eth.getBalance(from).then((r) => {
@@ -99,14 +99,14 @@ class Ethereum {
           }
 
           if (balance < amount) {
-            EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
+            EA.dispatch('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
             reject()
             return
           }
 
           if (!this.core.utils.isAddress(to)) {
 
-            EA.dispatchEvent('form:showError', '#withdrawEth', 'Адрес не верный')
+            EA.dispatch('form:showError', '#withdrawEth', 'Адрес не верный')
             reject()
             return
           }

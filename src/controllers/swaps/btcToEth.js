@@ -1,7 +1,7 @@
 import alight from 'alight'
 import crypto from 'swap-crypto'
 import { localStorage } from 'helpers'
-import { EA, user, room, ethereum, bitcoin } from 'instances'
+import { user, room, bitcoin } from 'instances'
 import { ethSwap, btcSwap } from 'swaps'
 
 
@@ -137,7 +137,7 @@ alight.controllers.btcToEth = (scope) => {
         })
     }
     else if (scope.data.step === 6) {
-      room.sendMessageToPeer(swapData.participant.peer, [
+      room.sendMessage(swapData.participant.peer, [
         {
           event: 'swap:btcScriptCreated',
           data: {
@@ -148,7 +148,7 @@ alight.controllers.btcToEth = (scope) => {
         },
       ])
 
-      EA.subscribe('room:swap:ethSwapCreated', function ({ orderId }) {
+      room.subscribe('swap:ethSwapCreated', function ({ orderId }) {
         if (order.id === orderId) {
           this.unsubscribe()
 
@@ -174,7 +174,7 @@ alight.controllers.btcToEth = (scope) => {
         })
     }
     else if (scope.data.step === 8) {
-      room.sendMessageToPeer(swapData.participant.peer, [
+      room.sendMessage(swapData.participant.peer, [
         {
           event: 'swap:ethWithdrawDone',
           data: {

@@ -1,6 +1,6 @@
 import alight from 'alight'
 import { localStorage } from 'helpers'
-import { EA, room, ethereum } from 'instances'
+import { room, ethereum } from 'instances'
 import { ethSwap, btcSwap } from 'swaps'
 
 
@@ -87,7 +87,7 @@ alight.controllers.ethToBtc = (scope) => {
     if (scope.data.step === 1) {
       console.log('Waiting until owner creates secretHash and BTC Swap script')
 
-      EA.subscribe('room:swap:btcScriptCreated', async function ({ orderId, secretHash, btcScriptData }) {
+      room.subscribe('swap:btcScriptCreated', async function ({ orderId, secretHash, btcScriptData }) {
         if (order.id === orderId) {
           console.log('Owner created secretHash', secretHash)
           console.log('Owner created btcScript', btcScriptData)
@@ -128,7 +128,7 @@ alight.controllers.ethToBtc = (scope) => {
       scope.data.isEthSwapCreated = true
       scope.$scan()
 
-      room.sendMessageToPeer(swapData.participant.peer, [
+      room.sendMessage(swapData.participant.peer, [
         {
           event: 'swap:ethSwapCreated',
           data: {
@@ -140,7 +140,7 @@ alight.controllers.ethToBtc = (scope) => {
       scope.goNextStep()
     }
     else if (scope.data.step === 4) {
-      EA.subscribe('room:swap:ethWithdrawDone', function ({ orderId }) {
+      room.subscribe('swap:ethWithdrawDone', function ({ orderId }) {
         if (order.id === orderId) {
           this.unsubscribe()
 

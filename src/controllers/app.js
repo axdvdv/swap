@@ -28,7 +28,7 @@ alight.controllers.app = function (scope) {
         scope.data.initialized = true
         scope.$scan()
 
-        EA.dispatchEvent('app:ready')
+        EA.dispatch('app:ready')
       }, 0)
     }
   }

@@ -30,7 +30,7 @@ class User {
       this.peer = peer
     })
 
-    EA.once('room:ready', () => {
+    room.once('ready', () => {
       this.sign()
       this.getBalances()
     })

@@ -29,7 +29,7 @@ class EventAggregator {
    * @param eventName {string}
    * @param eventArgs {...array}
    */
-  dispatchEvent(eventName, ...eventArgs) {
+  dispatch(eventName, ...eventArgs) {
     const event = this.getEvent(eventName)
 
     if (event) {

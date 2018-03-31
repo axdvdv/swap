@@ -49,7 +49,7 @@ class Bitcoin {
       publicKey,
     }
     console.info('Logged in with Bitcoin', data)
-    EA.dispatchEvent('btc:login', data)
+    EA.dispatch('btc:login', data)
 
     return data
   }
@@ -58,7 +58,7 @@ class Bitcoin {
     return request.get(`${config.api.bitpay}/addr/${address}`)
       .then(({ balance }) => {
         console.log('BTC Balance:', balance)
-        EA.dispatchEvent('btc:updateBalance', balance)
+        EA.dispatch('btc:updateBalance', balance)
 
         return balance
       })
@@ -80,7 +80,7 @@ class Bitcoin {
               type: address.toLocaleLowerCase() === item.outputs[0].address.toLocaleLowerCase() ? 'in' : 'out'
             }))
 
-            EA.dispatchEvent('btc:updateTransactions', transactions.reverse())
+            EA.dispatch('btc:updateTransactions', transactions.reverse())
             resolve(transactions)
           }
           else {
@@ -108,7 +108,7 @@ class Bitcoin {
       }
 
       /*      if (amount > this.data.balance) {
-              EA.dispatchEvent('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
+              EA.dispatch('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
               reject()
               return
             }*/

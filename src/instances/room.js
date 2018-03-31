@@ -1,4 +1,5 @@
 import IpfsRoom from 'ipfs-pubsub-room'
+import EventAggregator from 'models/EventAggregator'
 import EA from './EA'
 import user from './user'
 
@@ -6,9 +7,9 @@ import user from './user'
 class Room {
 
   constructor() {
+    this.events = new EventAggregator()
     this.peers = []
     this.connection = null
-    // this.waitList = []
 
     global.room = this
 
@@ -21,17 +22,35 @@ class Room {
         pollInterval: 5000,
       })
 
-      this.connection.on('message', this.handleNewMessage)
+      this.connection.on('subscribed', this.handleSubscribe)
       this.connection.on('peer joined', this.handleNewUserConnected)
       this.connection.on('peer left', this.handleUserLeft)
-      this.connection.on('subscribed', this.handleSubscribe)
+      this.connection.on('message', this.handleNewMessage)
     })
   }
 
   handleSubscribe = () => {
     console.info('Room ready!')
 
-    EA.dispatchEvent('room:ready')
+    this.events.dispatch('ready')
+  }
+
+  handleNewUserConnected = (peer) => {
+    if (!this.peers.includes(peer)) {
+      console.room('newPeer', peer)
+
+      this.peers.push(peer)
+      this.events.dispatch('newPeer', { peer })
+    }
+  }
+
+  handleUserLeft = (peer) => {
+    if (this.peers.includes(peer)) {
+      console.room('peerLeft', peer)
+
+      this.peers.splice(this.peers.indexOf(peer), 1)
+      this.events.dispatch('peerLeft', { peer })
+    }
   }
 
   handleNewMessage = (message) => {
@@ -41,63 +60,39 @@ class Room {
 
     const data = JSON.parse(message.data.toString())
 
-    // console.log('New message', { ...message, data })
-
-    // if (this.waitList.includes(JSON.stringify({ peer: message.from, message: data }))) {
-    //
-    // }
-
     if (data && data.length) {
       data.forEach(({ event, data }) => {
         if (data) {
           console.room(event, { ...message, data })
-          EA.dispatchEvent(`room:${event}`, { ...data, peerFrom: message.from })
+          this.events.dispatch(event, { ...data, peerFrom: message.from })
         }
       })
     }
   }
 
-  handleNewUserConnected = (peer) => {
-    if (!this.peers.includes(peer)) {
-      console.room('newPeer', peer)
+  subscribe(eventName, handler) {
+    this.events.subscribe(eventName, handler)
+  }
 
-      this.peers.push(peer)
-      EA.dispatchEvent('room:newPeer', { peer })
+  once(eventName, handler) {
+    this.events.once(eventName, handler)
+  }
+
+  sendMessage(...args) {
+    if (args.length === 1) {
+      const [ message ] = args
+
+      this.connection.broadcast(JSON.stringify(message))
     }
-  }
+    else {
+      const [ peer, message ] = args
 
-  handleUserLeft = (peer) => {
-    if (this.peers.includes(peer)) {
-      console.room('peerLeft', peer)
-
-      this.peers.splice(this.peers.indexOf(peer), 1)
-      EA.dispatchEvent('room:peerLeft', { peer })
+      this.connection.sendTo(peer, JSON.stringify(message))
     }
-  }
-
-  checkMessageDeliveryStatus() {
-
-  }
-
-  addMessageToWaitList() {
-
   }
 
   isPeerExist(peer) {
     return this.connection.hasPeer(peer)
-  }
-
-  sendMessage(message) {
-    this.connection.broadcast(JSON.stringify(message))
-  }
-
-  sendMessageToPeer(peer, message) {
-    // this.waitList.push(JSON.stringify({
-    //   peer,
-    //   message
-    // }))
-
-    this.connection.sendTo(peer, JSON.stringify(message))
   }
 }
 

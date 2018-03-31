@@ -1,7 +1,6 @@
 import { Collection } from 'models'
 import { localStorage } from 'helpers'
-import { user } from 'instances'
-import EA from './EA'
+import { EA, user, room } from 'instances'
 
 
 class Notifications extends Collection {
@@ -15,7 +14,7 @@ class Notifications extends Collection {
   }
 
   onMount() {
-    EA.subscribe('room:swap:userConnected', ({ order, participant }) => {
+    room.subscribe('swap:userConnected', ({ order, participant }) => {
       // notify only order creator
       if (order.owner.peer === user.peer) {
         try {
@@ -65,7 +64,7 @@ class Notifications extends Collection {
       this.animate()
 
       console.log('New notification:', item)
-      EA.dispatchEvent('newNotification', item)
+      EA.dispatch('newNotification', item)
     }
   }
 }

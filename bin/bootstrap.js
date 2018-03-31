@@ -9,7 +9,7 @@ global.$ = require('jquery')
 global.window = {}
 global.log = global.console.log
 // global.console.log = () => {}
-global.localstorage = {
+global.localStorage = {
   getItem: () => {},
   setItem: () => {},
 }
