@@ -5,17 +5,17 @@
   </div>
 
   <div al-if="data.status == data.statuses.initialized" class="alert alert-danger mt-2" role="alert">
-    Настоятельно рекомендуем не закрывать эту страницу до завершения сделки. Это может привести к нежелательным результатам
+    We strongly recommend to not close this page until the transaction is completed. This can lead to undesirable results
   </div>
 </div>
 
 <div al-if="data.status == data.statuses.thereIsNoAnyParticipant">
-  <h2>У этой сделки еще нет покупателя</h2>
-  <a class="btn btn-primary" al-link="/">Вернуться к списку ордеров</a>
+  <h2>This order doesn't have a buyer</h2>
+  <a class="btn btn-primary" al-link="/">Go back to the orders list</a>
 </div>
 
 <div al-if="data.status == data.statuses.waitingSwapCreatorToBecomeOnline">
-  <h2>Создатель сделки оффлайн. Ожидаем его</h2>
+  <h2>The order creator is offline. Waiting for him..</h2>
   <div class="loader small">
     <div class="loader1"></div>
     <div class="loader2"></div>
@@ -24,7 +24,7 @@
 </div>
 
 <div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
-  <h2>Ожидаем хомяка, когда он присоединится</h2>
+  <h2>Waiting for other user when he connect to the order</h2>
   <div class="loader small">
     <div class="loader1"></div>
     <div class="loader2"></div>
@@ -34,21 +34,21 @@
 
 <h2 al-if="data.status == data.statuses.swapSigning || data.isMeSigned" class="mb-1">
   <div al-if="data.isMeSigned && data.isParticipantSigned" class="stepPassed"></div>
-  1. Подтвердите свое согласие на начало сделки
+  1. Please confirm your participation to begin the deal
 </h2>
 <div al-if="data.status == data.statuses.swapSigning">
   <div class="mb-4 text-muted">
-    Подтверждение сделки необходимо для начисления репутации.
-    Если хомяк не доводит сделку до конца он получает отрицательную репутацию.
+    Confirmation of the transaction is necessary for crediting the reputation.
+    If a user does not bring the deal to the end he gets a negative reputation.
   </div>
   <div al-if="data.isParticipantSigned" class="alert alert-success" role="alert">
-    Хомяк подтвердил участие в сделке
+    Other user confirmed his participation
   </div>
-  <button al-if="!data.signFetching && !data.isMeSigned" type="button" class="btn btn-primary" @click="signSwap()">Подтверждаю</button>
+  <button al-if="!data.signFetching && !data.isMeSigned" type="button" class="btn btn-primary" @click="signSwap()">Confirm</button>
   <div al-if="data.signFetching">
-    <h5 class="mb-2">Ожидайте. Производится подпись сделки</h5>
+    <h5 class="mb-2">Please wait. Confirmation processing</h5>
     <div al-if="data.signTransactionHash" class="alert alert-warning" role="alert">
-      Транзакция: <strong><a href="{{data.signTransactionHash}}" target="_blank">{{data.signTransactionHash}}</a></strong>
+      Transaction: <strong><a href="{{data.signTransactionHash}}" target="_blank">{{data.signTransactionHash}}</a></strong>
     </div>
     <div  class="loader small">
       <div class="loader1"></div>
@@ -57,10 +57,10 @@
     </div>
   </div>
   <div al-if="data.isMeSigned" class="alert alert-success" role="alert">
-    Вы подтвердили участие в сделке
+    You successfully confirmed your participation
   </div>
   <div al-if="data.isMeSigned && !data.isParticipantSigned">
-    <h5 class="mb-2">Ожидаем когда хомяк подтвердит сделку</h5>
+    <h5 class="mb-2">Waiting when other user confirm his participation</h5>
     <div  class="loader small">
       <div class="loader1"></div>
       <div class="loader2"></div>

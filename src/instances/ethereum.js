@@ -94,19 +94,19 @@ class Ethereum {
           let balance = this.core.utils.fromWei(r)
           if (balance == 0) {
 
-            reject( 'Ваш балансе пуст')
+            reject('Your balance is empty')
             return
           }
 
           if (balance < amount) {
-            EA.dispatch('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
+            EA.dispatch('form:showError', '#withdrawEth', 'There is not enough money on your balance')
             reject()
             return
           }
 
           if (!this.core.utils.isAddress(to)) {
 
-            EA.dispatch('form:showError', '#withdrawEth', 'Адрес не верный')
+            EA.dispatch('form:showError', '#withdrawEth', 'Incorrect address')
             reject()
             return
           }

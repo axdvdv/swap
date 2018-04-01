@@ -5,17 +5,7 @@
 
       <div class="d-flex justify-content-between mb-4">
         <h3 class="mb-0">
-          Обменять
-          <div class="btn-group">
-            <button type="button" id="sellCurrencyDropdown" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{data.selectedCurrencies.sell}}
-            </button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#" al-if="data.selectedCurrencies.sell != 'BTC'" al-click="updateSelectedCurrency('sell', 'BTC')">BTC</a>
-              <a class="dropdown-item" href="#" al-if="data.selectedCurrencies.sell != 'ETH'" al-click="updateSelectedCurrency('sell', 'ETH')">ETH</a>
-            </div>
-          </div>
-          на
+          Buy
           <div class="btn-group">
             <button type="button" id="buyCurrencyDropdown" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               {{data.selectedCurrencies.buy}}
@@ -25,9 +15,19 @@
               <a class="dropdown-item" href="#" al-if="data.selectedCurrencies.buy != 'ETH'" al-click="updateSelectedCurrency('buy', 'ETH')">ETH</a>
             </div>
           </div>
+          for
+          <div class="btn-group">
+            <button type="button" id="sellCurrencyDropdown" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{data.selectedCurrencies.sell}}
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#" al-if="data.selectedCurrencies.sell != 'BTC'" al-click="updateSelectedCurrency('sell', 'BTC')">BTC</a>
+              <a class="dropdown-item" href="#" al-if="data.selectedCurrencies.sell != 'ETH'" al-click="updateSelectedCurrency('sell', 'ETH')">ETH</a>
+            </div>
+          </div>
         </h3>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createOrderModal">
-          Добавить ордер
+          Create order
         </button>
       </div>
 
@@ -35,7 +35,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Обменять {{data.selectedCurrencies.sell}} на {{data.selectedCurrencies.buy}}</h5>
+              <h5 class="modal-title">Buy {{data.selectedCurrencies.buy}} for {{data.selectedCurrencies.sell}}</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -45,7 +45,7 @@
               <btc-balance-card al-if="data.selectedCurrencies.buy == 'BTC'"></btc-balance-card>
               <form action="" al-submit="createOrder()">
                 <div class="form-group">
-                  <label>Стоимость <b>1 {{data.selectedCurrencies.buy}}</b></label>
+                  <label>Price of <b>1 {{data.selectedCurrencies.buy}}</b></label>
                   <div class="input-group mb-3">
                     <input
                       class="form-control"
@@ -60,7 +60,7 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label>Количество <b>{{data.selectedCurrencies.buy}}</b> которое вы хотите <b>получить</b></label>
+                  <label><b>{{data.selectedCurrencies.buy}}</b> amount you want to <b>buy</b></label>
                   <div class="input-group mb-3">
                     <input
                       class="form-control"
@@ -75,7 +75,7 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label>Количество <b>{{data.selectedCurrencies.sell}}</b> которое вы хотите <b>продать</b></label>
+                  <label><b>{{data.selectedCurrencies.sell}}</b> amount you want to <b>sell</b></label>
                   <div class="input-group mb-3">
                     <input
                       class="form-control"
@@ -90,7 +90,7 @@
                   </div>
                 </div>
                 <div class="pt-3">
-                  <input type="submit" class="btn btn-primary btn-lg btn-block" value="Создать объявление">
+                  <input type="submit" class="btn btn-primary btn-lg btn-block" value="Create order">
                 </div>
               </form>
             </div>
@@ -100,14 +100,14 @@
 
       <div class="mt-4">
         <div class="d-flex justify-content-end">
-          <div>Всего: <span>{{data.totalAmount}} {{data.selectedCurrencies.buy}}</span></div>
+          <div>Total: <span>{{data.totalAmount}} {{data.selectedCurrencies.buy}}</span></div>
         </div>
         <div class="table-responsive mt-3">
           <table class="table">
             <thead>
             <tr>
-              <th>Курс</th>
-              <th>Рейтинг пользователя</th>
+              <th>Exchange rate</th>
+              <th>User rating</th>
               <th class="text-right">{{data.selectedCurrencies.buy}}</th>
               <th class="text-right">{{data.selectedCurrencies.sell}}</th>
               <th colspan="2"></th>
@@ -125,7 +125,7 @@
               <td class="text-right trim-order-value">{{item.buyAmount}}</td>
               <td class="text-right">
                 <div al-if="item.owner.address != data.myAddress">
-                  <a href="#" al-link data-link="{{item.link}}">купить</a>
+                  <a href="#" al-link data-link="{{item.link}}">BUY</a>
                 </div>
               </td>
               <td class="text-right">
@@ -133,7 +133,8 @@
                   al-if="item.owner.address == data.myAddress"
                   class="close"
                   type="button"
-                  aria-label="Close"
+                  aria-label="Remove"
+                  title="remove order"
                   @click="removeOrder(item)"
                 >
                   <span aria-hidden="true">&times;</span>

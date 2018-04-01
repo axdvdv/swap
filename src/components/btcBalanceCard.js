@@ -20,7 +20,7 @@ createBalanceCard('btc-balance-card', (scope) => {
     user.saveSettings({withdraw_btc_address: scope.data.withdraw_address});
     bitcoin.send(user.btcData.address, scope.data.withdraw_address, scope.data.amount, user.btcData.keyPair)
       .then(() => {
-        notifications.append({ type: 'notification', text: 'Вывод денег' })
+        notifications.append({ type: 'notification', text: 'Money withdraw' })
         $('.modal').modal('hide')
       })
   }

@@ -20,7 +20,7 @@ createBalanceCard('eth-balance-card', (scope) => {
     user.saveSettings({withdraw_eth_address: scope.withdraw_address});
     ethereum.send(user.ethData.address, scope.withdraw_ddress,  scope.amount, user.ethData.privateKey)
       .then(() => {
-        notifications.append({type: 'notification', text: 'Вывод денег'})
+        notifications.append({type: 'notification', text: 'Money withdraw'})
         $('.modal').modal('hide')
       }).catch((err) => {
       console.log(err)

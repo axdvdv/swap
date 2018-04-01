@@ -1,21 +1,21 @@
 <div al-if="data.slug == 'btc-eth'" al-ctrl="btcToEth">
 
-  <h2 class="mt-5">
+  <h3 class="mt-5">
     <div al-if="data.secretHash" class="stepPassed"></div>
-    2. Придумайте секретную фразу
-  </h2>
+    2. Create a secret key
+  </h3>
   <div al-if="!data.secretHash" class="mt-4">
-    <input type="text" class="form-control" placeholder="Секретная фраза" al-value="data.secret">
+    <input type="text" class="form-control" placeholder="Secret Key" al-value="data.secret">
     <br />
-    <button type="button" class="btn btn-primary" @click="goNextStep()">Погнали!</button>
+    <button type="button" class="btn btn-primary" @click="goNextStep()">Continue</button>
   </div>
 
   <div al-if="data.secretHash">
     <div class="alert alert-danger mt-4" role="alert">
-      Сохраните секретную фразу, иначе вы не сможете получить деньги!
+      Save the secret key! Otherwise there will be a chance you loose your money!
     </div>
     <div class="alert alert-warning" role="alert">
-      Secret: <strong><a href="" al-copy>{{data.secret}}</a></strong>
+      Secret Key: <strong><a href="" al-copy>{{data.secret}}</a></strong>
     </div>
     <div class="alert alert-warning" role="alert">
       Secret Hash: <strong><a href="" al-copy>{{data.secretHash}}</a></strong>
@@ -23,40 +23,42 @@
   </div>
 
   <div al-if="data.step == 3 && data.notEnoughMoney && !data.checkingBalance" class="mt-5">
-    <h2 class="mb-4">На вашем балансе недостаточно средств для этой сделки. Пополните кошелек</h2>
+    <h3 class="mb-4">Not enough money for this swap. Please charge the balance</h3>
     <div class="alert alert-warning fs-16" role="alert">
-      <div>Баланс <strong>{{data.balance}}</strong> ETH</div>
-      <div>Необходимый баланс <strong>{{data.order.currency1Amount}}</strong> ETH</div>
+      <div>Your balance: <strong>{{data.balance}}</strong> BTC</div>
+      <div>Required balance: <strong>{{data.order.sellAmount}}</strong> BTC</div>
       <hr />
-      <a href="" al-copy title="скопировать в буффер">{{data.address}}</a>&nbsp;&nbsp;&nbsp;<a href="https://www.blocktrail.com/tBTC/address/{{data.address}}/transactions" target="_blank">Посмотреть</a>
+      <a href="" al-copy title="copy to clipboard">{{data.address}}</a>&nbsp;&nbsp;&nbsp;<a href="https://www.blocktrail.com/tBTC/address/{{data.address}}/transactions" target="_blank">Check</a>
     </div>
     <br />
-    <button type="button" class="btn btn-primary" @click="updateBalance()">Я пополнил, давай проверяй и погнали дальше!</button>
+    <button type="button" class="btn btn-primary" @click="updateBalance()">Continue</button>
   </div>
 
-  <h2 al-if="data.step == 3 && data.checkingBalance" class="mt-5">Проверяем баланс</h2>
+  <h3 al-if="data.step == 3 && data.checkingBalance" class="mt-5">
+    Checking balance..
+  </h3>
 
-  <h2 al-if="data.step == 4 || data.btcScriptData" class="mt-5">
+  <h3 al-if="data.step == 4 || data.btcScriptData" class="mt-5">
     <div al-if="data.btcScriptData" class="stepPassed"></div>
-    3. Создаем Bitcoin Swap скрипт. Подождите, это займет некоторое время
-  </h2>
+    3. Creating Bitcoin Script. Please wait, it will take a while
+  </h3>
 
-  <h2 al-if="data.step == 5 || data.isBtcScriptFunded" class="mt-5">
+  <h3 al-if="data.step == 5 || data.isBtcScriptFunded" class="mt-5">
     <div al-if="data.isBtcScriptFunded" class="stepPassed"></div>
-    4. Пополняем баланс Bitcoin Swap скрипта. Подождите, это займет некоторое время
-  </h2>
+    4. Charging Bitcoin Script. Please wait, it will take a while
+  </h3>
 
-  <h2 al-if="data.step == 6 || data.isEthSwapCreated" class="mt-5">
+  <h3 al-if="data.step == 6 || data.isEthSwapCreated" class="mt-5">
     <div al-if="data.isEthSwapCreated" class="stepPassed"></div>
-    5. Мы отправили созданный скрипт и secretHash хомяку. Ожидаем когда он создаст ETH Swap контракт
-  </h2>
+    5. ETH Owner received Bitcoin Script and Secret Hash. Waiting when he creates ETH Contract.
+  </h3>
 
-  <h2 al-if="data.step == 7 || data.isWithdrawn" class="mt-5">
+  <h3 al-if="data.step == 7 || data.isWithdrawn" class="mt-5">
     <div al-if="data.isWithdrawn" class="stepPassed"></div>
-    6. ETH Swap контракт создан и пополнен. Запрашиваем деньги с ETH Swap контракта. Ожидайте
-  </h2>
+    6. ETH Contract created and charged. Requesting withdrawal from ETH Contract. Please wait
+  </h3>
   <div al-if="data.step == 7 && data.ethSwapWithdrawTransactionHash" class="alert alert-warning mt-4" role="alert">
-    Транзакция: <strong><a href="{{data.ethSwapWithdrawTransactionHash}}" target="_blank">{{data.ethSwapWithdrawTransactionHash}}</a></strong>
+    Transaction: <strong><a href="{{data.ethSwapWithdrawTransactionHash}}" target="_blank">{{data.ethSwapWithdrawTransactionHash}}</a></strong>
   </div>
 
   <div al-if="(data.step > 3 && data.step != 8) || data.checkingBalance" class="loader small mt-4">
@@ -65,9 +67,10 @@
     <div class="loader3"></div>
   </div>
 
-  <h2 al-if="data.isWithdrawn" class="mt-5">
+  <div al-if="data.isWithdrawn" class="mt-5">
     <div  class="stepPassed"></div>
-    7. Деньги переведены на Ваш счет. Спасибо за использование сервиса Swap.Online!
-  </h2>
+    <h3>7. Money was transferred to your wallet. Check the balance.</h3>
+    <h2>Thank you for using Swap.Online!</h2>
+  </div>
 
 </div>

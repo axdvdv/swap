@@ -18,7 +18,7 @@ alight.controllers.ethToBtc = (scope) => {
   global.swapData = swapData
 
   scope.data = {
-    order,
+    myAddress: user.ethData.address,
     step: 0,
 
     // step 1
