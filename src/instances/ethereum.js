@@ -57,7 +57,7 @@ class Ethereum {
   getTransaction(address) {
     return new Promise((resolve) => {
       if (address) {
-        const url = `http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.apiKeys.blocktrail}`
+        const url = `https://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${config.apiKeys.blocktrail}`
         let transactions
 
         request.get(url)
