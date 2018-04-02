@@ -41,12 +41,12 @@
               </button>
             </div>
             <div class="modal-body">
-              <eth-balance-card al-if="data.selectedCurrencies.buy == 'ETH'"></eth-balance-card>
-              <btc-balance-card al-if="data.selectedCurrencies.buy == 'BTC'"></btc-balance-card>
+              <eth-balance-card al-if="data.selectedCurrencies.buy == 'BTC'"></eth-balance-card>
+              <btc-balance-card al-if="data.selectedCurrencies.buy == 'ETH'"></btc-balance-card>
               <form action="" al-submit="createOrder()">
                 <div class="form-group">
                   <label>Price of <b>1 {{data.selectedCurrencies.buy}}</b></label>
-                  <div class="input-group mb-3">
+                  <div class="input-group input-group-lg mb-3">
                     <input
                       class="form-control"
                       type="type"
@@ -61,7 +61,7 @@
                 </div>
                 <div class="form-group">
                   <label><b>{{data.selectedCurrencies.buy}}</b> amount you want to <b>buy</b></label>
-                  <div class="input-group mb-3">
+                  <div class="input-group input-group-lg mb-3">
                     <input
                       class="form-control"
                       type="type"
@@ -76,7 +76,7 @@
                 </div>
                 <div class="form-group">
                   <label><b>{{data.selectedCurrencies.sell}}</b> amount you want to <b>sell</b></label>
-                  <div class="input-group mb-3">
+                  <div class="input-group input-group-lg mb-3">
                     <input
                       class="form-control"
                       type="type"
@@ -89,9 +89,10 @@
                     </div>
                   </div>
                 </div>
-                <div class="pt-3">
-                  <input type="submit" class="btn btn-primary btn-lg btn-block" value="Create order">
+                <div class="alert alert-primary" role="alert">
+                  Your order will appear in "Buy <strong>{{data.selectedCurrencies.sell}}</strong> for <strong>{{data.selectedCurrencies.buy}}</strong>" list
                 </div>
+                <input type="submit" class="btn btn-primary btn-lg btn-block" value="Create order">
               </form>
             </div>
           </div>
@@ -107,7 +108,7 @@
             <thead>
             <tr>
               <th>Exchange rate</th>
-              <th>User rating</th>
+              <th>User reputation</th>
               <th class="text-right">{{data.selectedCurrencies.buy}}</th>
               <th class="text-right">{{data.selectedCurrencies.sell}}</th>
               <th colspan="2"></th>
@@ -120,7 +121,7 @@
               :style.background-color="item.owner.address == data.myAddress ? '#fffdbd' : '#fff'"
             >
               <td>{{item.exchangeRate}}</td>
-              <td>{{item.owner.rating}}</td>
+              <td>{{item.owner.reputation}}</td>
               <td class="text-right trim-order-value">{{item.sellAmount}}</td>
               <td class="text-right trim-order-value">{{item.buyAmount}}</td>
               <td class="text-right">

@@ -15,6 +15,7 @@ const timer = setInterval(() => {
     require('./directives')
     require('./controllers')
     require('./components')
+    require('./filters')
     require('./models')
     require('./instances')
 

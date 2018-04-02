@@ -85,15 +85,14 @@ class Ethereum {
   }
 
   send(from, to, amount, privateKey) {
-
     EA.dispatch('form:hideError')
+
     return new Promise((resolve, reject) => {
       this.core.eth.getBalance(from).then((r) => {
         try {
-
           let balance = this.core.utils.fromWei(r)
-          if (balance == 0) {
 
+          if (balance === 0) {
             reject('Your balance is empty')
             return
           }

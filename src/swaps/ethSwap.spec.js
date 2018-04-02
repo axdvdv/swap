@@ -1,6 +1,7 @@
 import test from 'ava'
 import ethereum, { Ethereum } from 'instances/ethereum'
 import ethSwap, { EthSwap } from 'swaps/ethSwap'
+import reputation, { Reputation } from 'swaps/reputation'
 
 
 const ratingAddress   = '0xa8f36d62425a085dc3d19448751db49ba2f68afb'
@@ -29,21 +30,24 @@ const btcOwnerData = ethereum.login(btcOwnerPrivateKey)
 
 
 test('sign + create + withdraw + getSecret', async (t) => {
-  const expected = `0x${secret}`
+  const [ ethOwnerReputation, btcOwnerReputation ] = await Promise.all([
+    reputation.get(ethOwnerData.address),
+    reputation.get(btcOwnerData.address),
+    // BTC Owner signs
+    // 0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF
+    ethSwap.sign({
+      myAddress: btcOwnerData.address,
+      participantAddress: ethOwnerData.address,
+    }),
+    // ETH Owner signs
+    // 0xf610609b0592c292d04C59d44244bb6CB41C59bd
+    ethSwap.sign({
+      myAddress: ethOwnerData.address,
+      participantAddress: btcOwnerData.address,
+    }),
+  ])
 
-  // BTC Owner signs
-  // 0x52b0ed6638D4Edf4e074D266E3D5fc05A5650DfF
-  await ethSwap.sign({
-    myAddress: btcOwnerData.address,
-    participantAddress: ethOwnerData.address,
-  })
-
-  // ETH Owner signs
-  // 0xf610609b0592c292d04C59d44244bb6CB41C59bd
-  await ethSwap.sign({
-    myAddress: ethOwnerData.address,
-    participantAddress: btcOwnerData.address,
-  })
+  console.log('initial reputation', ethOwnerReputation, btcOwnerReputation)
 
   // ETH Owner creates a swap
   // 0xc0933f9be51a284acb6b1a6617a48d795bdeaa80, "0xf610609b0592c292d04C59d44244bb6CB41C59bd", 1841171580000
@@ -65,7 +69,7 @@ test('sign + create + withdraw + getSecret', async (t) => {
 
   // ETH Owner receive the secret
   // 0xf610609b0592c292d04C59d44244bb6CB41C59bd
-  const result = await ethSwap.getSecret({
+  const secretKey = await ethSwap.getSecret({
     myAddress: ethOwnerData.address,
     participantAddress: btcOwnerData.address,
   })
@@ -77,7 +81,17 @@ test('sign + create + withdraw + getSecret', async (t) => {
     participantAddress: btcOwnerData.address,
   })
 
-  console.log('result', result)
+  const [ ethOwnerNewReputation, btcOwnerNewReputation ] = await Promise.all([
+    reputation.get(ethOwnerData.address),
+    reputation.get(btcOwnerData.address),
+  ])
 
-  t.is(result, expected)
+  console.log('new reputation', ethOwnerNewReputation, btcOwnerNewReputation)
+
+  const ethOwnerReputationDiff = ethOwnerNewReputation - ethOwnerReputation
+  const btcOwnerReputationDiff = btcOwnerNewReputation - btcOwnerReputation
+
+  t.is(ethOwnerReputationDiff, 1)
+  t.is(btcOwnerReputationDiff, 1)
+  t.is(secretKey, `0x${secret}`)
 })

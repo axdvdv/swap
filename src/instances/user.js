@@ -1,5 +1,6 @@
 import { localStorage } from 'helpers'
 import { merge } from 'lodash'
+import reputation from 'swaps/reputation'
 import bitcoin from './bitcoin'
 import ethereum from './ethereum'
 import EA from './EA'
@@ -10,7 +11,7 @@ class User {
 
   constructor() {
     this.peer = null
-    this.rating = 0
+    this.reputation = 0
     this.ethData = {
       address: '0x0',
       balance: 0,
@@ -34,6 +35,7 @@ class User {
     room.once('ready', () => {
       this.sign()
       this.getBalances()
+      this.getReputation()
     })
   }
 
@@ -52,12 +54,6 @@ class User {
     localStorage.setItem('user:privateBtcKey', this.btcData.privateKey)
   }
 
-  getTransactions() {
-
-    ethereum.getTransaction(this.ethData.address)
-    bitcoin.getTransaction(this.btcData.address)
-  }
-
   async getBalances(currency='all') {
     if (currency === 'eth' || currency ==='all') {
       this.ethData.balance = await ethereum.getBalance(this.ethData.address)
@@ -67,13 +63,23 @@ class User {
     }
   }
 
+  async getReputation() {
+    this.reputation = await reputation.get(this.ethData.address)
+  }
+
+  getTransactions() {
+    ethereum.getTransaction(this.ethData.address)
+    bitcoin.getTransaction(this.btcData.address)
+  }
+
   createOrder(data) {
     return {
       ...data,
       owner: {
         address: this.ethData.address,
         peer: this.peer,
-        rating: this.rating,
+        // TODO move `reputation` to room.peers and add to all orders related to such user
+        reputation: this.reputation,
       },
     }
   }
@@ -90,7 +96,6 @@ class User {
   }
 
   getSettings(name) {
-
     let settings = localStorage.getItem(this.localStorageName)
     if(!settings) {
 

@@ -1,5 +1,5 @@
 import createBalanceCard from './util/createBalanceCard'
-import { user, ethereum } from 'instances'
+import { EA, user, ethereum } from 'instances'
 
 
 createBalanceCard('eth-balance-card', (scope) => {
@@ -11,27 +11,27 @@ createBalanceCard('eth-balance-card', (scope) => {
   scope.data.withdraw_address = user.getSettings('withdraw_eth_address')
   scope.pattern ='(0x){1}[0-9a-fA-F]{40}'
   scope.disabled =0
-  scope.updateBalance = async () => {
 
-    scope.data.balance = await ethereum.getBalance(user.ethData.address)
-    scope.$scan()
+  scope.updateBalance = () => {
+    ethereum.getBalance(user.ethData.address)
   }
 
   scope.withdraw =  () => {
     user.saveSettings({withdraw_eth_address: scope.data.withdraw_address});
-    scope.disabled =1
-
-
+    scope.disabled = 1
 
     ethereum.send(user.ethData.address, scope.data.withdraw_address,  scope.data.amount, user.ethData.privateKey)
       .then(() => {
         notifications.append({type: 'notification', text: 'Money withdraw'})
         $('.modal').modal('hide')
-        scope.disabled =0
-      }).catch((err) => {
-      console.log(err)
-    })
+        scope.disabled = 0
+      })
   }
+
+  EA.subscribe('eth:updateBalance', (balance) => {
+    scope.data.balance = balance
+    scope.$scan()
+  })
 
   scope.updateBalance()
 })
