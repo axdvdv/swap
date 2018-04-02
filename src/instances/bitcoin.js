@@ -107,12 +107,6 @@ class Bitcoin {
         ],
       }
 
-      /*      if (amount > this.data.balance) {
-              EA.dispatch('form:showError', '#withdrawEth', 'На вашем балансе недостаточно средств')
-              reject()
-              return
-            }*/
-
       request.post('https://api.blockcypher.com/v1/btc/test3/txs/new', {
         body: JSON.stringify(newtx),
       }).then((d) => {

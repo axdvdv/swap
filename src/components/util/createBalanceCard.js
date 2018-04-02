@@ -35,7 +35,7 @@ const createBalanceCard = (name, cb) => {
                     <div class="form-group">
                         <label>Address</label>
                         <div class="input-group mb-3">
-                            <input class="form-control" value=""  pattern="[a-zA-HJ-NP-Z0-9]{25,34}" al-value="data.withdraw_address" required=""   type="text" placeholder="Address" onkeyup="this.value = this.value.trim()">
+                            <input class="form-control" value=""  pattern="{{pattern}}" al-value="data.withdraw_address" required=""   type="text" placeholder="Address" onkeyup="this.value = this.value.trim()">
                         </div>
                     </div>
 
@@ -53,8 +53,8 @@ const createBalanceCard = (name, cb) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Transfer</button>
+                    <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" al-attr.disabled="disabled">Transfer</button>
                 </div>
             </div>
         </form>
