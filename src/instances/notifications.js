@@ -1,6 +1,8 @@
 import { Collection } from 'models'
 import { localStorage } from 'helpers'
-import { EA, user, room } from 'instances'
+import EA from 'instances/EA'
+import user from 'instances/user'
+import room from 'instances/room'
 
 
 class Notifications extends Collection {

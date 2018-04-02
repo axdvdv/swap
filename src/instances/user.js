@@ -1,8 +1,9 @@
 import { localStorage } from 'helpers'
+import { merge } from 'lodash'
 import bitcoin from './bitcoin'
 import ethereum from './ethereum'
 import EA from './EA'
-import { merge } from 'lodash'
+import room from './room'
 
 
 class User {

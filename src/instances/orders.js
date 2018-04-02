@@ -1,6 +1,8 @@
 import request from 'swap-request'
 import { Collection, Order } from 'models'
-import { EA, room, user } from 'instances'
+import EA from 'instances/EA'
+import user from 'instances/user'
+import room from 'instances/room'
 
 
 class Orders extends Collection {
