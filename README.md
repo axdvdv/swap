@@ -1,6 +1,6 @@
 # Swap
 
-[**Demo alpha.swap.online/**](https://alpha.swap.online/)
+[**Live Demo (alpha.swap.online)**](https://alpha.swap.online/)
 
 
 ## Install
