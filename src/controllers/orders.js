@@ -18,6 +18,7 @@ alight.controllers.orders = (scope) => {
       sell: 'BTC',
     },
     orders: [],
+    myOrders: [],
     totalAmount: 0,
     createOrderModal: {
       lastChangedField: null,
@@ -43,6 +44,10 @@ alight.controllers.orders = (scope) => {
         return order
       }
     })
+    scope.data.myOrders = orders.items.filter((order) => order.owner.address === scope.data.myAddress)
+
+    console.log(222, orders.items)
+    console.log(333, scope.data.myOrders)
   }
 
   const getOrdersTotalAmount = (orders) =>
@@ -160,6 +165,9 @@ alight.controllers.orders = (scope) => {
           data: order,
         },
       ])
+
+      updateOrders()
+      decreaseTotals([ order ])
     })
   }
 
@@ -171,17 +179,14 @@ alight.controllers.orders = (scope) => {
   })
 
   EA.subscribe('orders:onAppend', (order) => {
-    if (checkOrderCurrencies(order)) {
-      scope.data.orders.unshift(order)
-      increaseTotals([ order ])
-      scope.$scan()
-    }
+    updateOrders()
+    increaseTotals([ order ])
+    scope.$scan()
   })
 
   EA.subscribe('orders:onRemove', (order) => {
+    updateOrders()
     decreaseTotals([ order ])
-    // TODO refactor this
-    scope.data.orders = orders.items
     scope.$scan()
   })
 

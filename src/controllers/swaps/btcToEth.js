@@ -44,7 +44,7 @@ alight.controllers.btcToEth = (scope) => {
     isEthSwapCreated: false,
 
     // step 7
-    ethSwapWithdrawTransactionUrl: null,
+    ethSwapCreationTransactionHash: null,
     isWithdrawn: false,
   }
 
@@ -164,7 +164,7 @@ alight.controllers.btcToEth = (scope) => {
         ownerAddress: swapData.participant.eth.address,
         secret: scope.data.secret,
       }, (transactionHash) => {
-        scope.data.ethSwapWithdrawTransactionUrl = transactionHash
+        scope.data.ethSwapCreationTransactionHash = transactionHash
         scope.$scan()
       })
         .then(() => {
