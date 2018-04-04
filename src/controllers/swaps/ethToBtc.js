@@ -11,14 +11,18 @@ const ethToBtc = {
 alight.controllers.ethToBtc = (scope) => {
   console.info('ETH to BTC controller!')
 
-  const order           = scope.$parent.data.order
-  const swapData        = localStorage.getItem(`swap:${order.id}`) || {}
-  const requiredAmount  = order.isMy ? order.sellAmount : order.buyAmount
+  const order             = scope.$parent.data.order
+  const swapData          = localStorage.getItem(`swap:${order.id}`) || {}
+  const requiredAmount    = order.isMy ? order.sellAmount : order.buyAmount
+  const requiredCurrency  = order.isMy ? order.sellCurrency : order.buyCurrency
 
   global.swapData = swapData
 
   scope.data = {
+    order,
     myAddress: user.ethData.address,
+    requiredAmount,
+    requiredCurrency,
     step: 0,
 
     // step 1
@@ -67,6 +71,7 @@ alight.controllers.ethToBtc = (scope) => {
 
     const balance = await ethereum.getBalance()
 
+    scope.data.checkingBalance = false
     scope.data.balance = balance
     scope.$scan()
 

@@ -26,7 +26,7 @@
     <h3 class="mb-4">Not enough money for this swap. Please charge the balance</h3>
     <div class="alert alert-warning fs-16" role="alert">
       <div>Your balance: <strong>{{data.balance}}</strong> BTC</div>
-      <div>Required balance: <strong>{{data.order.sellAmount}}</strong> BTC</div>
+      <div>Required balance: <strong>{{data.requiredAmount}}</strong> {{data.requiredCurrency}}</div>
       <hr />
       <a href="" al-copy title="copy to clipboard">{{data.address}}</a>&nbsp;&nbsp;&nbsp;<a href="https://www.blocktrail.com/tBTC/address/{{data.address}}/transactions" target="_blank">Check</a>
     </div>

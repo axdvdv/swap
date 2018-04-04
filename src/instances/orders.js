@@ -36,6 +36,12 @@ class Orders extends Collection {
     room.subscribe('updateOrderStatus', ({ orderId, status }) => {
       orders.getByKey(orderId).updateStatus(status)
     })
+
+    room.subscribe('peerLeft', ({ peer }) => {
+      const orders = this.items.filter(({ owner }) => owner.peer === peer)
+
+      orders.forEach((order) => this.remove(order))
+    })
   }
 
   append(data) {

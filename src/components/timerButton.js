@@ -2,7 +2,7 @@ import alight from 'alight'
 
 
 alight.createComponent('timer-button', (scope, element, env) => {
-  const label = env.takeAttr('label')
+  const label = element.innerText
   const timeLeft = Number(env.takeAttr('time') || 10)
 
   scope.data = {
@@ -10,6 +10,7 @@ alight.createComponent('timer-button', (scope, element, env) => {
     timeLeft,
   }
 
+  let tickTimer
   const tick = () => {
     scope.data.timeLeft--
     scope.$scan()
@@ -18,13 +19,18 @@ alight.createComponent('timer-button', (scope, element, env) => {
       scope.$dispatch('click')
     }
     else {
-      setTimeout(tick, 1000)
+      tickTimer = setTimeout(tick, 1000)
     }
   }
 
-  setTimeout(tick, 1000)
+  tickTimer = setTimeout(tick, 1000)
+
+  scope.handleClick = () => {
+    clearTimeout(tickTimer)
+    scope.$dispatch('click')
+  }
 
   return {
-    template: '<button type="button" class="btn btn-primary">{{data.label}} (auto click in {{data.timeLeft}}s)</button>'
+    template: '<button type="button" class="btn btn-primary" @click="handleClick()">{{data.label}} (auto click in {{data.timeLeft}}s)</button>'
   }
 })

@@ -23,7 +23,7 @@ alight.controllers.orders = (scope) => {
     createOrderModal: {
       lastChangedField: null,
       balance: 0,
-      exchangeRate: 0.1,
+      exchangeRate: 0,
       buyAmount: '',
       sellAmount: '',
     },
@@ -45,9 +45,6 @@ alight.controllers.orders = (scope) => {
       }
     })
     scope.data.myOrders = orders.items.filter((order) => order.owner.address === scope.data.myAddress)
-
-    console.log(222, orders.items)
-    console.log(333, scope.data.myOrders)
   }
 
   const getOrdersTotalAmount = (orders) =>
@@ -102,6 +99,7 @@ alight.controllers.orders = (scope) => {
     scope.data.createOrderModal.balance = user[`${currency}Data`].balance
     scope.$scan()
 
+    updateRate()
     $('#createOrderModal').modal('show')
   }
 
@@ -124,11 +122,8 @@ alight.controllers.orders = (scope) => {
 
     console.log('Order created:', order)
 
-    scope.data.createOrderModal = {
-      exchangeRate: 0.1,
-      buyAmount: '',
-      sellAmount: '',
-    }
+    scope.data.createOrderModal.buyAmount = ''
+    scope.data.createOrderModal.sellAmount = ''
 
     $('#createOrderModal').modal('hide')
 
