@@ -7,7 +7,7 @@
   <div al-if="!data.secretHash" class="mt-4">
     <input type="text" class="form-control" placeholder="Secret Key" al-value="data.secret">
     <br />
-    <button type="button" class="btn btn-primary" @click="goNextStep()">Continue</button>
+    <timer-button @click="goNextStep()">Confirm</timer-button>
   </div>
 
   <div al-if="data.secretHash">

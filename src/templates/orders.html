@@ -8,12 +8,12 @@
           Your orders
         </h3>
         <div class="table-responsive mt-3">
-          <table class="table">
-            <thead>
+          <table class="table table-bordered">
+            <thead class="thead-dark">
               <tr>
                 <th>Swap</th>
                 <th>Exchange rate</th>
-                <th></th>
+                <th width="1%"></th>
               </tr>
             </thead>
             <tbody>
@@ -147,14 +147,14 @@
           <div>Total: <span>{{data.totalAmount}} {{data.selectedCurrencies.buy}}</span></div>
         </div>
         <div class="table-responsive mt-3">
-          <table class="table">
-            <thead>
+          <table class="table table-bordered">
+            <thead class="thead-dark">
             <tr>
-              <th>Exchange rate</th>
-              <th>User reputation</th>
+              <th>Exchange Rate</th>
+              <th>User Reputation</th>
               <th class="text-right">{{data.selectedCurrencies.buy}}</th>
               <th class="text-right">{{data.selectedCurrencies.sell}}</th>
-              <th colspan="2"></th>
+              <th width="1%" colspan="2"></th>
             </tr>
             </thead>
             <tbody>

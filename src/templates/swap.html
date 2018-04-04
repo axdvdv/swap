@@ -44,7 +44,7 @@
   <div al-if="data.isParticipantSigned" class="alert alert-success" role="alert">
     Other user confirmed his participation
   </div>
-  <button al-if="!data.signFetching && !data.isMeSigned" type="button" class="btn btn-primary" @click="signSwap()">Confirm</button>
+  <timer-button al-if="!data.signFetching && !data.isMeSigned" @click="signSwap()">Confirm</timer-button>
   <div al-if="data.signFetching">
     <h5 class="mb-2">Please wait. Confirmation processing</h5>
     <div al-if="data.signTransactionHash" class="alert alert-warning" role="alert">
