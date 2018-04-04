@@ -1,6 +1,6 @@
 # Swap
 
-[**Run demo noxonswap.surge.sh**](https://noxonswap.surge.sh/) (если не работает то https://bk.wpmix.net/swap/build/)
+[**Demo alpha.swap.online/**](https://alpha.swap.online/)
 
 
 ## Install
