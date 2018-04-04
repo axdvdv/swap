@@ -36,7 +36,7 @@ module.exports = {
     filename: '[name].js'
   } : {
     path: BUILD_DIR,
-    filename: '[name].js',
+    filename: '[name].[hash:6].js',
     chunkFilename: '[id].chunk.js',
     publicPath: '',
   },
@@ -164,10 +164,10 @@ module.exports = {
   ]
     .concat(IS_DEV ? [] : [
       new ExtractTextPlugin({
-        filename: '[name].css',
+        filename: '[name].[hash:6].css',
         allChunks: true,
       }),
-      // new UglifyJsPlugin(),
+      new UglifyJsPlugin(),
       // new CompressionPlugin(),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',

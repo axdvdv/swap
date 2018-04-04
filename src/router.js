@@ -2,7 +2,7 @@ import Navigo from 'navigo'
 import EA from 'instances/EA'
 
 
-const router = new Navigo(null, true, '#')
+const router = IS_DEV ? new Navigo(null, true, '#') : new Navigo('https://alpha.swap.online', false)
 
 const bind = (path) => [ path, (params, query) => {
   console.log(`Route changed to ${path}`)

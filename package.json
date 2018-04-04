@@ -12,7 +12,7 @@
     "test": "ava",
     "clean": "rimraf build",
     "dev": "npm i && nodemon",
-    "build": "cross-env NODE_ENV=production node ./bin/compile && surge -p ./build -d noxonswap.surge.sh"
+    "build": "npm run clean && cross-env NODE_ENV=production node ./bin/compile"
   },
   "dependencies": {
     "alight": "^0.12.30",
@@ -25,6 +25,7 @@
     "lodash": "^4.17.5",
     "log-with-style": "^0.3.0",
     "navigo": "^7.1.1",
+    "notifyjs-browser": "^0.4.2",
     "popper.js": "^1.13.0",
     "superagent": "^3.8.2",
     "web3": "^1.0.0-beta.31"
@@ -70,7 +71,7 @@
   },
   "ava": {
     "files": [
-      "src/**/ethSwap.spec.js"
+      "src/**/btcSwap.spec.js"
     ],
     "require": [
       "./bin/bootstrap.js"

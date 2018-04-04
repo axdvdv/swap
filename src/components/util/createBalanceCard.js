@@ -14,7 +14,7 @@ const createBalanceCard = (name, cb) => {
       template: `
         <div class="alert alert-warning fs-16" role="alert">
           <div class="d-flex justify-content-between">
-            <div>Баланс <strong><truncate-amount :value="data.balance" /></strong> {{data.currency}} <a href="#" al-click="updateBalance()">refresh</a></div>
+            <div>Баланс <strong><truncate-amount :value="data.balance" /></strong> <strong>{{data.currency}}</strong> <a href="#" al-click="updateBalance()">refresh</a></div>
             <a href="" data-toggle="modal" data-target="#{{data.modal_id}}">withdraw money</a>
           </div>
           <hr />

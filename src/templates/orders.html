@@ -26,7 +26,7 @@
             </div>
           </div>
         </h3>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createOrderModal">
+        <button type="button" class="btn btn-primary" al-click="openModal()">
           Create order
         </button>
       </div>
@@ -87,6 +87,12 @@
                     <div class="input-group-append">
                       <span class="input-group-text">{{data.selectedCurrencies.sell}}</span>
                     </div>
+                  </div>
+                  <div
+                    al-if="data.createOrderModal.sellAmount > data.createOrderModal.balance"
+                    class="text-danger mt-2"
+                  >
+                    There is not enough balance
                   </div>
                 </div>
                 <div class="alert alert-primary" role="alert">

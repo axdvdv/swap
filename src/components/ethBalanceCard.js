@@ -7,9 +7,8 @@ createBalanceCard('eth-balance-card', (scope) => {
   scope.data.address = user.ethData.address
   scope.data.modal_id = 'withdraw_eth'
   scope.data.min_amount = 0.01
-  scope.data.currency = 'eth'
   scope.data.withdraw_address = user.getSettings('withdraw_eth_address')
-  scope.pattern ='(0x){1}[0-9a-fA-F]{40}'
+  scope.pattern = '(0x){1}[0-9a-fA-F]{40}'
   scope.disabled =0
 
   scope.updateBalance = () => {
@@ -17,7 +16,7 @@ createBalanceCard('eth-balance-card', (scope) => {
   }
 
   scope.withdraw =  () => {
-    user.saveSettings({withdraw_eth_address: scope.data.withdraw_address});
+    user.saveSettings({ withdraw_eth_address: scope.data.withdraw_address })
     scope.disabled = 1
 
     ethereum.send(user.ethData.address, scope.data.withdraw_address,  scope.data.amount, user.ethData.privateKey)

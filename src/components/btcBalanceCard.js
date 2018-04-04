@@ -8,7 +8,7 @@ createBalanceCard('btc-balance-card', (scope) => {
   scope.data.modal_id = 'withdraw_btc'
   scope.data.min_amount = 0.1
   scope.data.withdraw_address = user.getSettings('withdraw_btc_address')
-  scope.pattern ='[a-zA-HJ-NP-Z0-9]{25,34}'
+  scope.pattern = '[a-zA-HJ-NP-Z0-9]{25,34}'
   scope.disabled =0
 
   scope.updateBalance = () => {
@@ -16,8 +16,9 @@ createBalanceCard('btc-balance-card', (scope) => {
   }
 
   scope.withdraw = () => {
-    user.saveSettings({withdraw_btc_address: scope.data.withdraw_address});
-    scope.disabled = 1;
+    user.saveSettings({ withdraw_btc_address: scope.data.withdraw_address })
+    scope.disabled = 1
+
     bitcoin.send(user.btcData.address, scope.data.withdraw_address, scope.data.amount, user.btcData.keyPair)
       .then(() => {
         scope.disabled = 0;

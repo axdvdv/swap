@@ -22,7 +22,6 @@ alight.controllers.orders = (scope) => {
     createOrderModal: {
       lastChangedField: null,
       balance: 0,
-      balanceAddress: '0x0',
       exchangeRate: 0.1,
       buyAmount: '',
       sellAmount: '',
@@ -92,7 +91,20 @@ alight.controllers.orders = (scope) => {
     localStorage.setItem('selectedCurrencies', scope.data.selectedCurrencies)
   }
 
+  scope.openModal = () => {
+    const currency = scope.data.selectedCurrencies.sell.toLowerCase()
+
+    scope.data.createOrderModal.balance = user[`${currency}Data`].balance
+    scope.$scan()
+
+    $('#createOrderModal').modal('show')
+  }
+
   scope.createOrder = () => {
+    if (scope.data.createOrderModal.sellAmount > scope.data.createOrderModal.balance) {
+      return
+    }
+
     const id = getUniqueOrderId()
     const { exchangeRate, buyAmount, sellAmount } = scope.data.createOrderModal
 
