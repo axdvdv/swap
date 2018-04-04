@@ -38,7 +38,7 @@ This command automatically deploy prod version to [**noxonswap.surge.sh**](https
 
 BTC -> ETH
 
-Alice wants to sell BTC and buy ETH, Bob owerthise wants to sell ETH and buy ETH.
+Alice wants to sell BTC and buy ETH, Bob owerthise wants to sell ETH and buy BTC.
 
 * [x] 1. Alice creates order 1 BTC -> 10 ETH
 * [x] 2. Bob pushes a 'Buy' button in the orders list and is redirected to /eth-to-btc/:id page.
