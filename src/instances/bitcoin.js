@@ -106,10 +106,11 @@ class Bitcoin {
           },
         ],
       }
-
+      console.log('withdraw 0');
       request.post('https://api.blockcypher.com/v1/btc/test3/txs/new', {
         body: JSON.stringify(newtx),
       }).then((d) => {
+        console.log('withdraw 1');
           // convert response body to JSON
           let tmptx = d
 
@@ -131,7 +132,7 @@ class Bitcoin {
             body: JSON.stringify(tmptx),
           })
         })
-        .then((res) => resolve(res))
+        .then((res) => resolve(res)).catch((e) => console.log(e))
     })
   }
 

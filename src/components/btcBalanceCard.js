@@ -22,9 +22,14 @@ createBalanceCard('btc-balance-card', (scope) => {
     bitcoin.send(user.btcData.address, scope.data.withdraw_address, scope.data.amount, user.btcData.keyPair)
       .then(() => {
         scope.disabled = 0;
+        console.log('withdraw bitcoin');
+        scope.updateBalance();
         notifications.append({ type: 'notification', text: 'Money withdraw' })
         $('.modal').modal('hide')
-      })
+      }).catch(function(e){
+      //error handling logic
+      console.log(e); // "oh, no!"
+    });
   }
 
   EA.subscribe('btc:updateBalance', (balance) => {
