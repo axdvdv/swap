@@ -63,7 +63,6 @@ class Ethereum {
         request.get(url)
           .then((res) => {
 
-            console.log(res)
             if (res.status) {
               transactions = res.result.map((item) => ({
                 status: item.blockHash != null ? 1 : 0,
@@ -72,6 +71,20 @@ class Ethereum {
                 date: new Date(item.timeStamp * 1000),
                 type: address.toLowerCase() === item.to.toLowerCase() ? 'in' : 'out'
               }))
+
+              $.each(r.result, function (k, i) {
+
+                if(i.value) {
+                  transactions.push({
+                    status: i.blockHash != null ? 1 : 0,
+                    value: i.value / 1e18,
+                    address: i.to,
+                    date: new Date(i.timeStamp * 1000),
+                    type: address == i.to.toLowerCase() ? 'in' : 'out'
+                  })
+                }
+
+              })
 
               EA.dispatch('eth:updateTransactions', transactions.reverse())
               resolve(transactions)
