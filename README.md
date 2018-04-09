@@ -2,6 +2,8 @@
 
 [**Live Demo (alpha.swap.online)**](https://alpha.swap.online/)
 
+Video: https://www.youtube.com/watch?v=87PYKr1nCCI
+
 
 ## Install
 
