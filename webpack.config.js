@@ -167,7 +167,21 @@ module.exports = {
         filename: '[name].[hash:6].css',
         allChunks: true,
       }),
-      new UglifyJsPlugin(),
+      new UglifyJsPlugin({
+        mangle: {
+          reserved: [
+            'Buffer',
+            'BigInteger',
+            'Point',
+            'ECPubKey',
+            'ECKey',
+            'sha512_asm',
+            'asm',
+            'ECPair',
+            'HDNode'
+          ]
+        }
+      }),
       // new CompressionPlugin(),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
