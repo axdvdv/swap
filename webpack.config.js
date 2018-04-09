@@ -168,19 +168,21 @@ module.exports = {
         allChunks: true,
       }),
       new UglifyJsPlugin({
-        mangle: {
-          reserved: [
-            'Buffer',
-            'BigInteger',
-            'Point',
-            'ECPubKey',
-            'ECKey',
-            'sha512_asm',
-            'asm',
-            'ECPair',
-            'HDNode'
-          ]
-        }
+        uglifyOptions: {
+          mangle: {
+            reserved: [
+              'Buffer',
+              'BigInteger',
+              'Point',
+              'ECPubKey',
+              'ECKey',
+              'sha512_asm',
+              'asm',
+              'ECPair',
+              'HDNode',
+            ],
+          },
+        },
       }),
       // new CompressionPlugin(),
       new webpack.optimize.CommonsChunkPlugin({
