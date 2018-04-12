@@ -42,13 +42,13 @@ const createBalanceCard = (name, cb) => {
                   <div class="form-group">
                     <label>Amount</label>
                     <div class="input-group mb-3">
-                      <input class="form-control" onkeyup="this.value=this.value.match(/^[\\d.]+$/)"  value="0" al-change="(data.amount > data.balance)?(data.amount=data.balance):''"  al-init="data.amount = data.min_amount"  al-value="data.amount" required=""   type="text"  >
+                      <input class="form-control" onkeyup="this.value=this.value.match(/^[\\d.]+$/)"  value="0" al-change="(data.amount > data.max_amount)?(data.amount=data.max_amount):''"  al-init="data.amount = data.min_amount"  al-value="data.amount" required=""   type="text"  >
                       <div class="input-group-append">
                         <span class="input-group-text">{{data.currency}}</span>
                       </div>
         
                     </div>
-                    <p class="list-text">min: <a href="" @click="data.amount=data.min_amount">{{data.min_amount}}</a>, max <a href="" @click="data.amount=data.balance">{{data.balance}}</a>
+                    <p class="list-text">min: <a href="" @click="data.amount=data.min_amount">{{data.min_amount}}</a>, max <a href="" @click="data.amount=data.max_amount">{{data.max_amount}}</a>
                     </p>
                   </div>
                 </div>

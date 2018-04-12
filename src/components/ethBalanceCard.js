@@ -10,6 +10,8 @@ createBalanceCard('eth-balance-card', (scope) => {
   scope.data.withdraw_address = user.getSettings('withdraw_eth_address')
   scope.pattern = '(0x){1}[0-9a-fA-F]{40}'
   scope.disabled =0
+  scope.data.commission =0
+  scope.data.max_amount =0
 
   scope.updateBalance = () => {
     ethereum.getBalance(user.ethData.address)
@@ -25,10 +27,17 @@ createBalanceCard('eth-balance-card', (scope) => {
         $('.modal').modal('hide')
         scope.disabled = 0
       })
+    user.getBalances();
   }
 
   EA.subscribe('eth:updateBalance', (balance) => {
     scope.data.balance = balance
+    scope.$scan()
+  })
+
+  EA.subscribe('eth:updateCommission', (gas) => {
+    scope.data.commission = gas
+    scope.data.max_amount = scope.data.balance - gas ;
     scope.$scan()
   })
 

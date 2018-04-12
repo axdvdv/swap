@@ -10,7 +10,8 @@ createBalanceCard('btc-balance-card', (scope) => {
   scope.data.withdraw_address = user.getSettings('withdraw_btc_address')
   scope.pattern = '[a-zA-HJ-NP-Z0-9]{25,34}'
   scope.disabled =0
-
+  scope.data.commission =0
+  scope.data.max_amount =0
   scope.updateBalance = () => {
     bitcoin.getBalance(user.btcData.address)
   }
@@ -22,10 +23,10 @@ createBalanceCard('btc-balance-card', (scope) => {
     bitcoin.send(user.btcData.address, scope.data.withdraw_address, scope.data.amount, user.btcData.keyPair)
       .then(() => {
         scope.disabled = 0;
-        console.log('withdraw bitcoin');
         scope.updateBalance();
         notifications.append({ type: 'notification', text: 'Money withdraw' })
         $('.modal').modal('hide')
+        user.getBalances();
       }).catch(function(e){
       //error handling logic
       console.log(e); // "oh, no!"
@@ -34,6 +35,7 @@ createBalanceCard('btc-balance-card', (scope) => {
 
   EA.subscribe('btc:updateBalance', (balance) => {
     scope.data.balance = balance
+    scope.data.max_amount =balance
     scope.$scan()
   })
 
