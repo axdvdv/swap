@@ -1,6 +1,8 @@
-import eth2btc from './eth2btc'
+import ETH2BTC from './ETH2BTC'
+import BTC2ETH from './BTC2ETH'
 
 
 export {
-  eth2btc,
+  ETH2BTC,
+  BTC2ETH,
 }

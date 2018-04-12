@@ -1,38 +1,66 @@
-import Flow from './Flow'
+import Flow from '../Flow'
 
 
 class ETH2BTC extends Flow {
 
-  constructor({ swap }) {
+  constructor({ swap, getBalance }) {
     super()
 
     this.swap = swap
-    this.index = swap.index
+    this.getBalance = getBalance
 
     this.getSteps()
   }
 
   getSteps() {
-    const { storage, steps } = this.swap
+    const { swap, swap: { storage, steps } } = this
 
     this.steps = [
       () => {
 
       },
-      () => {
-        self.swap.room.subscribe('swap:btcScriptCreated', async function ({ orderId, secretHash, btcScriptData }) {
-          if (self.swap.order.id === orderId) {
+
+      // Wait participant create BTC Script
+      ({ index }) => {
+        swap.room.subscribe('swap:btcScriptCreated', async function ({ orderId, secretHash, btcScriptData }) {
+          if (swap.order.id === orderId) {
             this.unsubscribe()
 
-            storage.update({
+            swap.storage.update({
+              step: index,
               stepsData: {
                 secretHash,
                 btcScriptData,
               },
             })
-            steps.goNext()
+            swap.flow.goNextStep()
           }
         })
+      },
+
+      // Verify BTC Script
+      ({ index }) => {
+        swap.storage.update({
+          stepsData: {
+            step: index,
+            btcScriptVerified: true,
+          },
+        })
+        swap.flow.goNextStep()
+      },
+
+      // Check balance
+      () => {
+        this.syncBalance()
+      },
+      () => {
+
+      },
+      () => {
+
+      },
+      () => {
+
       },
       () => {
 
@@ -40,7 +68,31 @@ class ETH2BTC extends Flow {
     ]
   }
 
+  startSyncBalance() {
+    
+  }
 
+  syncBalance() {
+    this.swap.storage.update({
+      stepsData: {
+        checkingBalance: true,
+      },
+    })
+
+    const balance = this.getBalance()
+    const isEnoughMoney =
+
+    if (isEnoughMoney) {
+      swap.flow.goNextStep()
+    }
+    else {
+      swap.storage.update({
+        stepsData: {
+          notEnoughMoney: true,
+        },
+      })
+    }
+  }
 }
 
 

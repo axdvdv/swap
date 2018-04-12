@@ -1,5 +1,5 @@
-import btcToEth from './btcToEth'
-import ethToBtc from './ethToBtc'
+import btcToEth from './btcToEth2'
+import ethToBtc from './ethToBtc2'
 
 
 export {

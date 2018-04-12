@@ -15,8 +15,11 @@ import { eth2btc } from './flows'
 
 
 const swap = new Swap({
+  // initial state to load saved data - to persist current step, etc
   initialState: localStorage.getItem('swap'),
+  // pass room connection to subscribe and dispatch events
   connection: room.connection,
+  // setup steps flow
   flow: eth2btc,
 })
 
