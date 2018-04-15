@@ -247,6 +247,15 @@
       transform: translate3d(-37%, -37%, 0) rotate(40deg);
     }
   </style>
+
+  <% for (var index in htmlWebpackPlugin.files.css) { %>
+  <link
+    rel="stylesheet"
+    href="<%= htmlWebpackPlugin.files.css[index] %>"
+    integrity="<%= htmlWebpackPlugin.files.cssIntegrity[index] %>"
+    crossorigin="<%= webpackConfig.output.crossOriginLoading %>"
+  />
+  <% } %>
 </head>
 <body al-app="app">
 
@@ -272,13 +281,21 @@
           <%= require('html-loader!./templates/swap.html') %>
           <div al-if="data.status == data.statuses.initialized">
             <%= require('html-loader!./templates/swaps/btc-to-eth.html') %>
-            <%= require('html-loader!./templates/swaps/eth-to-btc.html') %>
+            <%= require('html-loader!./templates/swaps/eth-to-btc2.html') %>
           </div>
         </div>
       </div>
 
     </div>
   </div>
+
+  <% for (var index in htmlWebpackPlugin.files.js) { %>
+  <script
+    src="<%= htmlWebpackPlugin.files.js[index] %>"
+    integrity="<%= htmlWebpackPlugin.files.jsIntegrity[index] %>"
+    crossorigin="<%= webpackConfig.output.crossOriginLoading %>"
+  ></script>
+  <% } %>
 
   <script src="https://unpkg.com/ipfs@0.27.7/dist/index.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>

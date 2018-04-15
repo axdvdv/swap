@@ -67,11 +67,12 @@
     "url-loader": "^0.6.2",
     "webpack": "^3.11.0",
     "webpack-dev-middleware": "^2.0.5",
-    "webpack-dev-server": "^2.11.1"
+    "webpack-dev-server": "^2.11.1",
+    "webpack-subresource-integrity": "^1.1.0-rc.4"
   },
   "ava": {
     "files": [
-      "src/**/btcSwap.spec.js"
+      "src/**/*.spec.js"
     ],
     "require": [
       "./bin/bootstrap.js"

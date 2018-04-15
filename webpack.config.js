@@ -5,6 +5,7 @@ const ProgressBarPlugin     = require('progress-bar-webpack-plugin')
 const ExtractTextPlugin     = require('extract-text-webpack-plugin')
 const UglifyJsPlugin        = require('uglifyjs-webpack-plugin')
 const CompressionPlugin     = require('compression-webpack-plugin')
+const SriPlugin             = require('webpack-subresource-integrity')
 
 
 const IS_DEV      = process.env.NODE_ENV === 'development'
@@ -35,6 +36,7 @@ module.exports = {
     publicPath: 'http://localhost:3000/',
     filename: '[name].js'
   } : {
+    crossOriginLoading: 'anonymous',
     path: BUILD_DIR,
     filename: '[name].[hash:6].js',
     chunkFilename: '[id].chunk.js',
@@ -158,8 +160,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src/index.html'),
       title: 'Swap',
-      inject: 'body',
+      inject: false,
       hash: false,
+      files: {
+        js: [ 'vendor.js', 'app.js' ],
+        css: [ 'app.css' ],
+      }
     }),
   ]
     .concat(IS_DEV ? [] : [
@@ -189,6 +195,10 @@ module.exports = {
         name: 'vendor',
         // this assumes your vendor imports exist in the node_modules directory
         minChunks: (module) => module.context && module.context.indexOf('node_modules') >= 0,
+      }),
+      new SriPlugin({
+        hashFuncNames: [ 'sha256', 'sha384' ],
+        enabled: true,
       }),
     ]),
 }
