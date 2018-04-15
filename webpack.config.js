@@ -167,6 +167,10 @@ module.exports = {
         css: [ 'app.css' ],
       }
     }),
+    new SriPlugin({
+      hashFuncNames: [ 'sha256', 'sha384' ],
+      enabled: !IS_DEV,
+    }),
   ]
     .concat(IS_DEV ? [] : [
       new ExtractTextPlugin({
@@ -195,10 +199,6 @@ module.exports = {
         name: 'vendor',
         // this assumes your vendor imports exist in the node_modules directory
         minChunks: (module) => module.context && module.context.indexOf('node_modules') >= 0,
-      }),
-      new SriPlugin({
-        hashFuncNames: [ 'sha256', 'sha384' ],
-        enabled: true,
       }),
     ]),
 }

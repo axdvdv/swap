@@ -50,4 +50,4 @@ class BTC2ETH extends Flow {
 }
 
 
-export default ETH2BTC
+export default BTC2ETH

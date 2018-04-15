@@ -11,7 +11,7 @@ console.room = (eventName, ...args) => log(`[c="color: #FFAB27"]room:${eventName
 alight.autostart = false
 
 const timer = setInterval(() => {
-  if (Ipfs && jQuery && bootstrap) {
+  if (window.Ipfs && window.jQuery && window.bootstrap) {
     require('./directives')
     require('./controllers')
     require('./components')

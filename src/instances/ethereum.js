@@ -142,4 +142,5 @@ export default new Ethereum()
 
 export {
   Ethereum,
+  web3,
 }

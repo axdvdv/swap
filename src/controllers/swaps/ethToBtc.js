@@ -37,14 +37,14 @@ alight.controllers.ethToBtc = (scope) => {
     checkingBalance: false,
 
     // step 3
-    ethSwapCreationTransactionHash: null,
+    ethSwapCreationTransactionUrl: null,
     isEthSwapCreated: false,
 
     // step 4
     isEthWithdrawn: false,
 
     // step 5
-    btcSwapWithdrawTransactionHash: null,
+    btcSwapWithdrawTransactionUrl: null,
   }
 
   function checkBalance() {
@@ -126,7 +126,7 @@ alight.controllers.ethToBtc = (scope) => {
         participantAddress: swapData.participant.eth.address,
         amount: requiredAmount,
       }, (transactionHash) => {
-        scope.data.ethSwapCreationTransactionHash = transactionHash
+        scope.data.ethSwapCreationTransactionUrl = transactionHash
         scope.$scan()
       })
 
@@ -178,7 +178,7 @@ alight.controllers.ethToBtc = (scope) => {
             script,
             secret,
           }, (transactionHash) => {
-            scope.data.btcSwapWithdrawTransactionHash = transactionHash
+            scope.data.btcSwapWithdrawTransactionUrl = transactionHash
           })
         })
         .then(() => {

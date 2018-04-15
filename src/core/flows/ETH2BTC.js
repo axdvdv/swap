@@ -3,93 +3,162 @@ import Flow from '../Flow'
 
 class ETH2BTC extends Flow {
 
-  constructor({ swap, getBalance }) {
-    super()
+  constructor({ swap, data, options: { ethSwap, btcSwap, getBalance } }) {
+    super({ swap, data })
 
     this.swap = swap
+    this.ethSwap = ethSwap
+    this.btcSwap = btcSwap
     this.getBalance = getBalance
 
-    this.getSteps()
+    this._getSteps()
+    this._persist()
   }
 
-  getSteps() {
-    const { swap, swap: { storage, steps } } = this
+  _getSteps() {
+    const { room, storage } = this.swap
+    const flow = this
 
     this.steps = [
-      () => {
-
-      },
 
       // Wait participant create BTC Script
-      ({ index }) => {
-        swap.room.subscribe('swap:btcScriptCreated', async function ({ orderId, secretHash, btcScriptData }) {
-          if (swap.order.id === orderId) {
+
+      () => {
+        room.subscribe('swap:btcScriptCreated', function ({ orderId, secretHash, btcScriptData }) {
+          if (storage.data.id === orderId) {
             this.unsubscribe()
 
-            swap.storage.update({
-              step: index,
-              stepsData: {
-                secretHash,
-                btcScriptData,
-              },
+            flow.finishStep({
+              secretHash,
+              btcScriptData,
             })
-            swap.flow.goNextStep()
           }
         })
       },
 
       // Verify BTC Script
-      ({ index }) => {
-        swap.storage.update({
-          stepsData: {
-            step: index,
-            btcScriptVerified: true,
-          },
+
+      () => {
+        this.finishStep({
+          btcScriptVerified: true,
         })
-        swap.flow.goNextStep()
       },
 
       // Check balance
+
       () => {
         this.syncBalance()
       },
-      () => {
 
-      },
-      () => {
+      // Create ETH Contract
 
-      },
-      () => {
+      async () => {
+        const swapData = {
+          myAddress:            storage.data.me.ethData.address,
+          participantAddress:   storage.data.participant.ethData.address,
+          secretHash:           flow.storage.data.secretHash,
+          amount:               storage.data.requiredAmount,
+        }
 
+        await this.ethSwap.create(swapData, (transactionUrl) => {
+          this.storage.update({
+            ethSwapCreationTransactionUrl: transactionUrl,
+          })
+        })
+
+        room.sendMessage(storage.data.participant.peer, [
+          {
+            event: 'swap:ethSwapCreated',
+            data: {
+              orderId: storage.data.id,
+            },
+          },
+        ])
+
+        this.finishStep({
+          isEthSwapCreated: true,
+        })
       },
+
+      // Wait participant withdraw
+
+      () => {
+        room.subscribe('swap:ethWithdrawDone', function ({ orderId }) {
+          if (storage.data.id === orderId) {
+            this.unsubscribe()
+
+            flow.finishStep({
+              isEthWithdrawn: true,
+            })
+          }
+        })
+      },
+
+      // Withdraw
+
+      () => {
+        let secret
+
+        const myAndParticipantData = {
+          myAddress: storage.data.me.ethData.address,
+          participantAddress: storage.data.participant.ethData.address,
+        }
+
+        this.ethSwap.getSecret(myAndParticipantData)
+          .then((result) => {
+            secret = result
+
+            return flow.ethSwap.close(myAndParticipantData)
+          })
+          .then(() => {
+            const { script } = flow.btcSwap.createScript(flow.storage.data.btcScriptData)
+
+            return flow.btcSwap.withdraw({
+              // TODO here is the problem... now in `btcData` stored bitcoinjs-lib instance with additional functionality
+              // TODO need to rewrite this - check instances/bitcoin.js and core/swaps/btcSwap.js:185
+              btcData: storage.data.me.btcData,
+              script,
+              secret,
+            }, (transactionUrl) => {
+              flow.storage.update({
+                btcSwapWithdrawTransactionUrl: transactionUrl,
+              })
+            })
+          })
+          .then(() => {
+            flow.finishStep({
+              isWithdrawn: true,
+            })
+          })
+      },
+
+
       () => {
 
       },
     ]
   }
 
-  startSyncBalance() {
-    
-  }
+  async syncBalance() {
+    const { storage } = this.swap
 
-  syncBalance() {
-    this.swap.storage.update({
-      stepsData: {
-        checkingBalance: true,
-      },
+    this.storage.update({
+      checkingBalance: true,
     })
 
-    const balance = this.getBalance()
-    const isEnoughMoney =
+    const balance = await this.getBalance()
+    const isEnoughMoney = storage.data.requiredAmount <= balance
 
     if (isEnoughMoney) {
-      swap.flow.goNextStep()
+      this.finishStep({
+        checkingBalance: false,
+        notEnoughMoney: false,
+      })
     }
     else {
-      swap.storage.update({
-        stepsData: {
-          notEnoughMoney: true,
-        },
+      this.storage.update({
+        checkingBalance: false,
+        notEnoughMoney: true,
       })
     }
   }

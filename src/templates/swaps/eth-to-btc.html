@@ -70,8 +70,8 @@
     4. Creating Ethereum Contract. Please wait, it will take a while
   </h3>
   <div class="mt-4" al-if="data.step == 3">
-    <div al-if="data.ethSwapCreationTransactionHash" class="alert alert-warning" role="alert">
-      Transaction: <strong><a href="{{data.ethSwapCreationTransactionHash}}" target="_blank">{{data.ethSwapCreationTransactionHash}}</a></strong>
+    <div al-if="data.ethSwapCreationTransactionUrl" class="alert alert-warning" role="alert">
+      Transaction: <strong><a href="{{data.ethSwapCreationTransactionUrl}}" target="_blank">{{data.ethSwapCreationTransactionUrl}}</a></strong>
     </div>
   </div>
 
@@ -84,8 +84,8 @@
     <div al-if="data.isWithdrawn" class="stepPassed"></div>
     6. BTC Owner successfully took money from ETH Contract and left Secret Key. Requesting withdrawal from BTC Script. Please wait
   </h3>
-  <div al-if="data.step == 5 && data.btcSwapWithdrawTransactionHash" class="alert alert-warning mt-4" role="alert">
-    Transaction: <strong><a href="https://www.blocktrail.com/tBTC/tx/{{data.btcSwapWithdrawTransactionHash}}" target="_blank">{{data.btcSwapWithdrawTransactionHash}}</a></strong>
+  <div al-if="data.step == 5 && data.btcSwapWithdrawTransactionUrl" class="alert alert-warning mt-4" role="alert">
+    Transaction: <strong><a href="https://www.blocktrail.com/tBTC/tx/{{data.btcSwapWithdrawTransactionUrl}}" target="_blank">{{data.btcSwapWithdrawTransactionUrl}}</a></strong>
   </div>
 
   <div al-if="(!data.secretHash || !data.btcScriptData) && data.step != 6" class="loader small mt-4">

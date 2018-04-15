@@ -15,7 +15,23 @@ class Event {
    * @param handler {function}
    */
   addHandler(handler) {
-    return this.handlers.push(handler)
+    this.handlers.push(handler.bind({
+      unsubscribe: () => {
+        this.removeHandler(handler)
+      },
+    }))
+  }
+
+  /**
+   * Remove handler from current Event
+   *
+   * @param handler {function}
+   * @returns {Array.<T>|*}
+   */
+  removeHandler(handler) {
+    const handlerIndex = this.handlers.indexOf(handler)
+
+    this.handlers.splice(handlerIndex, 1);
   }
 
   /**
@@ -54,19 +70,6 @@ class EventAggregator {
   /**
    *
    * @param name {string}
-   * @param eventArgs {...array}
-   */
-  dispatch(name, ...eventArgs) {
-    const event = this.getEvent(name)
-
-    if (event) {
-      event.call(...eventArgs)
-    }
-  }
-
-  /**
-   *
-   * @param name {string}
    * @param handler {function}
    * @returns {{ event: *, handler: * }}
    */
@@ -76,6 +79,30 @@ class EventAggregator {
     event.addHandler(handler)
 
     return { event, handler }
+  }
+
+  /**
+   *
+   * @param eventName {string}
+   * @param handler {function}
+   */
+  unsubscribe(eventName, handler) {
+    const event = this.getEvent(eventName)
+
+    event.removeHandler(handler)
+  }
+
+  /**
+   *
+   * @param name {string}
+   * @param eventArgs {...array}
+   */
+  dispatch(name, ...eventArgs) {
+    const event = this.getEvent(name)
+
+    if (event) {
+      event.call(...eventArgs)
+    }
   }
 }
 
