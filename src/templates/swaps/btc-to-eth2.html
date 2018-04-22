@@ -1,0 +1,153 @@
+<div al-if="data.slug == 'btc-eth'" al-ctrl="btcToEth">
+
+  <div al-if="data.swap.id" class="mb-4">
+    <div class="alert alert-primary fs-18">
+      <strong al-if="!data.swap.isMy">{{data.swap.buyAmount}} {{data.swap.buyCurrency}} &#10230; {{data.swap.sellAmount}} {{data.swap.sellCurrency}}</strong>
+      <strong al-if="data.swap.isMy">{{data.swap.sellAmount}} {{data.swap.sellCurrency}} &#10230; {{data.swap.buyAmount}} {{data.swap.buyCurrency}}</strong>
+    </div>
+
+    <div class="alert alert-danger mt-2" role="alert">
+      We strongly recommend to not close this page until the transaction is completed. This can lead to undesirable results
+    </div>
+  </div>
+
+  <div al-if="data.swap.isMy && !data.swap.id">
+    <h3>This order doesn't have a buyer</h3>
+    <a class="btn btn-primary" al-link="/">Go back to the orders list</a>
+  </div>
+
+  <div al-if="!data.swap.isMy && !data.swap.id">
+    <h3>The order creator is offline. Waiting for him..</h3>
+    <div class="loader small">
+      <div class="loader1"></div>
+      <div class="loader2"></div>
+      <div class="loader3"></div>
+    </div>
+  </div>
+
+  <div al-if="data.flow.isWaitingParticipant">
+    <h3>Waiting for other user when he connect to the order</h3>
+    <div class="loader small">
+      <div class="loader1"></div>
+      <div class="loader2"></div>
+      <div class="loader3"></div>
+    </div>
+  </div>
+
+  <h3 al-if="data.flow.isSigning || data.flow.isMeSigned" class="mb-1">
+    <div al-if="data.flow.isMeSigned && data.flow.isParticipantSigned" class="stepPassed"></div>
+    1. Please confirm your participation to begin the deal
+  </h3>
+  <div al-if="data.flow.isSigning">
+    <div class="mb-4 text-muted">
+      Confirmation of the transaction is necessary for crediting the reputation.
+      If a user does not bring the deal to the end he gets a negative reputation.
+    </div>
+    <div al-if="data.flow.isParticipantSigned" class="alert alert-success" role="alert">
+      Other user confirmed his participation
+    </div>
+    <timer-button al-if="!data.flow.isSignFetching && !data.flow.isMeSigned" @click="signSwap()">Confirm</timer-button>
+    <div al-if="data.flow.isSignFetching">
+      <h5 class="mb-2">Please wait. Confirmation processing</h5>
+      <div al-if="data.flow.signTransactionUrl" class="alert alert-warning" role="alert">
+        Transaction: <strong><a href="{{data.flow.signTransactionUrl}}" target="_blank">{{data.flow.signTransactionUrl}}</a></strong>
+      </div>
+      <div  class="loader small">
+        <div class="loader1"></div>
+        <div class="loader2"></div>
+        <div class="loader3"></div>
+      </div>
+    </div>
+    <div al-if="data.flow.isMeSigned" class="alert alert-success" role="alert">
+      You successfully confirmed your participation
+    </div>
+    <div al-if="data.flow.isMeSigned && !data.flow.isParticipantSigned">
+      <h5 class="mb-2">Waiting when other user confirm his participation</h5>
+      <div  class="loader small">
+        <div class="loader1"></div>
+        <div class="loader2"></div>
+        <div class="loader3"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- --------------------------------------- -->
+
+  <div al-if="data.flow.isMeSigned && data.flow.isParticipantSigned">
+
+    <h3 class="mt-5">
+      <div al-if="flow.data.secretHash" class="stepPassed"></div>
+      2. Create a secret key
+    </h3>
+    <div al-if="!flow.data.secretHash" class="mt-4">
+      <input type="text" class="form-control" placeholder="Secret Key" al-value="flow.data.secret">
+      <br />
+      <timer-button @click="submitSecret()">Confirm</timer-button>
+    </div>
+
+    <div al-if="flow.data.secretHash">
+      <div class="alert alert-danger mt-4" role="alert">
+        Save the secret key! Otherwise there will be a chance you loose your money!
+      </div>
+      <div class="alert alert-warning" role="alert">
+        Secret Key: <strong><a href="" al-copy>{{flow.data.secret}}</a></strong>
+      </div>
+      <div class="alert alert-warning" role="alert">
+        Secret Hash: <strong><a href="" al-copy>{{flow.data.secretHash}}</a></strong>
+      </div>
+    </div>
+
+    <div al-if="flow.data.step == 3 && flow.data.notEnoughMoney && !flow.data.checkingBalance" class="mt-5">
+      <h3 class="mb-4">Not enough money for this swap. Please charge the balance</h3>
+      <div class="alert alert-warning fs-16" role="alert">
+        <div>Your balance: <strong>{{flow.data.balance}}</strong> BTC</div>
+        <div>Required balance: <strong>{{flow.data.requiredAmount}}</strong> {{flow.data.requiredCurrency}}</div>
+        <hr />
+        <a href="" al-copy title="copy to clipboard">{{flow.data.address}}</a>&nbsp;&nbsp;&nbsp;<a href="https://www.blocktrail.com/tBTC/address/{{flow.data.address}}/transactions" target="_blank">Check</a>
+      </div>
+      <br />
+      <button type="button" class="btn btn-primary" @click="updateBalance()">Continue</button>
+    </div>
+
+    <h3 al-if="flow.data.step == 3 && flow.data.checkingBalance" class="mt-5">
+      Checking balance..
+    </h3>
+
+    <h3 al-if="flow.data.step == 4 || flow.data.btcScriptData" class="mt-5">
+      <div al-if="flow.data.btcScriptData" class="stepPassed"></div>
+      3. Creating Bitcoin Script. Please wait, it will take a while
+    </h3>
+
+    <h3 al-if="flow.data.step == 5 || flow.data.isBtcScriptFunded" class="mt-5">
+      <div al-if="flow.data.isBtcScriptFunded" class="stepPassed"></div>
+      4. Charging Bitcoin Script. Please wait, it will take a while
+    </h3>
+
+    <h3 al-if="flow.data.step == 6 || flow.data.isEthSwapCreated" class="mt-5">
+      <div al-if="flow.data.isEthSwapCreated" class="stepPassed"></div>
+      5. ETH Owner received Bitcoin Script and Secret Hash. Waiting when he creates ETH Contract.
+    </h3>
+
+    <h3 al-if="flow.data.step == 7 || flow.data.isWithdrawn" class="mt-5">
+      <div al-if="flow.data.isWithdrawn" class="stepPassed"></div>
+      6. ETH Contract created and charged. Requesting withdrawal from ETH Contract. Please wait
+    </h3>
+    <div al-if="flow.data.step == 7 && flow.data.ethSwapWithdrawTransactionUrl" class="alert alert-warning mt-4" role="alert">
+      Transaction: <strong><a href="{{flow.data.ethSwapWithdrawTransactionUrl}}" target="_blank">{{flow.data.ethSwapWithdrawTransactionUrl}}</a></strong>
+    </div>
+
+    <div al-if="(flow.data.step > 3 && flow.data.step != 8) || flow.data.checkingBalance" class="loader small mt-4">
+      <div class="loader1"></div>
+      <div class="loader2"></div>
+      <div class="loader3"></div>
+    </div>
+
+    <div al-if="flow.data.isWithdrawn" class="mt-5">
+      <div  class="stepPassed"></div>
+      <h3>7. Money was transferred to your wallet. Check the balance.</h3>
+      <h2>Thank you for using Swap.Online!</h2>
+    </div>
+
+  </div>
+
+</div>

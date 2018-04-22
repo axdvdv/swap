@@ -4,11 +4,10 @@ import EventAggregator from './EventAggregator'
 class Room {
 
   constructor({ swap, connection }) {
-    this.events           = new EventAggregator()
+    this.events       = new EventAggregator()
 
-    this.myPeer           = swap.storage.data.me.peer
-    this.participantPeer  = swap.storage.data.participant.peer
-    this.connection       = connection
+    this.swap         = swap
+    this.connection   = connection
 
     connection.on('peer joined', this.handleNewUserConnected)
     connection.on('peer left', this.handleUserLeft)
@@ -16,19 +15,25 @@ class Room {
   }
 
   handleNewUserConnected = (peer) => {
-    if (peer === this.participantPeer) {
-      this.events.dispatch('participantOnline')
+    const { storage } = this.swap
+
+    if (!storage.data.participant && peer !== storage.data.me.peer) {
+      this.events.dispatch('participantOnline', peer)
     }
   }
 
   handleUserLeft = (peer) => {
-    if (peer === this.participantPeer) {
-      this.events.dispatch('participantOffline')
+    const { storage } = this.swap
+
+    if (storage.data.participant && peer === storage.data.participant.peer) {
+      this.events.dispatch('participantOffline', peer)
     }
   }
 
   handleNewMessage = (message) => {
-    if (message.from === this.myPeer) {
+    const { storage } = this.swap
+
+    if (message.from === storage.data.me.peer) {
       return
     }
 

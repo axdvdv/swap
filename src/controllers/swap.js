@@ -21,9 +21,9 @@ import { localStorage } from 'helpers'
 
 const statuses = {
   thereIsNoAnyParticipant: 'thereIsNoAnyParticipant',
-  waitingSwapCreatorToBecomeOnline: 'waitingSwapCreatorToBecomeOnline',
-  waitingParticipantConnectToDeal: 'waitingParticipantConnectToDeal',
-  swapSigning: 'swapSigning',
+  isWaitingParticipant: 'isWaitingParticipant',
+  waitingParticipantToConnect: 'waitingParticipantToConnect',
+  isSigning: 'isSigning',
   initialized: 'initialized',
 }
 
@@ -49,8 +49,8 @@ alight.controllers.swap = (scope) => {
     order,
 
     // sign
-    signFetching: false,
-    signTransactionHash: null,
+    isSignFetching: false,
+    signTransactionUrl: null,
     isMeSigned: false,
     isParticipantSigned: false,
   }
@@ -58,7 +58,7 @@ alight.controllers.swap = (scope) => {
   if (!order) {
     console.error('There is no such order!')
 
-    scope.data.status = statuses.waitingSwapCreatorToBecomeOnline
+    scope.data.status = statuses.isWaitingParticipant
     scope.$scan()
 
     EA.subscribe('orders:onAppend', function ({ id }) {
@@ -123,7 +123,7 @@ alight.controllers.swap = (scope) => {
     else {
       console.log('Wait until creator connect to this order')
 
-      scope.data.status = statuses.waitingParticipantConnectToDeal
+      scope.data.status = statuses.waitingParticipantToConnect
       scope.$scan()
 
       room.subscribe('swap:userConnected', function ({ order: { id: orderId }, participant }) {
@@ -143,7 +143,7 @@ alight.controllers.swap = (scope) => {
   function initSigning() {
     const { order } = scope.data
 
-    scope.data.status = statuses.swapSigning
+    scope.data.status = statuses.isSigning
     scope.$scan()
 
     room.subscribe('swap:signed', function ({ orderId }) {
@@ -162,18 +162,18 @@ alight.controllers.swap = (scope) => {
   scope.signSwap = () => {
     const { order } = scope.data
 
-    scope.data.signFetching = true
+    scope.data.isSignFetching = true
     scope.$scan()
 
-    // ethSwap.sign({
-    //   myAddress: user.ethData.address,
-    //   participantAddress: swapData.participant.eth.address,
-    // }, (signTransactionHash) => {
-    //   scope.data.signTransactionHash = signTransactionHash
-    //   scope.$scan()
-    // })
-    //   .then(() => {
-        scope.data.signFetching = false
+    ethSwap.sign({
+      myAddress: user.ethData.address,
+      participantAddress: swapData.participant.eth.address,
+    }, (signTransactionUrl) => {
+      scope.data.signTransactionUrl = signTransactionUrl
+      scope.$scan()
+    })
+      .then(() => {
+        scope.data.isSignFetching = false
         scope.data.isMeSigned = true
         scope.$scan()
         checkIfCanInit()
@@ -186,7 +186,7 @@ alight.controllers.swap = (scope) => {
             },
           },
         ])
-      // })
+      })
   }
 
   function checkIfCanInit() {

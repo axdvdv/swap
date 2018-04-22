@@ -278,11 +278,8 @@
 
       <div al-if="data.activeRoute.path == '/swap/:slug/:id'">
         <div class="content-800" al-ctrl="swap">
-          <%= require('html-loader!./templates/swap.html') %>
-          <div al-if="data.status == data.statuses.initialized">
-            <%= require('html-loader!./templates/swaps/btc-to-eth.html') %>
-            <%= require('html-loader!./templates/swaps/eth-to-btc.html') %>
-          </div>
+          <%= require('html-loader!./templates/swaps/btc-to-eth2.html') %>
+          <%= require('html-loader!./templates/swaps/eth-to-btc2.html') %>
         </div>
       </div>
 

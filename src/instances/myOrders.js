@@ -2,6 +2,7 @@ import { orderStatuses, localStorage } from 'helpers'
 import EA from './EA'
 import room from './room'
 import orders from './orders'
+import  from ''
 
 
 class MyOrders {
@@ -20,6 +21,9 @@ class MyOrders {
 
     myOrders.forEach((order) => {
       orders.append(order)
+      
+      // TODO create swaps
+      
     })
 
     EA.dispatch('myOrders:onMount')

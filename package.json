@@ -11,6 +11,7 @@
   "scripts": {
     "test": "ava",
     "clean": "rimraf build",
+    "d": "nodemon",
     "dev": "npm i && nodemon",
     "build": "npm run clean && cross-env NODE_ENV=production node ./bin/compile"
   },

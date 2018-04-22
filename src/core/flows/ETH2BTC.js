@@ -3,15 +3,41 @@ import Flow from '../Flow'
 
 class ETH2BTC extends Flow {
 
-  constructor({ swap, data, options: { ethSwap, btcSwap, getBalance } }) {
-    super({ swap, data })
+  /*
 
-    this.swap = swap
-    this.ethSwap = ethSwap
-    this.btcSwap = btcSwap
+    Flow storage data:
+
+    {boolean}   secretHash
+    {boolean}   checkingBalance
+    {boolean}   notEnoughMoney
+    {object}    btcScriptData
+    {boolean}   btcScriptVerified
+    {string}    ethSwapCreationTransactionUrl
+    {boolean}   isEthSwapCreated
+    {boolean}   isEthWithdrawn
+    {string}    btcSwapWithdrawTransactionUrl
+    {boolean}   isWithdrawn
+
+   */
+
+  constructor({ swap, data, options: { ethSwap, btcSwap, syncData, getBalance } }) {
+    super({ swap, data, options: { ethSwap, syncData } })
+
+    if (!ethSwap) {
+      throw new Error('BTC2ETH failed. "ethSwap" of type object required.')
+    }
+    if (!btcSwap) {
+      throw new Error('BTC2ETH failed. "btcSwap" of type object required.')
+    }
+    if (typeof getBalance !== 'function') {
+      throw new Error('BTC2ETH failed. "getBalance" of type function required.')
+    }
+
+    this.swap       = swap
+    this.ethSwap    = ethSwap
+    this.btcSwap    = btcSwap
     this.getBalance = getBalance
 
-    this._getSteps()
     this._persist()
   }
 
@@ -19,7 +45,7 @@ class ETH2BTC extends Flow {
     const { room, storage } = this.swap
     const flow = this
 
-    this.steps = [
+    return [
 
       // Wait participant create BTC Script
 
@@ -96,42 +122,36 @@ class ETH2BTC extends Flow {
 
       // Withdraw
 
-      () => {
-        let secret
-
+      async () => {
         const myAndParticipantData = {
           myAddress: storage.data.me.ethData.address,
           participantAddress: storage.data.participant.ethData.address,
         }
 
-        this.ethSwap.getSecret(myAndParticipantData)
-          .then((result) => {
-            secret = result
+        const secret = await this.ethSwap.getSecret(myAndParticipantData)
 
-            return flow.ethSwap.close(myAndParticipantData)
-          })
-          .then(() => {
-            const { script } = flow.btcSwap.createScript(flow.storage.data.btcScriptData)
+        await flow.ethSwap.close(myAndParticipantData)
 
-            return flow.btcSwap.withdraw({
-              // TODO here is the problem... now in `btcData` stored bitcoinjs-lib instance with additional functionality
-              // TODO need to rewrite this - check instances/bitcoin.js and core/swaps/btcSwap.js:185
-              btcData: storage.data.me.btcData,
-              script,
-              secret,
-            }, (transactionUrl) => {
-              flow.storage.update({
-                btcSwapWithdrawTransactionUrl: transactionUrl,
-              })
-            })
+        const { script } = flow.btcSwap.createScript(flow.storage.data.btcScriptData)
+
+        await flow.btcSwap.withdraw({
+          // TODO here is the problem... now in `btcData` stored bitcoinjs-lib instance with additional functionality
+          // TODO need to rewrite this - check instances/bitcoin.js and core/swaps/btcSwap.js:185
+          btcData: storage.data.me.btcData,
+          script,
+          secret,
+        }, (transactionUrl) => {
+          flow.storage.update({
+            btcSwapWithdrawTransactionUrl: transactionUrl,
           })
-          .then(() => {
-            flow.finishStep({
-              isWithdrawn: true,
-            })
-          })
+        })
+
+        flow.finishStep({
+          isWithdrawn: true,
+        })
       },
 
+      // Finish
 
       () => {
 

@@ -14,7 +14,7 @@
   <a class="btn btn-primary" al-link="/">Go back to the orders list</a>
 </div>
 
-<div al-if="data.status == data.statuses.waitingSwapCreatorToBecomeOnline">
+<div al-if="data.status == data.statuses.isWaitingParticipant">
   <h3>The order creator is offline. Waiting for him..</h3>
   <div class="loader small">
     <div class="loader1"></div>
@@ -23,7 +23,7 @@
   </div>
 </div>
 
-<div al-if="data.status == data.statuses.waitingParticipantConnectToDeal">
+<div al-if="data.status == data.statuses.waitingParticipantToConnect">
   <h3>Waiting for other user when he connect to the order</h3>
   <div class="loader small">
     <div class="loader1"></div>
@@ -32,11 +32,11 @@
   </div>
 </div>
 
-<h3 al-if="data.status == data.statuses.swapSigning || data.isMeSigned" class="mb-1">
+<h3 al-if="data.status == data.statuses.isSigning || data.isMeSigned" class="mb-1">
   <div al-if="data.isMeSigned && data.isParticipantSigned" class="stepPassed"></div>
   1. Please confirm your participation to begin the deal
 </h3>
-<div al-if="data.status == data.statuses.swapSigning">
+<div al-if="data.status == data.statuses.isSigning">
   <div class="mb-4 text-muted">
     Confirmation of the transaction is necessary for crediting the reputation.
     If a user does not bring the deal to the end he gets a negative reputation.
@@ -44,11 +44,11 @@
   <div al-if="data.isParticipantSigned" class="alert alert-success" role="alert">
     Other user confirmed his participation
   </div>
-  <timer-button al-if="!data.signFetching && !data.isMeSigned" @click="signSwap()">Confirm</timer-button>
-  <div al-if="data.signFetching">
+  <timer-button al-if="!data.isSignFetching && !data.isMeSigned" @click="signSwap()">Confirm</timer-button>
+  <div al-if="data.isSignFetching">
     <h5 class="mb-2">Please wait. Confirmation processing</h5>
-    <div al-if="data.signTransactionHash" class="alert alert-warning" role="alert">
-      Transaction: <strong><a href="{{data.signTransactionHash}}" target="_blank">{{data.signTransactionHash}}</a></strong>
+    <div al-if="data.signTransactionUrl" class="alert alert-warning" role="alert">
+      Transaction: <strong><a href="{{data.signTransactionUrl}}" target="_blank">{{data.signTransactionUrl}}</a></strong>
     </div>
     <div  class="loader small">
       <div class="loader1"></div>
