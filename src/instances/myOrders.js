@@ -2,7 +2,6 @@ import { orderStatuses, localStorage } from 'helpers'
 import EA from './EA'
 import room from './room'
 import orders from './orders'
-import  from ''
 
 
 class MyOrders {
