@@ -64,10 +64,12 @@ alight.controllers.swap = (scope) => {
     EA.subscribe('orders:onAppend', function ({ id }) {
       if (id === orderId) {
         this.unsubscribe()
+
+        scope.data.order = orders.getByKey(id)
+
         console.log('Participant became online!')
         console.log('Order:', scope.data.order)
 
-        scope.data.order = orders.getByKey(id)
         connect()
       }
     })
@@ -87,7 +89,7 @@ alight.controllers.swap = (scope) => {
       swapData.participant = order.owner
     }
 
-    console.log('Notify participant that I connected to this order')
+    console.log('Notify participant that I connected to this order', swapData.participant.peer)
 
     room.sendMessage(swapData.participant.peer, [
       {
